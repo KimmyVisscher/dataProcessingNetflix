@@ -1,4 +1,4 @@
-.idea
+.idea/
 .ipynb_checkpoints
 .mypy_cache
 .vscode
@@ -17,9 +17,10 @@ env3.*
 env
 docs_build
 site_build
-venv
+venv/
 docs.zip
 archive.zip
+secrets.py
 
 # vim temporary files
 *~
