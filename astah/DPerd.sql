@@ -1,7 +1,7 @@
 CREATE TABLE Episode (
  episode_id INT NOT NULL,
- title CHAR(255),
- episode_duration TIMESTAMP(10)
+ title VARCHAR(255),
+ episode_duration TIMESTAMP(6)
 );
 
 ALTER TABLE Episode ADD CONSTRAINT PK_Episode PRIMARY KEY (episode_id);
@@ -9,8 +9,8 @@ ALTER TABLE Episode ADD CONSTRAINT PK_Episode PRIMARY KEY (episode_id);
 
 CREATE TABLE Movie (
  movie_id INT NOT NULL,
- title CHAR(255),
- movie_duration TIMESTAMP(10)
+ title VARCHAR(255),
+ movie_duration TIMESTAMP(6)
 );
 
 ALTER TABLE Movie ADD CONSTRAINT PK_Movie PRIMARY KEY (movie_id);
@@ -20,8 +20,8 @@ CREATE TABLE Preference (
  preference_id INT NOT NULL,
  watchlist_id INT NOT NULL,
  characteristics_id INT NOT NULL,
- interest CHAR(255),
- username CHAR(255)
+ interest VARCHAR(255),
+ username VARCHAR(255)
 );
 
 ALTER TABLE Preference ADD CONSTRAINT PK_Preference PRIMARY KEY (preference_id,watchlist_id,characteristics_id);
@@ -31,9 +31,9 @@ CREATE TABLE Profile (
  profile_id INT NOT NULL,
  account_id INT NOT NULL,
  subscription_id INT NOT NULL,
- profile_image CHAR(255),
- profile_child CHAR(255),
- language CHAR(255),
+ profile_image VARCHAR(255),
+ profile_child BIT(10),
+ language VARCHAR(255),
  preference_id INT NOT NULL,
  watchlist_id INT,
  characteristics_id INT
@@ -51,7 +51,8 @@ ALTER TABLE Season ADD CONSTRAINT PK_Season PRIMARY KEY (season_id);
 
 CREATE TABLE Serie (
  serie_id INT NOT NULL,
- episode_id INT NOT NULL
+ episode_id INT NOT NULL,
+ serie_name VARCHAR(255)
 );
 
 ALTER TABLE Serie ADD CONSTRAINT PK_Serie PRIMARY KEY (serie_id,episode_id);
@@ -59,7 +60,7 @@ ALTER TABLE Serie ADD CONSTRAINT PK_Serie PRIMARY KEY (serie_id,episode_id);
 
 CREATE TABLE Subscription (
  subscription_id INT NOT NULL,
- description CHAR(255),
+ description VARCHAR(255),
  subscription_price FLOAT(10)
 );
 
@@ -70,8 +71,8 @@ CREATE TABLE Subtitle (
  subtitle_id INT NOT NULL,
  movie_id INT NOT NULL,
  episode_id INT NOT NULL,
- language CHAR(255),
- subtitle_location CHAR(255)
+ language VARCHAR(255),
+ subtitle_location VARCHAR(255)
 );
 
 ALTER TABLE Subtitle ADD CONSTRAINT PK_Subtitle PRIMARY KEY (subtitle_id,movie_id,episode_id);
@@ -86,9 +87,9 @@ ALTER TABLE ViewerIndication ADD CONSTRAINT PK_ViewerIndication PRIMARY KEY (vie
 
 CREATE TABLE viewing_behavior (
  watchlist_id INT NOT NULL,
- pause_time CHAR(255),
- viewing_history CHAR(255),
- times_watched CHAR(10)
+ pause_time VARCHAR(255),
+ viewing_history VARCHAR(255),
+ times_watched VARCHAR(10)
 );
 
 ALTER TABLE viewing_behavior ADD CONSTRAINT PK_viewing_behavior PRIMARY KEY (watchlist_id);
@@ -111,12 +112,12 @@ ALTER TABLE watchlist_item ADD CONSTRAINT PK_watchlist_item PRIMARY KEY (watchli
 CREATE TABLE Account (
  account_id INT NOT NULL,
  subscription_id INT NOT NULL,
- email CHAR(255) NOT NULL,
- password CHAR(255),
- payment_method CHAR(255),
+ email VARCHAR(255) NOT NULL,
+ password VARCHAR(255),
+ payment_method VARCHAR(255),
  blocked BIT(10),
- max_profile CHAR(10),
- video_quality CHAR(10)
+ max_profile INT(1),
+ video_quality VARCHAR(10)
 );
 
 ALTER TABLE Account ADD CONSTRAINT PK_Account PRIMARY KEY (account_id,subscription_id);
@@ -126,9 +127,9 @@ CREATE TABLE characteristics (
  characteristics_id INT NOT NULL,
  episode_id INT NOT NULL,
  movie_id INT NOT NULL,
- genres CHAR(10),
- age_restriction CHAR(10),
- classification CHAR(10)
+ genres VARCHAR(10),
+ age_restriction VARCHAR(10),
+ classification VARCHAR(10)
 );
 
 ALTER TABLE characteristics ADD CONSTRAINT PK_characteristics PRIMARY KEY (characteristics_id);
