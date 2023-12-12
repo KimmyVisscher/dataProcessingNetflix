@@ -14,7 +14,7 @@ class MovieBase(SQLModel):
 class Movie(MovieBase, table=True):
     movie_id: Optional[int] = Field(default=None, primary_key=True)
 
-    subtitles: List["Movie"] = Relationship(back_populates="movie")
+    subtitles: List["Subtitle"] = Relationship(back_populates="movie")
 
 
 class MovieRead(MovieBase):
@@ -29,11 +29,11 @@ class SubtitleBase(SQLModel):
     language: str
     subtitle_location: str
 
-    movie_id: Optional[int] = Field(default=None, foreign_key="Movie.movie_id")
+    movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
 
 
 class Subtitle(SubtitleBase, table=True):
-    subtitle_id = Optional[int] = Field(default=None, primary_key=True)
+    subtitle_id: Optional[int] = Field(default=None, primary_key=True)
 
     movie: Optional[Movie] = Relationship(back_populates="subtitles")
 
@@ -46,7 +46,7 @@ class SubtitleCreate(SubtitleBase):
     pass
 
 
-connect_args = {"check_same_thread": False}
+connect_args = {}
 engine = create_engine(connect_string, echo=True, connect_args=connect_args)
 
 
@@ -67,6 +67,9 @@ def on_startup():
     create_db_and_tables()
 
 
-app = FastAPI()
-
-
+@app.get("/movies/{movie_id}", response_model=MovieRead)
+def read_movie(*, session: Session = Depends(get_session), movie_id: int):
+    movie = session.get(Movie, movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return movie
