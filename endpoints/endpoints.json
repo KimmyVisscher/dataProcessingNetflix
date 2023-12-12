@@ -2,7 +2,7 @@
 	"components": {
 		"schemas": {
 			"ErrorModel": {
-				"type": "object"
+				"type": "object",
 				"required": ["message", "code"],
 				"properties": {
 					"message": {
@@ -20,10 +20,10 @@
 				"properties": {
 					"id": {
 						"type": "integer"
-					}
+					},
 					"title": {
 						"type": "string"
-					}
+					},
 					"movie_duration": {
 						"type": "integer"
 					}
@@ -34,10 +34,10 @@
 				"properties": {
 					"id": {
 						"type": "integer"
-					}
+					},
 					"title": {
 						"type": "string"
-					}
+					},
 					"episode_duration": {
 						"type": "integer"
 					}
@@ -48,10 +48,10 @@
 				"properties": {
 					"id": {
 						"type": "integer"
-					}
+					},
 					"name": {
 						"type": "string"
-					}
+					},
 					"episodes": {
 						"type": "array",
 						"items": {
@@ -73,10 +73,57 @@
 						}
 					}
 				}
+			},
+			"Account": {
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"email": {
+						"type": "string"
+					},
+					"is_blocked": {
+						"type": "boolean"
+					}
+				}
+			},
+			"Profile": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"name": {
+						"type": "string"
+					},
+					"photo_path": {
+						"type": "string"
+					},
+					"is_child": {
+						"type": "boolean"
+					},
+					"language": {
+						"type": "string"
+					}
+				}
+			},
+			"Subscription": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"description": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number"
+					}
+				}
 			}
 		}
 	}
-}
+},
 
 
 {
@@ -107,7 +154,7 @@
 			}
 		}
 	}
-}
+},
 
 
 {
@@ -141,7 +188,7 @@
 			}
 		}
 	}
-}
+},
 
 
 {
@@ -172,7 +219,7 @@
 			}
 		}
 	}
-}
+},
 
 
 {
@@ -206,7 +253,7 @@
 			}
 		}
 	}
-}
+},
 
 
 {
@@ -219,7 +266,144 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": #/components/schemas/Watchlist"
+								"$ref": "#/components/schemas/Watchlist"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/accounts/{account_id}/": {
+		"get": {
+			"description": "Returns the account with id {account_id}",
+			"responses": {
+				"200": {
+					"description": "An account object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#components/schemas/Account"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/profiles/{profile_id}/": {
+		"get": {
+			"description": "Returns the profile with id {profile_id}",
+			"responses": {
+				"200": {
+					"description": "A profile object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Profile"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/profiles/{account_id}/": {
+		"get": {
+			"description": "Returns the profile(s) that are attached to the account with id {account_id}",
+			"responses": {
+				"200": {
+					"description": "An array of profile objects that belongs to the given account id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Profile"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/subscriptions/{account_id}/": {
+		"get": {
+			"description": "Returns the subscription that belongs to account with id {account_id}",
+			"responses": {
+				"200": {
+					"description": "A subscription object"
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Subscription"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
 							}
 						}
 					}
