@@ -1,0 +1,230 @@
+{
+	"components": {
+		"schemas": {
+			"ErrorModel": {
+				"type": "object"
+				"required": ["message", "code"],
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"code": {
+						"type": "integer",
+						"minimum": 100,
+						"maximum": 600
+					}
+				}
+			},			
+			"Movie": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					}
+					"title": {
+						"type": "string"
+					}
+					"movie_duration": {
+						"type": "integer"
+					}
+				}
+			},
+			"Episode": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					}
+					"title": {
+						"type": "string"
+					}
+					"episode_duration": {
+						"type": "integer"
+					}
+				}
+			},
+			"Series": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					}
+					"name": {
+						"type": "string"
+					}
+					"episodes": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Episode"
+						}
+					}
+				}
+			},
+			"Watchlist": {
+				"type": "object",
+				"properties": {
+					"watchlist_items": {
+						"type": "array",
+						"items": {
+							"oneOf": [
+								{"$ref": "#/components/schemas/Movie"},
+								{"$ref": "#/components/schemas/Episode"}
+							]
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+{
+	"/movies/{movie_id}/": {
+		"get": {
+			"description": "Returns the movie with id {movie_id}",
+			"responses": {
+				"200": {
+					"description": "A movie object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Movie"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+{
+	"/movies/{characteristic_id}/": {
+		"get": {
+			"description": "Returns all movies with the characteristic described in id {characteristic_id}",
+			"responses": {
+				"200": {
+					"description": "An array of movie objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Movie"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+{
+	"/serie/{serie_id}/": {
+		"get": {
+			"description": "Returns the series with id {serie_id}",
+			"responses": {
+				"200": {
+					"description": "A series object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Series"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+{
+	"/episodes/{characteristic_id}/": {
+		"get": {
+			"description": "Returns all episodes with the characteristic described in id {characteristic_id}",
+			"responses": {
+				"200": {
+					"description": "An array of episode objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Episode"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+{
+	"/watchlist/{profile_id}/": {
+		"get": {
+			"description": "Returns the watchlist of the profile with id {profile_id}",
+			"responses": {
+				"200": {
+					"description": "A watchlist object that belongs to the given profile",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": #/components/schemas/Watchlist"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
