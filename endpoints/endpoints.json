@@ -1,0 +1,414 @@
+{
+	"components": {
+		"schemas": {
+			"ErrorModel": {
+				"type": "object",
+				"required": ["message", "code"],
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"code": {
+						"type": "integer",
+						"minimum": 100,
+						"maximum": 600
+					}
+				}
+			},			
+			"Movie": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"title": {
+						"type": "string"
+					},
+					"movie_duration": {
+						"type": "integer"
+					}
+				}
+			},
+			"Episode": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"title": {
+						"type": "string"
+					},
+					"episode_duration": {
+						"type": "integer"
+					}
+				}
+			},
+			"Series": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"name": {
+						"type": "string"
+					},
+					"episodes": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Episode"
+						}
+					}
+				}
+			},
+			"Watchlist": {
+				"type": "object",
+				"properties": {
+					"watchlist_items": {
+						"type": "array",
+						"items": {
+							"oneOf": [
+								{"$ref": "#/components/schemas/Movie"},
+								{"$ref": "#/components/schemas/Episode"}
+							]
+						}
+					}
+				}
+			},
+			"Account": {
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"email": {
+						"type": "string"
+					},
+					"is_blocked": {
+						"type": "boolean"
+					}
+				}
+			},
+			"Profile": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"name": {
+						"type": "string"
+					},
+					"photo_path": {
+						"type": "string"
+					},
+					"is_child": {
+						"type": "boolean"
+					},
+					"language": {
+						"type": "string"
+					}
+				}
+			},
+			"Subscription": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"description": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number"
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/movies/{movie_id}/": {
+		"get": {
+			"description": "Returns the movie with id {movie_id}",
+			"responses": {
+				"200": {
+					"description": "A movie object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Movie"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/movies/{characteristic_id}/": {
+		"get": {
+			"description": "Returns all movies with the characteristic described in id {characteristic_id}",
+			"responses": {
+				"200": {
+					"description": "An array of movie objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Movie"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/serie/{serie_id}/": {
+		"get": {
+			"description": "Returns the series with id {serie_id}",
+			"responses": {
+				"200": {
+					"description": "A series object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Series"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/episodes/{characteristic_id}/": {
+		"get": {
+			"description": "Returns all episodes with the characteristic described in id {characteristic_id}",
+			"responses": {
+				"200": {
+					"description": "An array of episode objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Episode"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/watchlist/{profile_id}/": {
+		"get": {
+			"description": "Returns the watchlist of the profile with id {profile_id}",
+			"responses": {
+				"200": {
+					"description": "A watchlist object that belongs to the given profile",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Watchlist"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/accounts/{account_id}/": {
+		"get": {
+			"description": "Returns the account with id {account_id}",
+			"responses": {
+				"200": {
+					"description": "An account object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#components/schemas/Account"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/profiles/{profile_id}/": {
+		"get": {
+			"description": "Returns the profile with id {profile_id}",
+			"responses": {
+				"200": {
+					"description": "A profile object that belongs to the given id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Profile"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/profiles/{account_id}/": {
+		"get": {
+			"description": "Returns the profile(s) that are attached to the account with id {account_id}",
+			"responses": {
+				"200": {
+					"description": "An array of profile objects that belongs to the given account id",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Profile"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/subscriptions/{account_id}/": {
+		"get": {
+			"description": "Returns the subscription that belongs to account with id {account_id}",
+			"responses": {
+				"200": {
+					"description": "A subscription object"
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Subscription"
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -83,7 +83,7 @@ ALTER TABLE ViewerIndication ADD CONSTRAINT PK_ViewerIndication PRIMARY KEY (vie
 
 CREATE TABLE viewing_behavior (
  watchlist_item_id INT NOT NULL,
- pause_time FLOAT(10),
+ pause_time INT,
  viewing_history VARCHAR(255),
  times_watched INT
 );
