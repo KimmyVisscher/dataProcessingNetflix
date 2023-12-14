@@ -1,9 +1,34 @@
 from typing import List, Optional
+from enum import Enum
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
 from secrets import *
+
+
+class Genre(Enum):
+    ACTION = 1
+    SCIFI = 2
+    FANTASY = 3
+    DRAMA = 4
+    HORROR = 5
+    THRILLER = 6
+    ROMANCE = 7
+    COMEDY = 8
+    ANIMATION = 9
+    REALITY = 10
+
+
+AgeRestriction = Enum("AgeRestriction", ["ALL_AGES", "6_YEARS", "9_YEARS", "12_YEARS", "16_YEARS"])
+
+
+class ViewerIndication(Enum):
+    SEX = 1
+    FEAR = 2
+    DISCRIMINATION = 3
+    DRUG_ALCOHOL_USAGE = 4
+    PROFANITY_USAGE = 5
 
 
 class MovieBase(SQLModel):
@@ -84,6 +109,10 @@ class EpisodeRead(EpisodeBase):
 
 class EpisodeCreate(EpisodeBase):
     pass
+
+
+class CharacteristicsBase(SQLModel):
+    genres: List[Genre]
 
 
 connect_args = {}
