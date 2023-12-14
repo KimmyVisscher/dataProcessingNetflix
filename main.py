@@ -2,6 +2,7 @@ from typing import List, Optional, Type
 from enum import Enum
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
 from secrets import *
@@ -31,18 +32,32 @@ class ViewerIndication(Enum):
     PROFANITY_USAGE = 5
 
 
+class Role(Enum):
+    JUNIOR = 1
+    MEDIOR = 2
+    SENIOR = 3
+
+    def get_value(role):
+        return role.value
+
+
+class APIKey(SQLModel, table=True):
+    apikey: str = Field(default=None, primary_key=True)
+    role: Role
+
+
 class MovieBase(SQLModel):
     title: str
     movie_duration: int
 
-    characteristics_id: int = Field(default=None, foreign_key="characteristics.characteristics_id")
+    #characteristics_id: int = Field(default=None, foreign_key="characteristics.characteristics_id")
 
 
 class Movie(MovieBase, table=True):
     movie_id: Optional[int] = Field(default=None, primary_key=True)
 
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
-    characteristics: 'Type[Characteristics]' = Relationship(back_populates="movie")
+    #characteristics: 'Type[Characteristics]' = Relationship(back_populates="movie")
 
 
 class MovieRead(MovieBase):
@@ -121,7 +136,7 @@ class CharacteristicsBase(SQLModel):
 class Characteristics(CharacteristicsBase, table=True):
     characteristics_id: Optional[int] = Field(default=None, primary_key=True)
 
-    movie: Movie = Relationship(back_populates="characteristics")
+    #movie: Movie = Relationship(back_populates="characteristics")
     # add relationship with episode
 
 
@@ -132,6 +147,8 @@ class CharacteristicsRead(CharacteristicsBase):
 class CharacteristicsCreate(CharacteristicsBase):
     pass
 
+
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 connect_args = {}
 engine = create_engine(connect_string, echo=True, connect_args=connect_args)
@@ -155,11 +172,20 @@ def on_startup():
 
 
 @app.get("/movies/{movie_id}", response_model=MovieRead)
-def read_movie(*, session: Session = Depends(get_session), movie_id: int):
-    movie = session.get(Movie, movie_id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-    return movie
+def read_movie(*, session: Session = Depends(get_session), movie_id: int, api_key_header: Optional[str] = Depends(api_key_header)):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
+        return movie
+    else:
+        raise HTTPException(status_code=401, detail="No permission")
 
 
 
