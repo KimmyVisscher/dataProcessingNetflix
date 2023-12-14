@@ -67,10 +67,12 @@ class SerieCreate(SubtitleBase):
 class EpisodeBase(SQLModel):
     title: str
     episode_duration: int
+
     characteristics_id: Optional[int]
+    serie_id: int = Field(default=None, foreign_key="serie.serie_id")
 
 
-class Episode(EpisodeBase):
+class Episode(EpisodeBase, table=True):
     episode_id: Optional[int] = Field(default=None, primary_key=True)
 
     serie: Serie = Relationship(back_populates="episodes")
