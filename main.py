@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Type
 from enum import Enum
 
 from fastapi import Depends, FastAPI, HTTPException, Query
@@ -35,11 +35,14 @@ class MovieBase(SQLModel):
     title: str
     movie_duration: int
 
+    characteristics_id: int = Field(default=None, foreign_key="characteristics.characteristics_id")
+
 
 class Movie(MovieBase, table=True):
     movie_id: Optional[int] = Field(default=None, primary_key=True)
 
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
+    characteristics: 'Type[Characteristics]' = Relationship(back_populates="movie")
 
 
 class MovieRead(MovieBase):
@@ -112,7 +115,22 @@ class EpisodeCreate(EpisodeBase):
 
 
 class CharacteristicsBase(SQLModel):
-    genres: List[Genre]
+    pass #todo
+
+
+class Characteristics(CharacteristicsBase, table=True):
+    characteristics_id: Optional[int] = Field(default=None, primary_key=True)
+
+    movie: Movie = Relationship(back_populates="characteristics")
+    # add relationship with episode
+
+
+class CharacteristicsRead(CharacteristicsBase):
+    pass
+
+
+class CharacteristicsCreate(CharacteristicsBase):
+    pass
 
 
 connect_args = {}
