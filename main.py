@@ -46,6 +46,44 @@ class SubtitleCreate(SubtitleBase):
     pass
 
 
+class SerieBase(SQLModel):
+    serie_name: str
+
+
+class Serie(SerieBase, table=True):
+    serie_id: Optional[int] = Field(default=None, primary_key=True)
+
+    episodes: List["Episode"] = Relationship(back_populates="serie")
+
+
+class SerieRead(SubtitleBase):
+    serie_id: int
+
+
+class SerieCreate(SubtitleBase):
+    pass
+
+
+class EpisodeBase(SQLModel):
+    title: str
+    episode_duration: int
+    characteristics_id: Optional[int]
+
+
+class Episode(EpisodeBase):
+    episode_id: Optional[int] = Field(default=None, primary_key=True)
+
+    serie: Serie = Relationship(back_populates="episodes")
+
+
+class EpisodeRead(EpisodeBase):
+    episode_id: int
+
+
+class EpisodeCreate(EpisodeBase):
+    pass
+
+
 connect_args = {}
 engine = create_engine(connect_string, echo=True, connect_args=connect_args)
 
@@ -73,3 +111,6 @@ def read_movie(*, session: Session = Depends(get_session), movie_id: int):
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
+
+
+
