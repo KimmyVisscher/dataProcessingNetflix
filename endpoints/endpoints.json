@@ -120,6 +120,17 @@
 						"type": "number"
 					}
 				}
+			},
+			"Subtitle": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"language": {
+						"type": "string"
+					}
+				}
 			}
 		}
 	}
@@ -235,6 +246,105 @@
 								"type": "array",
 								"items": {
 									"$ref": "#/components/schemas/Episode"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+{
+	"/episodes/{serie_id}/": {
+		"get": {
+			"description": "Returns all episodes that belong to series with id {serie_id}",
+			"responses": {
+				"200": {
+					"description": "An array of episode objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Episode"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+{
+	"/subtitles/{movie_id}/": {
+		"get": {
+			"description": "Returns all subtitles available for the movie with id {movie_id}",
+			"responses": {
+				"200": {
+					"description": "An array of subtitle objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Subtitle"
+								}
+							}
+						}
+					}
+				},
+				"default": {
+					"description": "error"
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+{
+	"/subtitles/{episode_id}/": {
+		"get": {
+			"description": "Returns all subtitles available for the episode with id {episode_id}",
+			"responses": {
+				"200": {
+					"description": "An array of subtitle objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Subtitle"
 								}
 							}
 						}
