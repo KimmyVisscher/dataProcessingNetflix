@@ -1,9 +1,9 @@
 CREATE TABLE apikey (
- Key VARCHAR(30) NOT NULL,
+ apikey VARCHAR(30) NOT NULL,
  role VARCHAR(255)
 );
 
-ALTER TABLE apikey ADD CONSTRAINT PK_apikey PRIMARY KEY (Key);
+ALTER TABLE apikey ADD CONSTRAINT PK_apikey PRIMARY KEY (apikey);
 
 
 CREATE TABLE characteristics (
@@ -110,7 +110,6 @@ CREATE TABLE account (
  password VARCHAR(255),
  payment_method VARCHAR(255),
  blocked BIT(10),
- max_profile INT,
  video_quality VARCHAR(30)
 );
 

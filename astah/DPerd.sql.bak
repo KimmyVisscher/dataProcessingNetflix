@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 CREATE TABLE apikey (
  Key VARCHAR(30) NOT NULL,
  role VARCHAR(255)
@@ -18,9 +17,6 @@ ALTER TABLE characteristics ADD CONSTRAINT PK_characteristics PRIMARY KEY (chara
 
 
 CREATE TABLE movie (
-=======
-CREATE TABLE Movie (
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
  movie_id INT NOT NULL,
  title VARCHAR(255),
  movie_duration INT,
@@ -32,7 +28,6 @@ ALTER TABLE movie ADD CONSTRAINT PK_movie PRIMARY KEY (movie_id);
 
 CREATE TABLE preference (
  preference_id INT NOT NULL,
-<<<<<<< HEAD
  interest VARCHAR(255),
  username VARCHAR(255),
  characteristics_id INT NOT NULL,
@@ -40,15 +35,6 @@ CREATE TABLE preference (
 );
 
 ALTER TABLE preference ADD CONSTRAINT PK_preference PRIMARY KEY (preference_id);
-=======
- watchlist_item_id INT NOT NULL,
- interest VARCHAR(255),
- username VARCHAR(255),
- characteristics_id INT NOT NULL
-);
-
-ALTER TABLE Preference ADD CONSTRAINT PK_Preference PRIMARY KEY (preference_id,watchlist_item_id);
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 
 
 CREATE TABLE profile (
@@ -58,12 +44,7 @@ CREATE TABLE profile (
  profile_image VARCHAR(255),
  profile_child BIT(10),
  language VARCHAR(255),
-<<<<<<< HEAD
  preference_id INT
-=======
- preference_id INT,
- watchlist_item_id INT
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 );
 
 ALTER TABLE profile ADD CONSTRAINT PK_profile PRIMARY KEY (profile_id,account_id,subscription_id);
@@ -81,11 +62,7 @@ CREATE TABLE serie (
  serie_name VARCHAR(30)
 );
 
-<<<<<<< HEAD
 ALTER TABLE serie ADD CONSTRAINT PK_serie PRIMARY KEY (serie_id);
-=======
-ALTER TABLE Serie ADD CONSTRAINT PK_Serie PRIMARY KEY (serie_id);
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 
 
 CREATE TABLE subscription (
@@ -94,11 +71,7 @@ CREATE TABLE subscription (
  subscription_price FLOAT(10)
 );
 
-<<<<<<< HEAD
 ALTER TABLE subscription ADD CONSTRAINT PK_subscription PRIMARY KEY (subscription_id);
-=======
-ALTER TABLE Subscription ADD CONSTRAINT PK_Subscription PRIMARY KEY (subscription_id);
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 
 
 CREATE TABLE ViewerIndication (
@@ -110,7 +83,7 @@ ALTER TABLE ViewerIndication ADD CONSTRAINT PK_ViewerIndication PRIMARY KEY (vie
 
 CREATE TABLE viewing_behavior (
  watchlist_item_id INT NOT NULL,
- pause_time FLOAT(10),
+ pause_time INT,
  viewing_history VARCHAR(255),
  times_watched INT
 );
@@ -144,51 +117,17 @@ CREATE TABLE account (
 ALTER TABLE account ADD CONSTRAINT PK_account PRIMARY KEY (account_id,subscription_id);
 
 
-<<<<<<< HEAD
 CREATE TABLE episode (
  episode_id INT NOT NULL,
  serie_id INT NOT NULL,
  title VARCHAR(255),
  episode_duration INT,
  characteristics_id INT
-=======
-CREATE TABLE Episode (
- episode_id INT NOT NULL,
- serie_id INT NOT NULL,
- title VARCHAR(255),
- episode_duration TIMESTAMP(6)
-);
-
-ALTER TABLE Episode ADD CONSTRAINT PK_Episode PRIMARY KEY (episode_id,serie_id);
-
-
-CREATE TABLE Subtitle (
- subtitle_id INT NOT NULL,
- movie_id INT NOT NULL,
- episode_id INT NOT NULL,
- serie_id INT NOT NULL,
- language VARCHAR(30),
- subtitle_location VARCHAR(255)
-);
-
-ALTER TABLE Subtitle ADD CONSTRAINT PK_Subtitle PRIMARY KEY (subtitle_id,movie_id,episode_id,serie_id);
-
-
-CREATE TABLE characteristics (
- characteristics_id INT NOT NULL,
- episode_id INT NOT NULL,
- movie_id INT NOT NULL,
- genres VARCHAR(30),
- age_restriction VARCHAR(30),
- classification VARCHAR(30),
- serie_id INT
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 );
 
 ALTER TABLE episode ADD CONSTRAINT PK_episode PRIMARY KEY (episode_id,serie_id);
 
 
-<<<<<<< HEAD
 CREATE TABLE subtitle (
  subtitle_id INT NOT NULL,
  movie_id INT NOT NULL,
@@ -218,44 +157,16 @@ ALTER TABLE viewing_behavior ADD CONSTRAINT FK_viewing_behavior_0 FOREIGN KEY (w
 ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_0 FOREIGN KEY (movie_id) REFERENCES movie (movie_id);
 ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_1 FOREIGN KEY (serie_id) REFERENCES serie (serie_id);
 ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_2 FOREIGN KEY (profile_id,account_id,subscription_id) REFERENCES profile (profile_id,account_id,subscription_id);
-=======
-ALTER TABLE Preference ADD CONSTRAINT FK_Preference_0 FOREIGN KEY (watchlist_item_id) REFERENCES viewing_behavior (watchlist_item_id);
-ALTER TABLE Preference ADD CONSTRAINT FK_Preference_1 FOREIGN KEY (characteristics_id) REFERENCES characteristics (characteristics_id);
-
-
-ALTER TABLE Profile ADD CONSTRAINT FK_Profile_0 FOREIGN KEY (account_id,subscription_id) REFERENCES Account (account_id,subscription_id);
-ALTER TABLE Profile ADD CONSTRAINT FK_Profile_1 FOREIGN KEY (preference_id,watchlist_item_id) REFERENCES Preference (preference_id,watchlist_item_id);
-
-
-ALTER TABLE viewing_behavior ADD CONSTRAINT FK_viewing_behavior_0 FOREIGN KEY (watchlist_item_id) REFERENCES watchlist_item (watchlist_item_id);
-
-
-ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_0 FOREIGN KEY (movie_id) REFERENCES Movie (movie_id);
-ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_1 FOREIGN KEY (serie_id) REFERENCES Serie (serie_id);
-ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_2 FOREIGN KEY (profile_id,account_id,subscription_id) REFERENCES Profile (profile_id,account_id,subscription_id);
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 
 
 ALTER TABLE account ADD CONSTRAINT FK_account_0 FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
 
 
-<<<<<<< HEAD
 ALTER TABLE episode ADD CONSTRAINT FK_episode_0 FOREIGN KEY (serie_id) REFERENCES serie (serie_id);
 ALTER TABLE episode ADD CONSTRAINT FK_episode_1 FOREIGN KEY (characteristics_id) REFERENCES characteristics (characteristics_id);
 
 
 ALTER TABLE subtitle ADD CONSTRAINT FK_subtitle_0 FOREIGN KEY (movie_id) REFERENCES movie (movie_id);
 ALTER TABLE subtitle ADD CONSTRAINT FK_subtitle_1 FOREIGN KEY (episode_id,serie_id) REFERENCES episode (episode_id,serie_id);
-=======
-ALTER TABLE Episode ADD CONSTRAINT FK_Episode_0 FOREIGN KEY (serie_id) REFERENCES Serie (serie_id);
-
-
-ALTER TABLE Subtitle ADD CONSTRAINT FK_Subtitle_0 FOREIGN KEY (movie_id) REFERENCES Movie (movie_id);
-ALTER TABLE Subtitle ADD CONSTRAINT FK_Subtitle_1 FOREIGN KEY (episode_id,serie_id) REFERENCES Episode (episode_id,serie_id);
-
-
-ALTER TABLE characteristics ADD CONSTRAINT FK_characteristics_0 FOREIGN KEY (episode_id,serie_id) REFERENCES Episode (episode_id,serie_id);
-ALTER TABLE characteristics ADD CONSTRAINT FK_characteristics_1 FOREIGN KEY (movie_id) REFERENCES Movie (movie_id);
->>>>>>> 15a8021b80e0fad909c356d73bc809aec17421bd
 
 
