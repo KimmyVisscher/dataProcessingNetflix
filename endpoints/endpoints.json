@@ -138,6 +138,44 @@
 
 
 {
+	"/movies": {
+		"get": {
+			"description": "Returns all movies the user has access to",
+			"responses": {
+				"200": {
+					"description": "An array of movie objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Movie"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a new movie",
+			"requestBody": {
+				"description": "Required elements of the post request",
+				"required": true,
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Movie"
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
 	"/movies/{movie_id}/": {
 		"get": {
 			"description": "Returns the movie with id {movie_id}",
@@ -192,6 +230,30 @@
 						"text/html": {
 							"schema": {
 								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/serie": {
+		"get": {
+			"description": "Returns all series the user has access to",
+			"responses": {
+				"200": {
+					"description": "An array of series objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Series"
+								}
 							}
 						}
 					}
@@ -387,6 +449,30 @@
 						"text/html": {
 							"schema": {
 								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+},
+
+
+{
+	"/accounts": {
+		"get": {
+			"description": "Returns all accounts the user has access to",
+			"responses": {
+				"200": {
+					"description": "An array of account objects",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#components/schemas/Account"
+								}
 							}
 						}
 					}
