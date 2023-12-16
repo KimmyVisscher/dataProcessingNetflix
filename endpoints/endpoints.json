@@ -229,6 +229,26 @@
 				}
 			}
 		},
+		"/movies/": {
+			"get": {
+				"description": "Return most watched movie",
+				"responses": {
+					"200": {
+						"description": "An single movie object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/movies/{movie_id}/": {
 			"get": {
 				"description": "Returns the movie with id {movie_id}",
@@ -321,6 +341,26 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					}
+				}
+			}
+		},
+		"/serie/": {
+			"get": {
+				"description": "Return most watched serie",
+				"responses": {
+					"200": {
+						"description": "An single serie object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"items": {
+										"$ref": "#/components/schemas/Series"
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -642,6 +682,23 @@
 							"text/html": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/subscriptions/": {
+			"get": {
+				"description": "Returns the price of all the subscriptions",
+				"responses": {
+					"200": {
+						"description": "Integer",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Subscription"
 								}
 							}
 						}
