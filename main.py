@@ -46,18 +46,35 @@ class APIKey(SQLModel, table=True):
     role: Role
 
 
+class SubscriptionBase(SQLModel):
+    description: str
+    subscription_price: float
+
+
+class Subscription(SubscriptionBase, table=True):
+    subscription_id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class SubscriptionRead(SubscriptionBase):
+    subscription_id: int
+
+
+class SubscriptionCreate(SubscriptionBase):
+    pass
+
+
 class MovieBase(SQLModel):
     title: str
     movie_duration: int
 
-    #characteristics_id: int = Field(default=None, foreign_key="characteristics.characteristics_id")
+    # characteristics_id: int = Field(default=None, foreign_key="characteristics.characteristics_id")
 
 
 class Movie(MovieBase, table=True):
     movie_id: Optional[int] = Field(default=None, primary_key=True)
 
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
-    #characteristics: 'Type[Characteristics]' = Relationship(back_populates="movie")
+    # characteristics: 'Type[Characteristics]' = Relationship(back_populates="movie")
 
 
 class MovieRead(MovieBase):
@@ -130,13 +147,13 @@ class EpisodeCreate(EpisodeBase):
 
 
 class CharacteristicsBase(SQLModel):
-    pass #todo
+    pass  # todo
 
 
 class Characteristics(CharacteristicsBase, table=True):
     characteristics_id: Optional[int] = Field(default=None, primary_key=True)
 
-    #movie: Movie = Relationship(back_populates="characteristics")
+    # movie: Movie = Relationship(back_populates="characteristics")
     # add relationship with episode
 
 
@@ -172,7 +189,8 @@ def on_startup():
 
 
 @app.get("/movies/{movie_id}", response_model=MovieRead)
-def read_movie(*, session: Session = Depends(get_session), movie_id: int, api_key_header: Optional[str] = Depends(api_key_header)):
+def read_movie(*, session: Session = Depends(get_session), movie_id: int,
+               api_key_header: Optional[str] = Depends(api_key_header)):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
     if not api_key_db:
@@ -186,6 +204,3 @@ def read_movie(*, session: Session = Depends(get_session), movie_id: int, api_ke
         return movie
     else:
         raise HTTPException(status_code=401, detail="No permission")
-
-
-
