@@ -99,11 +99,11 @@ class Serie(SerieBase, table=True):
     episodes: List["Episode"] = Relationship(back_populates="serie")
 
 
-class SerieRead(SubtitleBase):
+class SerieRead(SerieBase):
     serie_id: int
 
 
-class SerieCreate(SubtitleBase):
+class SerieCreate(SerieBase):
     pass
 
 
@@ -185,7 +185,7 @@ def read_movie(*, session: Session = Depends(get_session), movie_id: int, api_ke
             raise HTTPException(status_code=404, detail="Movie not found")
         return movie
     else:
-        raise HTTPException(status_code=401, detail="No permission")
+        raise HTTPException(status_code=403, detail="No permission")
 
 
 
