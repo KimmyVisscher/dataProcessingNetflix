@@ -66,15 +66,14 @@ class SubscriptionCreate(SubscriptionBase):
 class MovieBase(SQLModel):
     title: str
     movie_duration: int
-
-    # characteristics_id: int = Field(default=None, foreign_key="characteristics.characteristics_id")
+    age_restriction: ViewerIndication
 
 
 class Movie(MovieBase, table=True):
     movie_id: Optional[int] = Field(default=None, primary_key=True)
 
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
-    # characteristics: 'Type[Characteristics]' = Relationship(back_populates="movie")
+    movie_classification: List["Classification"] = Relationship(back_populates="classification_movie")
 
 
 class MovieRead(MovieBase):
@@ -108,12 +107,14 @@ class SubtitleCreate(SubtitleBase):
 
 class SerieBase(SQLModel):
     serie_name: str
+    age_restriction: ViewerIndication
 
 
 class Serie(SerieBase, table=True):
     serie_id: Optional[int] = Field(default=None, primary_key=True)
 
     episodes: List["Episode"] = Relationship(back_populates="serie")
+    serie_classification: List["Classification"] = Relationship(back_populates="classification_serie")
 
 
 class SerieRead(SerieBase):
@@ -146,22 +147,25 @@ class EpisodeCreate(EpisodeBase):
     pass
 
 
-class CharacteristicsBase(SQLModel):
-    pass  # todo
+class ClassificationBase(SQLModel):
+    classification: str
+
+    serie_id: Optional[int] = Field(default=None, foreign_key="serie.serie_id")
+    movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
 
 
-class Characteristics(CharacteristicsBase, table=True):
-    characteristics_id: Optional[int] = Field(default=None, primary_key=True)
+class Classification(ClassificationBase, table=True):
+    classification_id: Optional[int] = Field(default=None, primary_key=True)
 
-    # movie: Movie = Relationship(back_populates="characteristics")
-    # add relationship with episode
+    classification_serie: Serie = Relationship(back_populates="serie_classification")
+    classification_movie: Movie = Relationship(back_populates="Movie_classification")
 
 
-class CharacteristicsRead(CharacteristicsBase):
+class ClassificationRead(ClassificationBase):
     pass
 
 
-class CharacteristicsCreate(CharacteristicsBase):
+class ClassificationCreate(ClassificationBase):
     pass
 
 
