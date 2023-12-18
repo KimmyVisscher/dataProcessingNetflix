@@ -32,6 +32,12 @@ class ViewerIndication(Enum):
     PROFANITY_USAGE = 5
 
 
+class Quality(Enum):
+    SD = 1
+    HD = 2
+    UHD = 3
+
+
 class Role(Enum):
     JUNIOR = 1
     MEDIOR = 2
@@ -53,6 +59,8 @@ class SubscriptionBase(SQLModel):
 
 class Subscription(SubscriptionBase, table=True):
     subscription_id: Optional[int] = Field(default=None, primary_key=True)
+
+    subscription_accounts: List["Account"] = Relationship(back_populates="account_subscription")
 
 
 class SubscriptionRead(SubscriptionBase):
@@ -174,8 +182,8 @@ class ClassificationCreate(ClassificationBase):
 class GenresBase(SQLModel):
     genre: str
 
-    serie_id: Optional[int] = Field(default=None)
-    movie_id: Optional[int] = Field(default=None)
+    serie_id: Optional[int] = Field(default=None, foreign_key="serie.serie_id")
+    movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
 
 
 class Genres(GenresBase, table=True):
@@ -191,6 +199,28 @@ class GenresRead(GenresBase):
 
 class GenresCreate(GenresBase):
     pass
+
+
+class AccountBase(SQLModel):
+    email: str
+    payment_method: str
+    video_quality: Quality
+
+    subscription_id: Optional[int] = Field(default=None, foreign_key="subscription.subscription_id")
+
+
+class Account(AccountBase, table=True):
+    account_id: int = Field(default=None, primary_key=True)
+
+    account_subscription : Subscription = Relationship(back_populates="subscription_accounts")
+
+
+class AccountRead(AccountBase):
+    blocked: int
+
+
+class AccountCreate(AccountBase):
+    password: str
 
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
