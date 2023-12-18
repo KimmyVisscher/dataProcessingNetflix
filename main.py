@@ -74,6 +74,7 @@ class Movie(MovieBase, table=True):
 
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
     movie_classification: List["Classification"] = Relationship(back_populates="classification_movie")
+    movie_genre: List["Classification"] = Relationship(back_populates="genre_movie")
 
 
 class MovieRead(MovieBase):
@@ -115,6 +116,7 @@ class Serie(SerieBase, table=True):
 
     episodes: List["Episode"] = Relationship(back_populates="serie")
     serie_classification: List["Classification"] = Relationship(back_populates="classification_serie")
+    serie_genre: List["Classification"] = Relationship(back_populates="genre_serie")
 
 
 class SerieRead(SerieBase):
@@ -166,6 +168,28 @@ class ClassificationRead(ClassificationBase):
 
 
 class ClassificationCreate(ClassificationBase):
+    pass
+
+
+class GenresBase(SQLModel):
+    genre: str
+
+    serie_id: Optional[int] = Field(default=None)
+    movie_id: Optional[int] = Field(default=None)
+
+
+class Genres(GenresBase, table=True):
+    genre_id: int = Field(default=None, primary_key=True)
+
+    genre_serie: Serie = Relationship(back_populates="serie_genre")
+    genre_movie: Serie = Relationship(back_populates="movie_genre")
+
+
+class GenresRead(GenresBase):
+    pass
+
+
+class GenresCreate(GenresBase):
     pass
 
 
