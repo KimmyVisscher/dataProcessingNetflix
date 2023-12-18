@@ -19,7 +19,16 @@
 						"maximum": 600
 					}
 				}
-			},			
+			},
+			"SuccessModel": {
+				"type": "object",
+				"required": ["message"],
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				}
+			},
 			"Movie": {
 				"type": "object",
 				"properties": {
@@ -229,26 +238,6 @@
 				}
 			}
 		},
-		"/movies/": {
-			"get": {
-				"description": "Return most watched movie",
-				"responses": {
-					"200": {
-						"description": "An single movie object",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"items": {
-										"$ref": "#/components/schemas/Movie"
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/movies/{movie_id}/": {
 			"get": {
 				"description": "Returns the movie with id {movie_id}",
@@ -263,6 +252,46 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
 					"default": {
 						"description": "error",
 						"content": {
@@ -272,6 +301,39 @@
 								}
 							}
 						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the movie object with id {movie_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Movie"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {movie_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
 					}
 				}
 			}
@@ -289,6 +351,46 @@
 									"items": {
 										"$ref": "#/components/schemas/Movie"
 									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
@@ -322,6 +424,56 @@
 								}
 							}
 						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
 					}
 				}
 			},
@@ -345,26 +497,6 @@
 				}
 			}
 		},
-		"/serie/": {
-			"get": {
-				"description": "Return most watched serie",
-				"responses": {
-					"200": {
-						"description": "An single serie object",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"items": {
-										"$ref": "#/components/schemas/Series"
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/serie/{serie_id}/": {
 			"get": {
 				"description": "Returns the series with id {serie_id}",
@@ -379,6 +511,46 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
 					"default": {
 						"description": "error",
 						"content": {
@@ -388,6 +560,39 @@
 								}
 							}
 						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the series object with id {serie_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Series"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {serie_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
 					}
 				}
 			}
@@ -405,6 +610,46 @@
 									"items": {
 										"$ref": "#/components/schemas/Episode"
 									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
@@ -439,6 +684,46 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
 					"default": {
 						"description": "error",
 						"content": {
@@ -448,6 +733,62 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/subtitles": {
+			"post": {
+				"description": "Add a new subtitle object",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Subtitle"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Created"
+					}
+				}
+			}
+		},
+		"/subtitles/{subtitle_id}": {
+			"put": {
+				"description": "Updates the subtitle object with id {subtitle_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Subtitle"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {subtitle_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
 					}
 				}
 			}
@@ -465,6 +806,46 @@
 									"items": {
 										"$ref": "#/components/schemas/Subtitle"
 									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
@@ -499,6 +880,46 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
 					"default": {
 						"description": "error",
 						"content": {
@@ -522,6 +943,46 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/Watchlist"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
@@ -552,6 +1013,56 @@
 									"items": {
 										"$ref": "#components/schemas/Account"
 									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
@@ -592,6 +1103,46 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
 					"default": {
 						"description": "error",
 						"content": {
@@ -601,6 +1152,39 @@
 								}
 							}
 						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the account object with id {account_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Account"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {account_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
 					}
 				}
 			}
@@ -619,6 +1203,46 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
 					"default": {
 						"description": "error",
 						"content": {
@@ -628,6 +1252,39 @@
 								}
 							}
 						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the profile object with id {profile_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Profile"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {profile_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
 					}
 				}
 			}
@@ -645,6 +1302,46 @@
 									"items": {
 										"$ref": "#/components/schemas/Profile"
 									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
@@ -676,8 +1373,8 @@
 							}
 						}
 					},
-					"default": {
-						"description": "error",
+					"400": {
+						"description": "Bad request",
 						"content": {
 							"text/html": {
 								"schema": {
@@ -685,20 +1382,43 @@
 								}
 							}
 						}
-					}
-				}
-			}
-		},
-		"/subscriptions/": {
-			"get": {
-				"description": "Returns the price of all the subscriptions",
-				"responses": {
-					"200": {
-						"description": "Integer",
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
 						"content": {
-							"application/json": {
+							"text/html": {
 								"schema": {
-									"$ref": "#/components/schemas/Subscription"
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
