@@ -1,4 +1,9 @@
 {
+	"openapi": "3.1.0",
+	"info": {
+		"title": "HenkFlix",
+		"version": "1.0.0"
+	},	
 	"components": {
 		"schemas": {
 			"ErrorModel": {
@@ -133,17 +138,82 @@
 				}
 			}
 		}
-	}
-},
-
-
-{
-	"/movies/{movie_id}/": {
-		"get": {
-			"description": "Returns the movie with id {movie_id}",
-			"responses": {
-				"200": {
-					"description": "A movie object that belongs to the given id",
+	},
+	"paths": {
+		"/movies": {
+			"get": {
+				"description": "Returns all movies the user has access to",
+				"responses": {
+					"200": {
+						"description": "An array of movie objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Add a new movie",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
@@ -152,63 +222,114 @@
 						}
 					}
 				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
-							}
-						}
+				"responses": {
+					"201": {
+						"description": "Created"
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/movies/{characteristic_id}/": {
-		"get": {
-			"description": "Returns all movies with the characteristic described in id {characteristic_id}",
-			"responses": {
-				"200": {
-					"description": "An array of movie objects",
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/Movie"
+		},
+		"/movies/": {
+			"get": {
+				"description": "Return most watched movie",
+				"responses": {
+					"200": {
+						"description": "An single movie object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
 								}
 							}
 						}
 					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
+				}
+			}
+		},
+		"/movies/{movie_id}/": {
+			"get": {
+				"description": "Returns the movie with id {movie_id}",
+				"responses": {
+					"200": {
+						"description": "A movie object that belongs to the given id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Movie"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/serie/{serie_id}/": {
-		"get": {
-			"description": "Returns the series with id {serie_id}",
-			"responses": {
-				"200": {
-					"description": "A series object that belongs to the given id",
+		},
+		"/movies/{genre_id}/": {
+			"get": {
+				"description": "Returns all movies with the genre with id {genre_id}",
+				"responses": {
+					"200": {
+						"description": "An array of movie objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/serie": {
+			"get": {
+				"description": "Returns all series the user has access to",
+				"responses": {
+					"200": {
+						"description": "An array of series objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Series"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Add a new series",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
@@ -217,303 +338,368 @@
 						}
 					}
 				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
-							}
-						}
+				"responses": {
+					"201": {
+						"description": "Created"
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/episodes/{characteristic_id}/": {
-		"get": {
-			"description": "Returns all episodes with the characteristic described in id {characteristic_id}",
-			"responses": {
-				"200": {
-					"description": "An array of episode objects",
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/Episode"
+		},
+		"/serie/": {
+			"get": {
+				"description": "Return most watched serie",
+				"responses": {
+					"200": {
+						"description": "An single serie object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"items": {
+										"$ref": "#/components/schemas/Series"
+									}
 								}
 							}
 						}
 					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
-							}
-						}
-					}
 				}
 			}
-		}
-	}
-},
-
-{
-	"/episodes/{serie_id}/": {
-		"get": {
-			"description": "Returns all episodes that belong to series with id {serie_id}",
-			"responses": {
-				"200": {
-					"description": "An array of episode objects",
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/Episode"
+		},
+		"/serie/{serie_id}/": {
+			"get": {
+				"description": "Returns the series with id {serie_id}",
+				"responses": {
+					"200": {
+						"description": "A series object that belongs to the given id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Series"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
 					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
-							}
-						}
-					}
 				}
 			}
-		}
-	}
-},
-
-{
-	"/subtitles/{movie_id}/": {
-		"get": {
-			"description": "Returns all subtitles available for the movie with id {movie_id}",
-			"responses": {
-				"200": {
-					"description": "An array of subtitle objects",
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/Subtitle"
+		},
+		"/episodes/{genre_id}/": {
+			"get": {
+				"description": "Returns all episodes with the genre with id {genre_id}",
+				"responses": {
+					"200": {
+						"description": "An array of episode objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Episode"
+									}
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
 					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
-							}
-						}
-					}
 				}
 			}
-		}
-	}
-},
-
-{
-	"/subtitles/{episode_id}/": {
-		"get": {
-			"description": "Returns all subtitles available for the episode with id {episode_id}",
-			"responses": {
-				"200": {
-					"description": "An array of subtitle objects",
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/Subtitle"
+		},
+		"/episodes/{serie_id}/": {
+			"get": {
+				"description": "Returns all episodes that belong to series with id {serie_id}",
+				"responses": {
+					"200": {
+						"description": "An array of episode objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Episode"
+									}
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
 								}
 							}
 						}
 					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
+				}
+			}
+		},
+		"/subtitles/{movie_id}/": {
+			"get": {
+				"description": "Returns all subtitles available for the movie with id {movie_id}",
+				"responses": {
+					"200": {
+						"description": "An array of subtitle objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Subtitle"
+									}
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/watchlist/{profile_id}/": {
-		"get": {
-			"description": "Returns the watchlist of the profile with id {profile_id}",
-			"responses": {
-				"200": {
-					"description": "A watchlist object that belongs to the given profile",
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Watchlist"
+		},
+		"/subtitles/{episode_id}/": {
+			"get": {
+				"description": "Returns all subtitles available for the episode with id {episode_id}",
+				"responses": {
+					"200": {
+						"description": "An array of subtitle objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Subtitle"
+									}
+								}
 							}
 						}
-					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-},
-
-
-{
-	"/accounts/{account_id}/": {
-		"get": {
-			"description": "Returns the account with id {account_id}",
-			"responses": {
-				"200": {
-					"description": "An account object that belongs to the given id",
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#components/schemas/Account"
-							}
-						}
-					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/profiles/{profile_id}/": {
-		"get": {
-			"description": "Returns the profile with id {profile_id}",
-			"responses": {
-				"200": {
-					"description": "A profile object that belongs to the given id",
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Profile"
+		},
+		"/watchlist/{profile_id}/": {
+			"get": {
+				"description": "Returns the watchlist of the profile with id {profile_id}",
+				"responses": {
+					"200": {
+						"description": "A watchlist object that belongs to the given profile",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Watchlist"
+								}
 							}
 						}
-					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/profiles/{account_id}/": {
-		"get": {
-			"description": "Returns the profile(s) that are attached to the account with id {account_id}",
-			"responses": {
-				"200": {
-					"description": "An array of profile objects that belongs to the given account id",
+		},
+		"/accounts": {
+			"get": {
+				"description": "Returns all accounts the user has access to",
+				"responses": {
+					"200": {
+						"description": "An array of account objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#components/schemas/Account"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Add a new account",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "array",
-								"items": {
+								"$ref": "#/components/schemas/Account"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Created"
+					}
+				}
+			}
+		},
+		"/accounts/{account_id}/": {
+			"get": {
+				"description": "Returns the account with id {account_id}",
+				"responses": {
+					"200": {
+						"description": "An account object that belongs to the given id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#components/schemas/Account"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/{profile_id}/": {
+			"get": {
+				"description": "Returns the profile with id {profile_id}",
+				"responses": {
+					"200": {
+						"description": "A profile object that belongs to the given id",
+						"content": {
+							"application/json": {
+								"schema": {
 									"$ref": "#/components/schemas/Profile"
 								}
 							}
 						}
-					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	}
-},
-
-
-{
-	"/subscriptions/{account_id}/": {
-		"get": {
-			"description": "Returns the subscription that belongs to account with id {account_id}",
-			"responses": {
-				"200": {
-					"description": "A subscription object"
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Subscription"
+		},
+		"/profiles/{account_id}/": {
+			"get": {
+				"description": "Returns the profile(s) that are attached to the account with id {account_id}",
+				"responses": {
+					"200": {
+						"description": "An array of profile objects that belongs to the given account id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Profile"
+									}
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
 							}
 						}
 					}
-				},
-				"default": {
-					"description": "error"
-					"content": {
-						"text/html": {
-							"schema": {
-								"$ref": "#/components/schemas/ErrorModel"
+				}
+			}
+		},
+		"/subscriptions/{account_id}/": {
+			"get": {
+				"description": "Returns the subscription that belongs to account with id {account_id}",
+				"responses": {
+					"200": {
+						"description": "A subscription object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Subscription"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/subscriptions/": {
+			"get": {
+				"description": "Returns the price of all the subscriptions",
+				"responses": {
+					"200": {
+						"description": "Integer",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Subscription"
+								}
 							}
 						}
 					}

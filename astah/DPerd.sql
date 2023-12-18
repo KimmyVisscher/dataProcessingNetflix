@@ -1,171 +1,364 @@
-CREATE TABLE apikey (
- apikey VARCHAR(30) NOT NULL,
- role VARCHAR(255)
-);
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: mysql
+-- Generation Time: Dec 15, 2023 at 07:44 PM
+-- Server version: 11.1.2-MariaDB-1:11.1.2+maria~ubu2204
+-- PHP Version: 8.2.10
 
-ALTER TABLE apikey ADD CONSTRAINT PK_apikey PRIMARY KEY (apikey);
-
-
-CREATE TABLE characteristics (
- characteristics_id INT NOT NULL,
- genres VARCHAR(30),
- age_restriction VARCHAR(30),
- classification VARCHAR(30)
-);
-
-ALTER TABLE characteristics ADD CONSTRAINT PK_characteristics PRIMARY KEY (characteristics_id);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
-CREATE TABLE movie (
- movie_id INT NOT NULL,
- title VARCHAR(255),
- movie_duration INT,
- characteristics_id INT
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-ALTER TABLE movie ADD CONSTRAINT PK_movie PRIMARY KEY (movie_id);
+--
+-- Database: `DP`
+--
 
+-- --------------------------------------------------------
 
-CREATE TABLE preference (
- preference_id INT NOT NULL,
- interest VARCHAR(255),
- username VARCHAR(255),
- characteristics_id INT NOT NULL,
- watchlist_item_id INT NOT NULL
-);
+--
+-- Table structure for table `account`
+--
 
-ALTER TABLE preference ADD CONSTRAINT PK_preference PRIMARY KEY (preference_id);
+CREATE TABLE `account` (
+  `account_id` int(11) NOT NULL,
+  `subscription_id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `payment_method` varchar(255) DEFAULT NULL,
+  `blocked` bit(10) DEFAULT NULL,
+  `video_quality` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE profile (
- profile_id INT NOT NULL,
- account_id INT NOT NULL,
- subscription_id INT NOT NULL,
- profile_image VARCHAR(255),
- profile_child BIT(10),
- language VARCHAR(255),
- preference_id INT
-);
+--
+-- Table structure for table `apikey`
+--
 
-ALTER TABLE profile ADD CONSTRAINT PK_profile PRIMARY KEY (profile_id,account_id,subscription_id);
+CREATE TABLE `apikey` (
+  `apikey` varchar(30) NOT NULL,
+  `role` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE Season (
- season_id INT NOT NULL
-);
+--
+-- Table structure for table `classification`
+--
 
-ALTER TABLE Season ADD CONSTRAINT PK_Season PRIMARY KEY (season_id);
+CREATE TABLE `classification` (
+  `classification_id` int(11) NOT NULL,
+  `classification` varchar(255) DEFAULT NULL,
+  `movie_id` int(11) DEFAULT NULL,
+  `episode_id` int(11) DEFAULT NULL,
+  `serie_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE serie (
- serie_id INT NOT NULL,
- serie_name VARCHAR(30)
-);
+--
+-- Table structure for table `episode`
+--
 
-ALTER TABLE serie ADD CONSTRAINT PK_serie PRIMARY KEY (serie_id);
+CREATE TABLE `episode` (
+  `episode_id` int(11) NOT NULL,
+  `serie_id` int(11) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `episode_duration` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE subscription (
- subscription_id INT NOT NULL,
- description VARCHAR(255),
- subscription_price FLOAT(10)
-);
+--
+-- Table structure for table `genres`
+--
 
-ALTER TABLE subscription ADD CONSTRAINT PK_subscription PRIMARY KEY (subscription_id);
+CREATE TABLE `genres` (
+  `genres_id` int(11) NOT NULL,
+  `genre` varchar(255) DEFAULT NULL,
+  `movie_id` int(11) DEFAULT NULL,
+  `serie_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE ViewerIndication (
- viewerIndication_id INT NOT NULL
-);
+--
+-- Table structure for table `movie`
+--
 
-ALTER TABLE ViewerIndication ADD CONSTRAINT PK_ViewerIndication PRIMARY KEY (viewerIndication_id);
+CREATE TABLE `movie` (
+  `movie_id` int(11) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `movie_duration` int(11) DEFAULT NULL,
+  `age_restriction` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE viewing_behavior (
- watchlist_item_id INT NOT NULL,
- pause_time INT,
- viewing_history VARCHAR(255),
- times_watched INT
-);
+--
+-- Table structure for table `preference`
+--
 
-ALTER TABLE viewing_behavior ADD CONSTRAINT PK_viewing_behavior PRIMARY KEY (watchlist_item_id);
+CREATE TABLE `preference` (
+  `preference_id` int(11) NOT NULL,
+  `interest` varchar(255) DEFAULT NULL,
+  `watchlist_item_id` int(11) NOT NULL,
+  `genres_id` int(11) DEFAULT NULL,
+  `viewing_behavior_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE watchlist_item (
- watchlist_item_id INT NOT NULL,
- movie_id INT NOT NULL,
- serie_id INT NOT NULL,
- profile_id INT,
- account_id INT,
- subscription_id INT
-);
+--
+-- Table structure for table `profile`
+--
 
-ALTER TABLE watchlist_item ADD CONSTRAINT PK_watchlist_item PRIMARY KEY (watchlist_item_id);
+CREATE TABLE `profile` (
+  `profile_id` int(11) NOT NULL,
+  `account_id` int(11) NOT NULL,
+  `subscription_id` int(11) NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `profile_child` bit(10) DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  `preference_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE account (
- account_id INT NOT NULL,
- subscription_id INT NOT NULL,
- email VARCHAR(255) NOT NULL,
- password VARCHAR(255),
- payment_method VARCHAR(255),
- blocked BIT(10),
- video_quality VARCHAR(30)
-);
+--
+-- Table structure for table `serie`
+--
 
-ALTER TABLE account ADD CONSTRAINT PK_account PRIMARY KEY (account_id,subscription_id);
+CREATE TABLE `serie` (
+  `serie_id` int(11) NOT NULL,
+  `serie_name` varchar(255) DEFAULT NULL,
+  `age_restriction` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE episode (
- episode_id INT NOT NULL,
- serie_id INT NOT NULL,
- title VARCHAR(255),
- episode_duration INT,
- characteristics_id INT
-);
+--
+-- Table structure for table `subscription`
+--
 
-ALTER TABLE episode ADD CONSTRAINT PK_episode PRIMARY KEY (episode_id,serie_id);
+CREATE TABLE `subscription` (
+  `subscription_id` int(11) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `subscription_price` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE subtitle (
- subtitle_id INT NOT NULL,
- movie_id INT NOT NULL,
- episode_id INT NOT NULL,
- serie_id INT NOT NULL,
- language VARCHAR(30),
- subtitle_location VARCHAR(30)
-);
+--
+-- Table structure for table `subtitle`
+--
 
-ALTER TABLE subtitle ADD CONSTRAINT PK_subtitle PRIMARY KEY (subtitle_id,movie_id,episode_id,serie_id);
+CREATE TABLE `subtitle` (
+  `subtitle_id` int(11) NOT NULL,
+  `movie_id` int(11) NOT NULL,
+  `episode_id` int(11) NOT NULL,
+  `serie_id` int(11) NOT NULL,
+  `language` varchar(100) DEFAULT NULL,
+  `subtitle_location` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-ALTER TABLE movie ADD CONSTRAINT FK_movie_0 FOREIGN KEY (characteristics_id) REFERENCES characteristics (characteristics_id);
+--
+-- Table structure for table `viewing_behavior`
+--
 
+CREATE TABLE `viewing_behavior` (
+  `viewing_behavior_id` int(11) NOT NULL,
+  `watchlist_item_id` int(11) NOT NULL,
+  `pause_time` int(11) DEFAULT NULL,
+  `viewing_history` varchar(255) DEFAULT NULL,
+  `times_watched` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE preference ADD CONSTRAINT FK_preference_0 FOREIGN KEY (characteristics_id) REFERENCES characteristics (characteristics_id);
-ALTER TABLE preference ADD CONSTRAINT FK_preference_1 FOREIGN KEY (watchlist_item_id) REFERENCES viewing_behavior (watchlist_item_id);
+-- --------------------------------------------------------
 
+--
+-- Table structure for table `watchlist_item`
+--
 
-ALTER TABLE profile ADD CONSTRAINT FK_profile_0 FOREIGN KEY (account_id,subscription_id) REFERENCES account (account_id,subscription_id);
-ALTER TABLE profile ADD CONSTRAINT FK_profile_1 FOREIGN KEY (preference_id) REFERENCES preference (preference_id);
+CREATE TABLE `watchlist_item` (
+  `watchlist_item_id` int(11) NOT NULL,
+  `movie_id` int(11) NOT NULL,
+  `serie_id` int(11) NOT NULL,
+  `profile_id` int(11) DEFAULT NULL,
+  `account_id` int(11) DEFAULT NULL,
+  `subscription_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Indexes for dumped tables
+--
 
-ALTER TABLE viewing_behavior ADD CONSTRAINT FK_viewing_behavior_0 FOREIGN KEY (watchlist_item_id) REFERENCES watchlist_item (watchlist_item_id);
+--
+-- Indexes for table `account`
+--
+ALTER TABLE `account`
+  ADD PRIMARY KEY (`account_id`,`subscription_id`);
 
+--
+-- Indexes for table `apikey`
+--
+ALTER TABLE `apikey`
+  ADD PRIMARY KEY (`apikey`);
 
-ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_0 FOREIGN KEY (movie_id) REFERENCES movie (movie_id);
-ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_1 FOREIGN KEY (serie_id) REFERENCES serie (serie_id);
-ALTER TABLE watchlist_item ADD CONSTRAINT FK_watchlist_item_2 FOREIGN KEY (profile_id,account_id,subscription_id) REFERENCES profile (profile_id,account_id,subscription_id);
+--
+-- Indexes for table `classification`
+--
+ALTER TABLE `classification`
+  ADD PRIMARY KEY (`classification_id`);
 
+--
+-- Indexes for table `episode`
+--
+ALTER TABLE `episode`
+  ADD PRIMARY KEY (`episode_id`,`serie_id`);
 
-ALTER TABLE account ADD CONSTRAINT FK_account_0 FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
+--
+-- Indexes for table `genres`
+--
+ALTER TABLE `genres`
+  ADD PRIMARY KEY (`genres_id`);
 
+--
+-- Indexes for table `movie`
+--
+ALTER TABLE `movie`
+  ADD PRIMARY KEY (`movie_id`);
 
-ALTER TABLE episode ADD CONSTRAINT FK_episode_0 FOREIGN KEY (serie_id) REFERENCES serie (serie_id);
-ALTER TABLE episode ADD CONSTRAINT FK_episode_1 FOREIGN KEY (characteristics_id) REFERENCES characteristics (characteristics_id);
+--
+-- Indexes for table `preference`
+--
+ALTER TABLE `preference`
+  ADD PRIMARY KEY (`preference_id`);
 
+--
+-- Indexes for table `profile`
+--
+ALTER TABLE `profile`
+  ADD PRIMARY KEY (`profile_id`,`account_id`,`subscription_id`);
 
-ALTER TABLE subtitle ADD CONSTRAINT FK_subtitle_0 FOREIGN KEY (movie_id) REFERENCES movie (movie_id);
-ALTER TABLE subtitle ADD CONSTRAINT FK_subtitle_1 FOREIGN KEY (episode_id,serie_id) REFERENCES episode (episode_id,serie_id);
+--
+-- Indexes for table `serie`
+--
+ALTER TABLE `serie`
+  ADD PRIMARY KEY (`serie_id`);
 
+--
+-- Indexes for table `subscription`
+--
+ALTER TABLE `subscription`
+  ADD PRIMARY KEY (`subscription_id`);
 
+--
+-- Indexes for table `subtitle`
+--
+ALTER TABLE `subtitle`
+  ADD PRIMARY KEY (`subtitle_id`,`movie_id`,`episode_id`,`serie_id`);
+
+--
+-- Indexes for table `viewing_behavior`
+--
+ALTER TABLE `viewing_behavior`
+  ADD PRIMARY KEY (`viewing_behavior_id`,`watchlist_item_id`);
+
+--
+-- Indexes for table `watchlist_item`
+--
+ALTER TABLE `watchlist_item`
+  ADD PRIMARY KEY (`watchlist_item_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `account`
+--
+ALTER TABLE `account`
+  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `classification`
+--
+ALTER TABLE `classification`
+  MODIFY `classification_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `episode`
+--
+ALTER TABLE `episode`
+  MODIFY `episode_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `genres`
+--
+ALTER TABLE `genres`
+  MODIFY `genres_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `movie`
+--
+ALTER TABLE `movie`
+  MODIFY `movie_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `preference`
+--
+ALTER TABLE `preference`
+  MODIFY `preference_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `profile`
+--
+ALTER TABLE `profile`
+  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `serie`
+--
+ALTER TABLE `serie`
+  MODIFY `serie_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `subscription`
+--
+ALTER TABLE `subscription`
+  MODIFY `subscription_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `subtitle`
+--
+ALTER TABLE `subtitle`
+  MODIFY `subtitle_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `viewing_behavior`
+--
+ALTER TABLE `viewing_behavior`
+  MODIFY `viewing_behavior_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `watchlist_item`
+--
+ALTER TABLE `watchlist_item`
+  MODIFY `watchlist_item_id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
