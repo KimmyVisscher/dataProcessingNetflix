@@ -47,6 +47,11 @@ class Role(Enum):
         return role.value
 
 
+class Language(Enum):
+    ENGLISH = 1
+    DUTCH = 2
+
+
 class APIKey(SQLModel, table=True):
     apikey: str = Field(default=None, primary_key=True)
     role: Role
@@ -212,7 +217,8 @@ class AccountBase(SQLModel):
 class Account(AccountBase, table=True):
     account_id: int = Field(default=None, primary_key=True)
 
-    account_subscription : Subscription = Relationship(back_populates="subscription_accounts")
+    account_subscription: Subscription = Relationship(back_populates="subscription_accounts")
+    account_profiles: List["Profile"] = Relationship(back_populates="profile_account")
 
 
 class AccountRead(AccountBase):
@@ -221,6 +227,28 @@ class AccountRead(AccountBase):
 
 class AccountCreate(AccountBase):
     password: str
+
+
+class ProfileBase(SQLModel):
+    profile_image: str
+    profile_child: int
+    language: Language
+
+
+class Profile(ProfileBase, table=True):
+    profile_id: int = Field(default=None, primary_key=True)
+
+    profile_account: Account = Relationship(back_populates="account_profiles")
+    # profile_preference: Preference = Relationship(back_populates="preference_account")
+
+
+class ProfileCreate(ProfileBase):
+    pass
+
+
+class ProfileRead(ProfileBase):
+    account_id: int = Field(default=None, foreign_key="account.account_id")
+    # preference_id: Preference = Field(default=None, foreign_key="preference.preference_id")
 
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
