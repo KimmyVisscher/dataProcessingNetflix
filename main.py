@@ -1,7 +1,9 @@
 from typing import List, Optional, Type
 from enum import Enum
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+import xmltodict
+from fastapi import Depends, FastAPI, HTTPException, Query, Header
+from fastapi.responses import PlainTextResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
@@ -234,6 +236,8 @@ class ProfileBase(SQLModel):
     profile_child: int
     language: Language
 
+    account_id: int = Field(default=None, foreign_key="account.account_id")
+
 
 class Profile(ProfileBase, table=True):
     profile_id: int = Field(default=None, primary_key=True)
@@ -248,7 +252,13 @@ class ProfileCreate(ProfileBase):
 
 class ProfileRead(ProfileBase):
     account_id: int = Field(default=None, foreign_key="account.account_id")
-    # preference_id: Preference = Field(default=None, foreign_key="preference.preference_id")
+    # preference_id: Preference = Field(default=None, foreign_key=
+
+
+class PreferenceBase(SQLModel):
+    preference_id: int = Field(default=None, primary_key=True)
+    username: str
+
 
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -274,9 +284,10 @@ def on_startup():
     create_db_and_tables()
 
 
-@app.get("/movies/{movie_id}", response_model=MovieRead)
+@app.get("/movies/{movie_id}")
 def read_movie(*, session: Session = Depends(get_session), movie_id: int,
-               api_key_header: Optional[str] = Depends(api_key_header)):
+               api_key_header: Optional[str] = Depends(api_key_header),
+               accept: Optional[str] = Header(None)):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
     if not api_key_db:
@@ -287,7 +298,13 @@ def read_movie(*, session: Session = Depends(get_session), movie_id: int,
         movie = session.get(Movie, movie_id)
         if not movie:
             raise HTTPException(status_code=404, detail="Movie not found")
-        return movie
+
+        if accept and "application/xml" in accept:
+            xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return movie
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
 
