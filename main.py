@@ -74,7 +74,7 @@ class SubscriptionCreate(SubscriptionBase):
 class MovieBase(SQLModel):
     title: str
     movie_duration: int
-    age_restriction: ViewerIndication
+    age_restriction: AgeRestriction
 
 
 class Movie(MovieBase, table=True):
@@ -82,7 +82,7 @@ class Movie(MovieBase, table=True):
 
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
     movie_classification: List["Classification"] = Relationship(back_populates="classification_movie")
-    movie_genre: List["Classification"] = Relationship(back_populates="genre_movie")
+    movie_genre: List["Genres"] = Relationship(back_populates="genre_movie")
 
 
 class MovieRead(MovieBase):
@@ -116,7 +116,7 @@ class SubtitleCreate(SubtitleBase):
 
 class SerieBase(SQLModel):
     serie_name: str
-    age_restriction: ViewerIndication
+    age_restriction: AgeRestriction
 
 
 class Serie(SerieBase, table=True):
@@ -124,7 +124,7 @@ class Serie(SerieBase, table=True):
 
     episodes: List["Episode"] = Relationship(back_populates="serie")
     serie_classification: List["Classification"] = Relationship(back_populates="classification_serie")
-    serie_genre: List["Classification"] = Relationship(back_populates="genre_serie")
+    serie_genre: List["Genres"] = Relationship(back_populates="genre_serie")
 
 
 class SerieRead(SerieBase):
@@ -168,7 +168,7 @@ class Classification(ClassificationBase, table=True):
     classification_id: Optional[int] = Field(default=None, primary_key=True)
 
     classification_serie: Serie = Relationship(back_populates="serie_classification")
-    classification_movie: Movie = Relationship(back_populates="Movie_classification")
+    classification_movie: Movie = Relationship(back_populates="movie_classification")
 
 
 class ClassificationRead(ClassificationBase):
@@ -190,7 +190,7 @@ class Genres(GenresBase, table=True):
     genre_id: int = Field(default=None, primary_key=True)
 
     genre_serie: Serie = Relationship(back_populates="serie_genre")
-    genre_movie: Serie = Relationship(back_populates="movie_genre")
+    genre_movie: Movie = Relationship(back_populates="movie_genre")
 
 
 class GenresRead(GenresBase):
