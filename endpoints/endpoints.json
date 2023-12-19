@@ -163,6 +163,14 @@
 										"$ref": "#/components/schemas/Movie"
 									}
 								}
+							},
+							"application/xml": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								}
 							}
 						}
 					},
@@ -228,6 +236,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Movie"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Movie"
+							}
 						}
 					}
 				},
@@ -246,6 +259,11 @@
 						"description": "A movie object that belongs to the given id",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Movie"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/Movie"
 								}
@@ -313,6 +331,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Movie"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Movie"
+							}
 						}
 					}
 				},
@@ -321,6 +344,11 @@
 						"description": "Resource updated succesfully",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessModel"
 								}
@@ -346,6 +374,14 @@
 						"description": "An array of movie objects",
 						"content": {
 							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"type": "array",
 									"items": {
@@ -422,6 +458,14 @@
 										"$ref": "#/components/schemas/Series"
 									}
 								}
+							},
+							"application/xml": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Series"
+									}
+								}
 							}
 						}
 					},
@@ -487,6 +531,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Series"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Series"
+							}
 						}
 					}
 				},
@@ -505,6 +554,11 @@
 						"description": "A series object that belongs to the given id",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Series"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/Series"
 								}
@@ -572,6 +626,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Series"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Series"
+							}
 						}
 					}
 				},
@@ -580,6 +639,11 @@
 						"description": "Resource updated succesfully",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessModel"
 								}
@@ -605,6 +669,14 @@
 						"description": "An array of episode objects",
 						"content": {
 							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Episode"
+									}
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"type": "array",
 									"items": {
@@ -681,6 +753,14 @@
 										"$ref": "#/components/schemas/Episode"
 									}
 								}
+							},
+							"application/xml": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Episode"
+									}
+								}
 							}
 						}
 					},
@@ -748,6 +828,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Subtitle"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Subtitle"
+							}
 						}
 					}
 				},
@@ -768,6 +853,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Subtitle"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Subtitle"
+							}
 						}
 					}
 				},
@@ -776,6 +866,11 @@
 						"description": "Resource updated succesfully",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessModel"
 								}
@@ -801,6 +896,14 @@
 						"description": "An array of subtitle objects",
 						"content": {
 							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Subtitle"
+									}
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"type": "array",
 									"items": {
@@ -877,6 +980,14 @@
 										"$ref": "#/components/schemas/Subtitle"
 									}
 								}
+							},
+							"application/xml": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Subtitle"
+									}
+								}
 							}
 						}
 					},
@@ -941,6 +1052,11 @@
 						"description": "A watchlist object that belongs to the given profile",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Watchlist"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/Watchlist"
 								}
@@ -1014,6 +1130,14 @@
 										"$ref": "#components/schemas/Account"
 									}
 								}
+							},
+							"application/xml": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#components/schemas/Account"
+									}
+								}
 							}
 						}
 					},
@@ -1079,6 +1203,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Account"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Account"
+							}
 						}
 					}
 				},
@@ -1097,6 +1226,11 @@
 						"description": "An account object that belongs to the given id",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#components/schemas/Account"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#components/schemas/Account"
 								}
@@ -1164,6 +1298,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Account"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Account"
+							}
 						}
 					}
 				},
@@ -1172,6 +1311,11 @@
 						"description": "Resource updated succesfully",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessModel"
 								}
@@ -1197,6 +1341,11 @@
 						"description": "A profile object that belongs to the given id",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Profile"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/Profile"
 								}
@@ -1264,6 +1413,11 @@
 							"schema": {
 								"$ref": "#/components/schemas/Profile"
 							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Profile"
+							}
 						}
 					}
 				},
@@ -1272,6 +1426,11 @@
 						"description": "Resource updated succesfully",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessModel"
 								}
@@ -1297,6 +1456,14 @@
 						"description": "An array of profile objects that belongs to the given account id",
 						"content": {
 							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Profile"
+									}
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"type": "array",
 									"items": {
@@ -1367,6 +1534,11 @@
 						"description": "A subscription object",
 						"content": {
 							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Subscription"
+								}
+							},
+							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/Subscription"
 								}
