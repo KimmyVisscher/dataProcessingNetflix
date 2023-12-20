@@ -247,11 +247,19 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			}
 		},
-		"/movies/{movie_id}/": {
+		"/movies/{movie_id}": {
 			"get": {
 				"description": "Returns the movie with id {movie_id}",
 				"responses": {
@@ -354,6 +362,14 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			},
@@ -366,7 +382,7 @@
 				}
 			}
 		},
-		"/movies/{genre_id}/": {
+		"/movies/{genre_id}": {
 			"get": {
 				"description": "Returns all movies with the genre with id {genre_id}",
 				"responses": {
@@ -542,11 +558,19 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			}
 		},
-		"/serie/{serie_id}/": {
+		"/serie/{serie_id}": {
 			"get": {
 				"description": "Returns the series with id {serie_id}",
 				"responses": {
@@ -649,6 +673,14 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			},
@@ -661,7 +693,7 @@
 				}
 			}
 		},
-		"/episodes/": {
+		"/episodes": {
 			"post": {
 				"description": "Add a new episode",
 				"requestBody": {
@@ -683,11 +715,19 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			}
 		},
-		"/episodes/{episode_id}/": {
+		"/episodes/{episode_id}": {
 			"get": {
 				"description": "Returns the episode with id {episode_id}",
 				"responses": {
@@ -790,6 +830,14 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			},
@@ -802,7 +850,7 @@
 				}
 			}
 		},
-		"/episodes/{genre_id}/": {
+		"/episodes/{genre_id}": {
 			"get": {
 				"description": "Returns all episodes with the genre with id {genre_id}",
 				"responses": {
@@ -880,7 +928,7 @@
 				}
 			}
 		},
-		"/episodes/{serie_id}/": {
+		"/episodes/{serie_id}": {
 			"get": {
 				"description": "Returns all episodes that belong to series with id {serie_id}",
 				"responses": {
@@ -980,6 +1028,14 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			}
@@ -1017,6 +1073,14 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			},
@@ -1029,7 +1093,7 @@
 				}
 			}
 		},
-		"/subtitles/{movie_id}/": {
+		"/subtitles/{movie_id}": {
 			"get": {
 				"description": "Returns all subtitles available for the movie with id {movie_id}",
 				"responses": {
@@ -1107,7 +1171,7 @@
 				}
 			}
 		},
-		"/subtitles/{episode_id}/": {
+		"/subtitles/{episode_id}": {
 			"get": {
 				"description": "Returns all subtitles available for the episode with id {episode_id}",
 				"responses": {
@@ -1185,7 +1249,7 @@
 				}
 			}
 		},
-		"/watchlist/{profile_id}/": {
+		"/watchlist/{profile_id}": {
 			"get": {
 				"description": "Returns the watchlist of the profile with id {profile_id}",
 				"responses": {
@@ -1355,11 +1419,19 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			}
 		},
-		"/accounts/{account_id}/": {
+		"/accounts/{account_id}": {
 			"get": {
 				"description": "Returns the account with id {account_id}",
 				"responses": {
@@ -1462,6 +1534,14 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			},
@@ -1474,7 +1554,7 @@
 				}
 			}
 		},
-		"/profiles/{profile_id}/": {
+		"/profiles/{profile_id}": {
 			"get": {
 				"description": "Returns the profile with id {profile_id}",
 				"responses": {
@@ -1577,6 +1657,14 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
 					}
 				}
 			},
@@ -1589,7 +1677,7 @@
 				}
 			}
 		},
-		"/profiles/{account_id}/": {
+		"/profiles/{account_id}": {
 			"get": {
 				"description": "Returns the profile(s) that are attached to the account with id {account_id}",
 				"responses": {
@@ -1667,7 +1755,7 @@
 				}
 			}
 		},
-		"/subscriptions/{account_id}/": {
+		"/subscriptions/{account_id}": {
 			"get": {
 				"description": "Returns the subscription that belongs to account with id {account_id}",
 				"responses": {
