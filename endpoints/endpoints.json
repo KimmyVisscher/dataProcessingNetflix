@@ -80,7 +80,7 @@
 					"watchlist_items": {
 						"type": "array",
 						"items": {
-							"oneOf": [
+							"anyOf": [
 								{"$ref": "#/components/schemas/Movie"},
 								{"$ref": "#/components/schemas/Episode"}
 							]
