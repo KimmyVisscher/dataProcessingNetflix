@@ -382,10 +382,36 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            movies_data = {"serie": [serie.dict() for serie in series]}
-            xml_content = xmltodict.unparse(movies_data, full_document=False)
+            series_data = {"serie": [serie.dict() for serie in series]}
+            xml_content = xmltodict.unparse(series_data, full_document=False)
             return PlainTextResponse(content=xml_content, media_type="application/xml")
         else:
             return series
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/series/{serie_id}", response_model=SerieRead)
+def read_series(*, session: Session = Depends(get_session),
+                serie_id: int,
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        serie = session.get(Serie, serie_id)
+        if not serie:
+            raise HTTPException(status_code=404, detail="No series found")
+
+        if accept and "application/xml" in accept:
+            xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return serie
     else:
         raise HTTPException(status_code=403, detail="No permission")
