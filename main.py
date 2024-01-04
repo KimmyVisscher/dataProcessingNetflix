@@ -146,7 +146,6 @@ class EpisodeBase(SQLModel):
     title: str
     episode_duration: int
 
-    characteristics_id: Optional[int]
     serie_id: int = Field(default=None, foreign_key="serie.serie_id")
 
 
@@ -413,5 +412,31 @@ def read_series(*, session: Session = Depends(get_session),
             return PlainTextResponse(content=xml_content, media_type="application/xml")
         else:
             return serie
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/episodes/{episode_id}", response_model=EpisodeRead)
+def read_episode(*, session: Session = Depends(get_session),
+                episode_id: int,
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        episode = session.get(Episode, episode_id)
+        if not episode:
+            raise HTTPException(status_code=404, detail="Episode not found")
+
+        if accept and "application/xml" in accept:
+            xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return episode
     else:
         raise HTTPException(status_code=403, detail="No permission")
