@@ -11,16 +11,16 @@ from secrets import *
 
 
 class Genre(Enum):
-    ACTION = 1
-    SCIFI = 2
-    FANTASY = 3
-    DRAMA = 4
-    HORROR = 5
-    THRILLER = 6
-    ROMANCE = 7
-    COMEDY = 8
-    ANIMATION = 9
-    REALITY = 10
+    ACTION = "ACTION"
+    SCIFI = "SCIFI"
+    FANTASY = "FANTASY"
+    DRAMA = "DRAMA"
+    HORROR = "HORROR"
+    THRILLER = "THRILLER"
+    ROMANCE = "ROMANCE"
+    COMEDY = "COMEDY"
+    ANIMATION = "ANIMATION"
+    REALITY = "REALITY"
 
 
 AgeRestriction = Enum("AgeRestriction", ["ALL_AGES", "6_YEARS", "9_YEARS", "12_YEARS", "16_YEARS"])
@@ -284,7 +284,7 @@ def on_startup():
     create_db_and_tables()
 
 
-@app.get("/movies/{movie_id}")
+@app.get("/movies/{movie_id}", response_model=MovieRead)
 def read_movie(*, session: Session = Depends(get_session), movie_id: int,
                api_key_header: Optional[str] = Depends(api_key_header),
                accept: Optional[str] = Header(None)):
@@ -308,7 +308,7 @@ def read_movie(*, session: Session = Depends(get_session), movie_id: int,
         raise HTTPException(status_code=403, detail="No permission")
 
 
-@app.get("/movies")
+@app.get("/movies", response_model=List[MovieRead])
 def read_movies(*, session: Session = Depends(get_session),
                  api_key_header: Optional[str] = Depends(api_key_header),
                  accept: Optional[str] = Header(None)):
@@ -331,5 +331,4 @@ def read_movies(*, session: Session = Depends(get_session),
             return movies
     else:
         raise HTTPException(status_code=403, detail="No permission")
-
 
