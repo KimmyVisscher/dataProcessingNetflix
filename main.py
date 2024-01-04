@@ -260,7 +260,6 @@ class PreferenceBase(SQLModel):
     username: str
 
 
-
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 connect_args = {}
@@ -285,9 +284,11 @@ def on_startup():
 
 
 @app.get("/movies/{movie_id}", response_model=MovieRead)
-def read_movie(*, session: Session = Depends(get_session), movie_id: int,
+def read_movie(*, session: Session = Depends(get_session),
+               movie_id: int,
                api_key_header: Optional[str] = Depends(api_key_header),
-               accept: Optional[str] = Header(None)):
+               accept: Optional[str] = Header(None)
+               ):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
     if not api_key_db:
@@ -309,9 +310,11 @@ def read_movie(*, session: Session = Depends(get_session), movie_id: int,
 
 
 @app.get("/movies", response_model=List[MovieRead])
-def read_movies(*, session: Session = Depends(get_session),
-                 api_key_header: Optional[str] = Depends(api_key_header),
-                 accept: Optional[str] = Header(None)):
+def read_movies(*,
+                session: Session = Depends(get_session),
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
     if not api_key_db:
@@ -335,11 +338,11 @@ def read_movies(*, session: Session = Depends(get_session),
 
 @app.get("/movies/genre/{genre}", response_model=List[MovieRead])
 def read_movies_by_genre(
-    *,
-    session: Session = Depends(get_session),
-    genre: Genre,
-    api_key_header: str = Depends(api_key_header),
-    accept: str = Header(None),
+        *,
+        session: Session = Depends(get_session),
+        genre: Genre,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
 ):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
@@ -361,3 +364,28 @@ def read_movies_by_genre(
     else:
         raise HTTPException(status_code=403, detail="No permission")
 
+
+@app.get("/series", response_model=List[SerieRead])
+def read_series(*, session: Session = Depends(get_session),
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        series = session.query(Serie).all()
+        if not series:
+            raise HTTPException(status_code=404, detail="No series found")
+
+        if accept and "application/xml" in accept:
+            movies_data = {"serie": [serie.dict() for serie in series]}
+            xml_content = xmltodict.unparse(movies_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return series
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
