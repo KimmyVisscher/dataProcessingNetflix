@@ -332,3 +332,32 @@ def read_movies(*, session: Session = Depends(get_session),
     else:
         raise HTTPException(status_code=403, detail="No permission")
 
+
+@app.get("/movies/genre/{genre}", response_model=List[MovieRead])
+def read_movies_by_genre(
+    *,
+    session: Session = Depends(get_session),
+    genre: Genre,
+    api_key_header: str = Depends(api_key_header),
+    accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movies = session.query(Movie).filter(Movie.movie_genre.any(genre=genre.value)).all()
+        if not movies:
+            raise HTTPException(status_code=404, detail="No movies found")
+
+        if accept and "application/xml" in accept:
+            movies_data = {"movie": [movie.dict() for movie in movies]}
+            xml_content = xmltodict.unparse(movies_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return movies
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
