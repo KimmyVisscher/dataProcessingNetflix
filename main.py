@@ -50,8 +50,8 @@ class Role(Enum):
 
 
 class Language(Enum):
-    ENGLISH = 1
-    DUTCH = 2
+    ENGLISH = "ENGLISH"
+    DUTCH = "DUTCH"
 
 
 class APIKey(SQLModel, table=True):
@@ -101,7 +101,7 @@ class MovieCreate(MovieBase):
 
 
 class SubtitleBase(SQLModel):
-    language: str
+    language: Language
     subtitle_location: str
 
     movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
@@ -495,10 +495,39 @@ def read_series_by_genre(
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            episodes_data = {"serie": [serie.dict() for serie in series]}
-            xml_content = xmltodict.unparse(episodes_data, full_document=False)
+            series_data = {"serie": [serie.dict() for serie in series]}
+            xml_content = xmltodict.unparse(series_data, full_document=False)
             return PlainTextResponse(content=xml_content, media_type="application/xml")
         else:
             return series
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/movies/{movie_id}/subtitles", response_model=List[SubtitleRead])
+def read_subtitles_by_movie(
+        *,
+        session: Session = Depends(get_session),
+        movie_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        subtitles = session.query(Subtitle).filter(Subtitle.movie_id == movie_id).all()
+        if not subtitles:
+            raise HTTPException(status_code=404, detail="No subtitles found")
+
+        if accept and "application/xml" in accept:
+            subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
+            xml_content = xmltodict.unparse(subtitles_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return subtitles
     else:
         raise HTTPException(status_code=403, detail="No permission")
