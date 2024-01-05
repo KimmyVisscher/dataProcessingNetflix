@@ -1,4 +1,4 @@
-from typing import List, Optional, Type
+from typing import List, Optional, Type, ForwardRef
 from enum import Enum
 
 import xmltodict
@@ -105,12 +105,17 @@ class SubtitleBase(SQLModel):
     subtitle_location: str
 
     movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
+    episode_id: Optional[int] = Field(default=None, foreign_key="episode.episode_id")
+
+
+Episode = ForwardRef("Episode")
 
 
 class Subtitle(SubtitleBase, table=True):
     subtitle_id: Optional[int] = Field(default=None, primary_key=True)
 
     movie: Optional[Movie] = Relationship(back_populates="subtitles")
+    subtitle_episode: Optional[Episode] = Relationship(back_populates="episode_subtitles")
 
 
 class SubtitleRead(SubtitleBase):
@@ -153,6 +158,7 @@ class Episode(EpisodeBase, table=True):
     episode_id: Optional[int] = Field(default=None, primary_key=True)
 
     serie: Serie = Relationship(back_populates="episodes")
+    episode_subtitles: List["Subtitle"] = Relationship(back_populates="subtitle_episode")
 
 
 class EpisodeRead(EpisodeBase):
@@ -520,6 +526,35 @@ def read_subtitles_by_movie(
     access_level = api_key_db.role.value
     if access_level >= Role.JUNIOR.value:
         subtitles = session.query(Subtitle).filter(Subtitle.movie_id == movie_id).all()
+        if not subtitles:
+            raise HTTPException(status_code=404, detail="No subtitles found")
+
+        if accept and "application/xml" in accept:
+            subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
+            xml_content = xmltodict.unparse(subtitles_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return subtitles
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/episodes/{episode_id}/subtitles", response_model=List[SubtitleRead])
+def read_subtitles_by_episode(
+        *,
+        session: Session = Depends(get_session),
+        episode_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        subtitles = session.query(Subtitle).filter(Subtitle.episode_id == episode_id).all()
         if not subtitles:
             raise HTTPException(status_code=404, detail="No subtitles found")
 
