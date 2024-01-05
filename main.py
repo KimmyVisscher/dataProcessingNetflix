@@ -90,6 +90,7 @@ class Movie(MovieBase, table=True):
     subtitles: List["Subtitle"] = Relationship(back_populates="movie")
     movie_classification: List["Classification"] = Relationship(back_populates="classification_movie")
     movie_genre: List["Genres"] = Relationship(back_populates="genre_movie")
+    movie_watchlists: List["Watchlist"] = Relationship(back_populates="watchlist_movie")
 
 
 class MovieRead(MovieBase):
@@ -137,6 +138,7 @@ class Serie(SerieBase, table=True):
     episodes: List["Episode"] = Relationship(back_populates="serie")
     serie_classification: List["Classification"] = Relationship(back_populates="classification_serie")
     serie_genre: List["Genres"] = Relationship(back_populates="genre_serie")
+    serie_watchlists: List["Watchlist"] = Relationship(back_populates="watchlist_serie")
 
 
 class SerieRead(SerieBase):
@@ -263,6 +265,27 @@ class ProfileRead(ProfileBase):
 class PreferenceBase(SQLModel):
     preference_id: int = Field(default=None, primary_key=True)
     username: str
+
+
+class WatchlistBase(SQLModel):
+    serie_id: Optional[int] = Field(default=None, foreign_key="serie.serie_id")
+    movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+
+
+class Watchlist(SQLModel, table=True):
+    watchlist_id: int = Field(default=None, primary_key=True)
+
+    watchlist_movie: Movie = Relationship(back_populates="movie_watchlists")
+    watchlist_serie: Serie = Relationship(back_populates="serie_watchlists")
+
+
+class WatchlistRead(WatchlistBase):
+    pass
+
+
+class WatchlistCreate(WatchlistBase):
+    pass
 
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
