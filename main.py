@@ -473,3 +473,32 @@ def read_episodes_by_serie(
             return episodes
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/series/genre/{genre}", response_model=List[SerieRead])
+def read_series_by_genre(
+        *,
+        session: Session = Depends(get_session),
+        genre: Genre,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        series = session.query(Serie).filter(Serie.serie_genre.any(genre=genre.value)).all()
+        if not series:
+            raise HTTPException(status_code=404, detail="No series found")
+
+        if accept and "application/xml" in accept:
+            episodes_data = {"serie": [serie.dict() for serie in series]}
+            xml_content = xmltodict.unparse(episodes_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return series
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
