@@ -273,7 +273,7 @@ class WatchlistBase(SQLModel):
     profile_id: int = Field(default=None, foreign_key="profile.profile_id")
 
 
-class Watchlist(SQLModel, table=True):
+class Watchlist(WatchlistBase, table=True):
     watchlist_id: int = Field(default=None, primary_key=True)
 
     watchlist_movie: Movie = Relationship(back_populates="movie_watchlists")
@@ -589,3 +589,34 @@ def read_subtitles_by_episode(
             return subtitles
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/profile/{profile_id}/watchlist", response_model=List[WatchlistRead])
+def read_watchlist_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        watchlists = session.query(Watchlist).filter(Watchlist.profile_id == profile_id).all()
+        if not watchlists:
+            raise HTTPException(status_code=404, detail="No watchlists found")
+
+        if accept and "application/xml" in accept:
+            watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
+            xml_content = xmltodict.unparse(watchlist_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return watchlists
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    
