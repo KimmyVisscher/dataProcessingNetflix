@@ -261,6 +261,7 @@ class ProfileCreate(ProfileBase):
 
 class ProfileRead(ProfileBase):
     account_id: int = Field(default=None, foreign_key="account.account_id")
+    profile_id: int
     # preference_id: Preference = Field(default=None, foreign_key=
 
 
@@ -642,6 +643,35 @@ def read_account(*, session: Session = Depends(get_session),
             return PlainTextResponse(content=xml_content, media_type="application/xml")
         else:
             return account
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/accounts/{account_id}/profiles", response_model=List[ProfileRead])
+def read_profiles_by_account(
+        *,
+        session: Session = Depends(get_session),
+        account_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        profiles = session.query(Profile).filter(Profile.account_id == account_id).all()
+        if not profiles:
+            raise HTTPException(status_code=404, detail="No profiles found")
+
+        if accept and "application/xml" in accept:
+            profiles_data = {"profile": [profile.dict() for profile in profiles]}
+            xml_content = xmltodict.unparse(profiles_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return profiles
     else:
         raise HTTPException(status_code=403, detail="No permission")
 
