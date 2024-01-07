@@ -219,6 +219,7 @@ class AccountBase(SQLModel):
     email: str
     payment_method: str
     video_quality: Quality
+    username: str
 
     subscription_id: Optional[int] = Field(default=None, foreign_key="subscription.subscription_id")
 
@@ -231,7 +232,8 @@ class Account(AccountBase, table=True):
 
 
 class AccountRead(AccountBase):
-    blocked: int
+    # blocked: Optional[int]
+    pass
 
 
 class AccountCreate(AccountBase):
@@ -618,7 +620,33 @@ def read_accounts(*,
         raise HTTPException(status_code=403, detail="No permission")
 
 
-@app.get("/accounts/profiles/{profile_id}/watchlist", response_model=List[WatchlistRead])
+@app.get("/accounts/{account_id}", response_model=AccountRead)
+def read_movie(*, session: Session = Depends(get_session),
+               account_id: int,
+               api_key_header: Optional[str] = Depends(api_key_header),
+               accept: Optional[str] = Header(None)
+               ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        account = session.get(Account, account_id)
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+
+        if accept and "application/xml" in accept:
+            xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return account
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/profiles/{profile_id}/watchlist", response_model=List[WatchlistRead])
 def read_watchlist_by_profile(
         *,
         session: Session = Depends(get_session),
