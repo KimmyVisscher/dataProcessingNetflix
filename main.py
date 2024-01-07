@@ -591,7 +591,34 @@ def read_subtitles_by_episode(
         raise HTTPException(status_code=403, detail="No permission")
 
 
-@app.get("/profile/{profile_id}/watchlist", response_model=List[WatchlistRead])
+@app.get("/accounts", response_model=List[AccountRead])
+def read_accounts(*,
+                session: Session = Depends(get_session),
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        accounts = session.query(Account).all()
+        if not accounts:
+            raise HTTPException(status_code=404, detail="No accounts found")
+
+        if accept and "application/xml" in accept:
+            account_data = {"account": [account.dict() for account in accounts]}
+            xml_content = xmltodict.unparse(account_data, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return accounts
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/accounts/profiles/{profile_id}/watchlist", response_model=List[WatchlistRead])
 def read_watchlist_by_profile(
         *,
         session: Session = Depends(get_session),
@@ -619,4 +646,4 @@ def read_watchlist_by_profile(
     else:
         raise HTTPException(status_code=403, detail="No permission")
 
-    
+
