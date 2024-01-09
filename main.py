@@ -27,11 +27,12 @@ AgeRestriction = Enum("AgeRestriction", ["ALL_AGES", "6_YEARS", "9_YEARS", "12_Y
 
 
 class ViewerIndication(Enum):
-    SEX = 1
-    FEAR = 2
-    DISCRIMINATION = 3
-    DRUG_ALCOHOL_USAGE = 4
-    PROFANITY_USAGE = 5
+    SEX = "SEX"
+    FEAR = "FEAR"
+    DISCRIMINATION = "DISCRIMINATION"
+    DRUG_ALCOHOL_USAGE = "DRUG_ALCOHOL_USAGE"
+    PROFANITY_USAGE = "PROFANITY_USAGE"
+    VIOLENCE = "VIOLENCE"
 
 
 class Quality(Enum):
@@ -861,4 +862,30 @@ def create_movie(*, session: Session = Depends(get_session),
         return serie
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.post("/episodes", response_model=EpisodeRead)
+def create_episode(
+        *,
+        session: Session = Depends(get_session),
+        episode_create: EpisodeCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    serie_id = episode_create.serie_id
+    if not session.query(Serie).filter(Serie.serie_id == serie_id).first():
+        raise HTTPException(status_code=404, detail="Serie not found")
+
+    episode = Episode(**episode_create.dict())
+    session.add(episode)
+    session.commit()
+    return episode
 
