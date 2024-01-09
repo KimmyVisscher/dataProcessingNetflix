@@ -309,6 +309,98 @@ def get_session():
 app = FastAPI()
 
 
+def subscription_to_xml_string(subscription):
+    xml_string = (
+        f"<subscription>\n"
+        f"  <description>{subscription.description}</description>\n"
+        f"  <subscription_price>{subscription.subscription_price}</subscription_price>\n"
+        f"</subscription>"
+    )
+    return xml_string
+
+
+def movie_to_xml_string(movie):
+    xml_string = (
+        f"<movie>\n"
+        f"  <title>{movie.title}</title>\n"
+        f"  <movie_duration>{movie.movie_duration}</movie_duration>\n"
+        f"  <age_restriction>{movie.age_restriction}</age_restriction>\n"
+        f"</movie>"
+    )
+    return xml_string
+
+
+def subtitle_to_xml_string(subtitle):
+    xml_string = (
+        f"<subtitle>\n"
+        f"  <language>{subtitle.language}</language>\n"
+        f"  <subtitle_location>{subtitle.subtitle_location}</subtitle_location>\n"
+        f"</subtitle>"
+    )
+    return xml_string
+
+
+def series_to_xml_string(serie):
+    xml_string = (
+        f"<serie>\n"
+        f"  <serie_name>{serie.serie_name}</serie_name>\n"
+        f"  <age_restriction>{serie.age_restriction}</age_restriction>\n"
+        f"</serie>"
+    )
+    return xml_string
+
+
+def episode_to_xml_string(episode):
+    xml_string = (
+        f"<episode>\n"
+        f"  <title>{episode.title}</title>\n"
+        f"  <episode_duration>{episode.episode_duration}</episode_duration>\n"
+        f"</episode>"
+    )
+    return xml_string
+
+
+def classification_to_xml_string(classification):
+    xml_string = (
+        f"<classification>\n"
+        f"  <classification>{classification.classification}</classification>\n"
+        f"</classification>"
+    )
+    return xml_string
+
+
+def genre_to_xml_string(genres):
+    xml_string = (
+        f"<genre>\n"
+        f"  <genre>{genres.genre}</genre>\n"
+        f"</genre>"
+    )
+    return xml_string
+
+
+def account_to_xml_string(account):
+    xml_string = (
+        f"<account>\n"
+        f"  <email>{account.email}</email>\n"
+        f"  <payment_method>{account.payment_method}</payment_method>\n"
+        f"  <video_quality>{account.video_quality}</video_quality>\n"
+        f"  <username>{account.username}</username>\n"
+        f"</account>"
+    )
+    return xml_string
+
+
+def profile_to_xml_string(profile):
+    xml_string = (
+        f"<profile>\n"
+        f"  <profile_image>{profile.profile_image}</profile_image>\n"
+        f"  <profile_child>{profile.profile_child}</profile_child>\n"
+        f"  <language>{profile.language}</language>\n"
+        f"</profile>"
+    )
+    return xml_string
+
+
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
