@@ -823,3 +823,22 @@ def read_watchlist_by_profile(
         raise HTTPException(status_code=403, detail="No permission")
 
 
+@app.post("/movies", response_model=MovieRead)
+def create_movie(*, session: Session = Depends(get_session),
+                 movie_create: MovieCreate,
+                 api_key_header: Optional[str] = Depends(api_key_header)
+                 ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = Movie(**movie_create.dict())
+        session.add(movie)
+        session.commit()
+        return movie
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
