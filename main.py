@@ -41,9 +41,9 @@ class ViewerIndication(Enum):
 
 
 class Quality(Enum):
-    SD = 1
-    HD = 2
-    UHD = 3
+    SD = "SD"
+    HD = "HD"
+    UHD = "UHD"
 
 
 class Role(Enum):
@@ -68,6 +68,7 @@ class APIKey(SQLModel, table=True):
 class SubscriptionBase(SQLModel):
     description: str
     subscription_price: float
+    quality: Quality
 
 
 class Subscription(SubscriptionBase, table=True):
@@ -224,10 +225,9 @@ class GenresCreate(GenresBase):
 class AccountBase(SQLModel):
     email: str
     payment_method: str
-    video_quality: Quality
     username: str
 
-    subscription_id: Optional[int] = Field(default=None, foreign_key="subscription.subscription_id")
+    subscription_id: int = Field(foreign_key="subscription.subscription_id")
 
 
 class Account(AccountBase, table=True):
@@ -320,6 +320,7 @@ def subscription_to_xml_string(subscription):
         f"<subscription>\n"
         f"  <description>{subscription.description}</description>\n"
         f"  <subscription_price>{subscription.subscription_price}</subscription_price>\n"
+        f"  <quality>{subscription.quality}</quality>\n"
         f"</subscription>"
     )
     return xml_string
@@ -953,3 +954,23 @@ def create_subtitle_for_movie(
     session.add(subtitle)
     session.commit()
     return subtitle
+
+
+@app.post("/accounts", response_model=AccountRead)
+def create_account(*, session: Session = Depends(get_session),
+                 account_create: AccountCreate,
+                 api_key_header: Optional[str] = Depends(api_key_header)
+                 ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        account = Account(**account_create.dict())
+        session.add(account)
+        session.commit()
+        return account
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
