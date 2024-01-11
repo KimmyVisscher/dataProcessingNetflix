@@ -23,7 +23,12 @@ class Genre(Enum):
     REALITY = "REALITY"
 
 
-AgeRestriction = Enum("AgeRestriction", ["ALL_AGES", "6_YEARS", "9_YEARS", "12_YEARS", "16_YEARS"])
+class AgeRestriction(Enum):
+    ALL_AGES = "ALL_AGES"
+    SIX_YEARS = "SIX_YEARS"
+    NINE_YEARS = "NINE_YEARS"
+    TWELVE_YEARS = "TWELVE_YEARS"
+    SIXTEEN_YEARS = "SIXTEEN_YEARS"
 
 
 class ViewerIndication(Enum):
