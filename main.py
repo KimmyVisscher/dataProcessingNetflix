@@ -1000,3 +1000,31 @@ def create_profile(
     session.add(profile)
     session.commit()
     return profile
+
+
+@app.put("/movies/{movie_id}", response_model=MovieRead)
+def update_movie(
+        *,
+        session: Session = Depends(get_session),
+        movie_id: int,
+        movie_update: MovieCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
+
+        for field, value in movie_update.dict().items():
+            setattr(movie, field, value)
+
+        session.commit()
+        return movie
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
