@@ -34,3 +34,20 @@ WHERE
 GROUP BY
     s.subscription_id;
 
+--merge conflict resolve
+
+DELIMiTER //
+
+CREATE PROCEDURE calculateTotalAccounts()
+BEGIN
+    DECLARE totalAccounts INT;
+
+    SELECT COUNT(*) INTO totalAccounts
+    FROM account;
+
+    SELECT totalAccounts AS TotalAccounts;
+END //
+
+DELIMIER ;
+
+--^^calculate the total accounts^^--
