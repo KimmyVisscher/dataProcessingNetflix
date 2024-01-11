@@ -974,3 +974,29 @@ def create_account(*, session: Session = Depends(get_session),
         return account
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.post("/profiles", response_model=ProfileRead)
+def create_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_create: ProfileCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    account_id = profile_create.account_id
+    if not session.query(Account).filter(Account.account_id == account_id).first():
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    profile = Profile(**profile_create.dict())
+    session.add(profile)
+    session.commit()
+    return profile
