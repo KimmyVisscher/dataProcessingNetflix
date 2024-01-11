@@ -1,8 +1,36 @@
-CREATE PROCEDURE GetRevenue
-AS
-SELECT payment_method FROM account
-GO;
+/*
+Stored procedure for calculating the monthly revenue.
+the result will be sorted by subscription type.
+there is an built in check to exclude blocked accounts
+*/
+CREATE PROCEDURE CalculateMonthlyRevenue()
+BEGIN
+    SELECT
+        s.subscription_id,
+        COUNT(a.account_id) AS number_of_accounts,
+        SUM(s.subscription_price) AS monthly_revenue
+    FROM
+        subscription s
+    JOIN
+        account a ON s.subscription_id = a.subscription_id
+    WHERE
+        a.blocked IS NULL OR a.blocked = 0
+    GROUP BY
+        s.subscription_id;
+END 
 
+--querry version for testing purposes
 
-#Account table nodig, niet de subscription table nodig. 
-#In de account moeten kijken welke subscription diegene heeft, waarna je dit op telt. Daarna ga je dat x de prijzen doen.
+SELECT
+    s.subscription_id,
+    COUNT(a.account_id) AS number_of_accounts,
+    SUM(s.subscription_price) AS monthly_revenue
+FROM
+    subscription s
+JOIN
+    account a ON s.subscription_id = a.subscription_id
+WHERE
+    a.blocked IS NULL OR a.blocked = 0
+GROUP BY
+    s.subscription_id;
+
