@@ -889,3 +889,32 @@ def create_episode(
     session.commit()
     return episode
 
+
+@app.post("/episodes/{episode_id}/subtitles", response_model=SubtitleRead)
+def create_subtitle_for_episode(
+    *,
+    session: Session = Depends(get_session),
+    episode_id: int,
+    subtitle_create: SubtitleCreate,
+    api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    episode = session.get(Episode, episode_id)
+    if not episode:
+        raise HTTPException(status_code=404, detail="Episode not found")
+
+    subtitle_data = subtitle_create.dict()
+    subtitle_data["episode_id"] = episode_id
+
+    subtitle = Subtitle(**subtitle_data)
+    session.add(subtitle)
+    session.commit()
+    return subtitle
