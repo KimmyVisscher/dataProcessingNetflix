@@ -1056,3 +1056,115 @@ def update_serie(
         return serie
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.put("/episodes/{episode_id}", response_model=EpisodeRead)
+def update_episode(
+        *,
+        session: Session = Depends(get_session),
+        episode_id: int,
+        episode_update: EpisodeCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        episode = session.get(Episode, episode_id)
+        if not episode:
+            raise HTTPException(status_code=404, detail="Episode not found")
+
+        for field, value in episode_update.dict().items():
+            setattr(episode, field, value)
+
+        session.commit()
+        return episode
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.put("/subtitles/{subtitle_id}", response_model=SubtitleRead)
+def update_subtitle(
+        *,
+        session: Session = Depends(get_session),
+        subtitle_id: int,
+        subtitle_update: SubtitleCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        subtitle = session.get(Subtitle, subtitle_id)
+        if not subtitle:
+            raise HTTPException(status_code=404, detail="Subtitle not found")
+
+        for field, value in subtitle_update.dict().items():
+            setattr(subtitle, field, value)
+
+        session.commit()
+        return subtitle
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.put("/accounts/{account_id}", response_model=AccountRead)
+def update_account(
+        *,
+        session: Session = Depends(get_session),
+        account_id: int,
+        account_update: AccountCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        account = session.get(Account, account_id)
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+
+        for field, value in account_update.dict().items():
+            setattr(account, field, value)
+
+        session.commit()
+        return account
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.put("/profiles/{profile_id}", response_model=ProfileRead)
+def update_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        profile_update: ProfileCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        profile = session.get(Profile, profile_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        for field, value in profile_update.dict().items():
+            setattr(profile, field, value)
+
+        session.commit()
+        return profile
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
