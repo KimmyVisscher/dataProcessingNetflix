@@ -145,43 +145,41 @@
 </div>
 
   <div class="recent_updates">
-     <h2>Recente films / series</h2>
-   <div class="updates">
-      <div class="update">
-         <div class="profile-photo">
-            <img src="./images/11.jpg" alt=""/>
-         </div>
-        <div class="message">
-           <p><b>Film</b></p>
-           <p>Titel: Kickass 2</p>
-           <p>Film duur: 90 minuten</p>
-        </div>
-      </div>
-      <div class="update">
-        <div class="profile-photo">
-        <img src="./images/5.jpg" alt=""/>
-        </div>
-       <div class="message">
-          <p><b>Film</b></p>
-          <p>Titel: Marvel avengers</p>
-          <p>Film duur: 90 minuten</p>
-       </div>
-     </div>
-     <div class="update">
-      <div class="profile-photo">
-         <img src="./images/8.jpg" alt=""/>
-      </div>
-     <div class="message">
-        <p><b>Serie</b></p>
-        <p>Titel: The brigde</p>
-        <p>Seizoenen: 4</p>
-        <p>Afleveringen per seizoen: 10</p>
-     </div>
-   </div>
-  </div>
+     <h2>Recente films</h2>
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function (){
+      fetch('/movies')
+        .then(response => response.json())
+        .then(data =>{
+            if(data.detail) {
+              document.getElementById('moviesList').innerHTML = '<p>Error: ${data.detail}</p>';
+            }
+            else {
+              const movieList = document.getElementById('movieList');
+              data.forEach(movie => {
+                const updateDiv = document.createElement('div');
+                updateDiv.className = 'update';
 
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `<p><b>${movie.type}</b></p>
+                                               <p>Titel: ${movie.title}</p>
+                                               ${movie.duration ? `<p>Film duur: ${movie.duration} minuten</p>` : ''}
+                                               ${movie.seasons ? `<p>Seizoenen: ${movie.seasons}</p>` : ''}
+                                               ${movie.episodesPerSeason ? `<p>Afleveringen per seizoen: ${movie.episodesPerSeason}</p>` : ''}`;
+                updateDiv.appendChild(messageDiv);
+                movieList.appendChild(updateDiv);
+              })
+            }
+        })
+        .catch(error => {
+          console.error('Error fetching movies:', error);
+          document.getElementById('movieList').innerHTML = '<p>Error fetching movies</p>';
+        })
+    })
+  </script>
    <div class="sales-analytics">
      <h2>Verkoop analyse</h2>
 
