@@ -1028,3 +1028,31 @@ def update_movie(
         return movie
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.put("/series/{serie_id}", response_model=SerieRead)
+def update_serie(
+        *,
+        session: Session = Depends(get_session),
+        serie_id: int,
+        serie_update: SerieCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        serie = session.get(Serie, serie_id)
+        if not serie:
+            raise HTTPException(status_code=404, detail="Serie not found")
+
+        for field, value in serie_update.dict().items():
+            setattr(serie, field, value)
+
+        session.commit()
+        return serie
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
