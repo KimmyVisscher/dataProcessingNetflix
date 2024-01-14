@@ -36,7 +36,7 @@ GROUP BY
 
 --merge conflict resolve
 
-DELIMiTER //
+DELIMITER //
 
 CREATE PROCEDURE calculateTotalAccounts()
 BEGIN
