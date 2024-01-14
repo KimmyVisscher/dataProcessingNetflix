@@ -65,16 +65,6 @@
                </div>
                <small>Laatste 24 uur</small>
             </div>
-              <div class="expenses">
-                <span class="material-symbols-sharp">subscriptions</span>
-                <div class="middle">
-                  <div class="left">
-                    <h3>Omzet abonnementen</h3>
-                    <h1>€25,024</h1>
-                  </div>
-                </div>
-                <small>Laatste 24 uur</small>
-             </div>
                <div class="income">
                 <span class="material-symbols-sharp">movie</span>
                 <div class="middle">
@@ -94,6 +84,7 @@
                 <th>Account id</th>
                 <th>Email-adres</th>
                 <th>abonnement type</th>
+                <th>Betaalwijze</th>
                 <th>Aantal profielen</th>
               </tr>
              </thead>
@@ -102,15 +93,15 @@
                    <td>22</td>
                    <td>henk.deslak@gmail.com</td>
                    <td>basis</td>
+                   <td>PayPal</td>
                    <td class="warning">1/4</td>
-                   <td class="primary">Details</td>
                  </tr>
                  <tr>
                   <td>21</td>
                   <td>jantje.dewit@gmail.com</td>
                   <td>standaard</td>
+                  <td>Credit card</td>
                   <td class="ultraWarning">4/4</td>
-                  <td class="primary">Details</td>
                 </tr>
               </tbody>
          </table>
@@ -145,7 +136,7 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function (){
+    /*document.addEventListener('DOMContentLoaded', function (){
       fetch('/movies')
         .then(response => response.json())
         .then(data =>{
@@ -174,8 +165,25 @@
           console.error('Error fetching movies:', error);
           document.getElementById('movieList').innerHTML = '<p>Error fetching movies</p>';
         })
+    })*/
+    const endpointUrl = "http://localhost:8000/movies";
+    const apiKey = "kimvissss"; // Vervang dit met je daadwerkelijke API-sleutel
+
+    fetch(endpointUrl, {
+        headers: {
+            'X-API-KEY': apiKey,
+            'Content-Type': 'application/json' // Voeg andere headers toe indien nodig
+        }
     })
-  </script>
+        .then(response => response.json())
+        .then(data => {
+            // Nu kun je werken met de gegevensarray
+            data.forEach(movie => {
+                console.log("ID: " + movie.id + ", Title: " + movie.title);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+    </script>
    <div class="sales-analytics">
      <h2>Verkoop analyse</h2>
 
