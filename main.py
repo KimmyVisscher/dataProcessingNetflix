@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Header
 from fastapi.responses import PlainTextResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from secrets import *
@@ -329,97 +329,166 @@ app.add_middleware(
 )
 
 
+def subscription_to_xml_string(subscriptions):
+    xml_string = "<subscriptions>\n"
 
-def subscription_to_xml_string(subscription):
-    xml_string = (
-        f"<subscription>\n"
-        f"  <description>{subscription.description}</description>\n"
-        f"  <subscription_price>{subscription.subscription_price}</subscription_price>\n"
-        f"  <quality>{subscription.quality}</quality>\n"
-        f"</subscription>"
-    )
+    for subscription in subscriptions:
+        xml_string += (
+            f"  <subscription>\n"
+            f"      <description>{subscription.description}</description>\n"
+            f"      <subscription_price>{subscription.subscription_price}</subscription_price>\n"
+            f"      <quality>{subscription.quality}</quality>\n"
+            f"  </subscription>"
+        )
+
+    xml_string += "</subscriptions>"
     return xml_string
 
 
-def movie_to_xml_string(movie):
-    xml_string = (
-        f"<movie>\n"
-        f"  <title>{movie.title}</title>\n"
-        f"  <movie_duration>{movie.movie_duration}</movie_duration>\n"
-        f"  <age_restriction>{movie.age_restriction}</age_restriction>\n"
-        f"</movie>"
-    )
+def movie_to_xml_string(movies):
+    xml_string = "<movies>\n"
+
+    for movie in movies:
+        xml_string += (
+            f"  <movie>\n"
+            f"      <title>{movie.title}</title>\n"
+            f"      <movie_duration>{movie.movie_duration}</movie_duration>\n"
+            f"      <age_restriction>{movie.age_restriction}</age_restriction>\n"
+            f"  </movie>"
+        )
+
+    xml_string += "</movies>"
     return xml_string
 
 
-def subtitle_to_xml_string(subtitle):
-    xml_string = (
-        f"<subtitle>\n"
-        f"  <language>{subtitle.language}</language>\n"
-        f"  <subtitle_location>{subtitle.subtitle_location}</subtitle_location>\n"
-        f"</subtitle>"
-    )
+def subtitle_to_xml_string(subtitles):
+    xml_string = "<subtitles>\n"
+
+    for subtitle in subtitles:
+        xml_string += (
+            f"  <subtitle>\n"
+            f"      <language>{subtitle.language}</language>\n"
+            f"      <subtitle_location>{subtitle.subtitle_location}</subtitle_location>\n"
+            f"      <movie_id>{subtitle.movie_id}</movie_id>\n"
+            f"      <episode_id>{subtitle.episode_id}</episode_id>\n"
+            f"  </subtitle>"
+        )
+
+    xml_string += "</subtitles>"
     return xml_string
 
 
-def series_to_xml_string(serie):
-    xml_string = (
-        f"<serie>\n"
-        f"  <serie_name>{serie.serie_name}</serie_name>\n"
-        f"  <age_restriction>{serie.age_restriction}</age_restriction>\n"
-        f"</serie>"
-    )
+def series_to_xml_string(series):
+    xml_string = "<series>\n"
+
+    for serie in series:
+        xml_string += (
+            f"  <serie>\n"
+            f"      <serie_name>{serie.serie_name}</serie_name>\n"
+            f"      <age_restriction>{serie.age_restriction}</age_restriction>\n"
+            f"  </serie>"
+        )
+
+    xml_string += "</series>"
     return xml_string
 
 
-def episode_to_xml_string(episode):
-    xml_string = (
-        f"<episode>\n"
-        f"  <title>{episode.title}</title>\n"
-        f"  <episode_duration>{episode.episode_duration}</episode_duration>\n"
-        f"</episode>"
-    )
+def episode_to_xml_string(episodes):
+    xml_string = "<episodes>\n"
+
+    for episode in episodes:
+        xml_string += (
+            f"  <episode>\n"
+            f"      <title>{episode.title}</title>\n"
+            f"      <episode_duration>{episode.episode_duration}</episode_duration>\n"
+            f"      <serie_id>{episode.serie_id}</serie_id>\n"
+            f"  </episode>"
+        )
+
+    xml_string += "</episodes>"
     return xml_string
 
 
-def classification_to_xml_string(classification):
-    xml_string = (
-        f"<classification>\n"
-        f"  <classification>{classification.classification}</classification>\n"
-        f"</classification>"
-    )
+def classification_to_xml_string(classifications):
+    xml_string = "<classifications>\n"
+
+    for classification in classifications:
+        xml_string += (
+            f"  <classification>\n"
+            f"      <classification>{classification.classification}</classification>\n"
+            f"      <serie_id>{classification.serie_id}</serie_id>\n"
+            f"      <movie_id>{classification.movie_id}</movie_id>\n"
+            f"  </classification>"
+        )
+
+    xml_string += "</classifications>"
     return xml_string
 
 
-def genre_to_xml_string(genres):
-    xml_string = (
-        f"<genre>\n"
-        f"  <genre>{genres.genre}</genre>\n"
-        f"</genre>"
-    )
+def genre_to_xml_string(genres_list):
+    xml_string = "<genres>\n"
+
+    for genres in genres_list:
+        xml_string += (
+            f"  <genre>\n"
+            f"      <genre>{genres.genre}</genre>\n"
+            f"      <serie_id>{genres.serie_id}</serie_id>\n"
+            f"      <movie_id>{genres.movie_id}</movie_id>\n"
+            f"  </genre>"
+        )
+
+    xml_string += "</genres>"
     return xml_string
 
 
-def account_to_xml_string(account):
-    xml_string = (
-        f"<account>\n"
-        f"  <email>{account.email}</email>\n"
-        f"  <payment_method>{account.payment_method}</payment_method>\n"
-        f"  <video_quality>{account.video_quality}</video_quality>\n"
-        f"  <username>{account.username}</username>\n"
-        f"</account>"
-    )
+def account_to_xml_string(accounts):
+    xml_string = "<accounts>\n"
+
+    for account in accounts:
+        xml_string += (
+            f"  <account>\n"
+            f"      <email>{account.email}</email>\n"
+            f"      <payment_method>{account.payment_method}</payment_method>\n"
+            f"      <video_quality>{account.video_quality}</video_quality>\n"
+            f"      <username>{account.username}</username>\n"
+            f"      <subscription_id>{account.subscription_id}</subscription_id>\n"
+            f"  </account>"
+        )
+
+    xml_string += "</accounts>"
     return xml_string
 
 
-def profile_to_xml_string(profile):
-    xml_string = (
-        f"<profile>\n"
-        f"  <profile_image>{profile.profile_image}</profile_image>\n"
-        f"  <profile_child>{profile.profile_child}</profile_child>\n"
-        f"  <language>{profile.language}</language>\n"
-        f"</profile>"
-    )
+def profile_to_xml_string(profiles):
+    xml_string = "<profiles>\n"
+
+    for profile in profiles:
+        xml_string += (
+            f"  <profile>\n"
+            f"      <profile_image>{profile.profile_image}</profile_image>\n"
+            f"      <profile_child>{profile.profile_child}</profile_child>\n"
+            f"      <language>{profile.language}</language>\n"
+            f"      <account_id>{profile.account_id}</account_id>\n"
+            f"  </profile>"
+        )
+
+    xml_string += "</profiles>"
+    return xml_string
+
+
+def watchlist_to_xml_string(watchlists):
+    xml_string = "<watchlists>\n"
+
+    for watchlist in watchlists:
+        xml_string = (
+            f"  <watchlist>\n"
+            f"      <serie_id>{watchlist.serie_id}</serie_id>\n"
+            f"      <movie_id>{watchlist.movie_id}</movie_id>\n"
+            f"      <profile_id>{watchlist.profile_id}</profile_id>\n"
+            f" </watchlist>"
+        )
+
+    xml_string += "</watchlists>"
     return xml_string
 
 
@@ -446,8 +515,9 @@ def read_movie(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Movie not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(movie), media_type="application/xml")
         else:
             return movie
     else:
@@ -527,9 +597,10 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            series_data = {"serie": [serie.dict() for serie in series]}
-            xml_content = xmltodict.unparse(series_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # series_data = {"serie": [serie.dict() for serie in series]}
+            # xml_content = xmltodict.unparse(series_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
     else:
