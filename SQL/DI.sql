@@ -1,8 +1,8 @@
-/*
-Stored procedure for calculating the monthly revenue.
-the result will be sorted by subscription type.
-there is an built in check to exclude blocked accounts
-*/
+START TRANSACTION
+--
+-- Stored procedures
+--
+
 CREATE PROCEDURE CalculateMonthlyRevenue()
 BEGIN
     SELECT
@@ -19,8 +19,7 @@ BEGIN
         s.subscription_id;
 END 
 
---querry version for testing purposes
-
+/* querry for testing
 SELECT
     s.subscription_id,
     COUNT(a.account_id) AS number_of_accounts,
@@ -33,10 +32,7 @@ WHERE
     a.blocked IS NULL OR a.blocked = 0
 GROUP BY
     s.subscription_id;
-
---merge conflict resolve
-
-DELIMITER //
+*/
 
 CREATE PROCEDURE calculateTotalAccounts()
 BEGIN
@@ -46,8 +42,24 @@ BEGIN
     FROM account;
 
     SELECT totalAccounts AS TotalAccounts;
-END //
+END
 
-DELIMIER ;
+--
+-- Checks
+--
 
---^^calculate the total accounts^^--
+ALTER TABLE profile
+ADD CONSTRAINT chk_max_profiles
+CHECK (NOT EXISTS (
+    SELECT 1
+    FROM profile p
+    WHERE p.account_id = profile.account_id
+    GROUP BY p.account_id
+    HAVING COUNT(*) > 4
+));
+
+COMMIT;
+
+--
+-- Triggers
+-- 

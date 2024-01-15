@@ -13,7 +13,7 @@ START TRANSACTION;
 
 CREATE USER 'User_Junior'@'%' IDENTIFIED BY 'GerjanRulez';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON `DP_Netflix`.* TO 'User_Junior'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `DP_netflix`.* TO 'User_Junior'@'%';
 
 --
 -- User Medior
@@ -21,9 +21,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON `DP_Netflix`.* TO 'User_Junior'@'%';
 
 CREATE USER 'User_Medior'@'%' IDENTIFIED BY 'RobRulez';
 
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EVENT, TRIGGER, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `DP_Netflix`.* TO 'User_Medior'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EVENT, TRIGGER, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `DP_netflix`.* TO 'User_Medior'@'%';
 
-GRANT SET PASSWORD ON DP_Netflix.* TO 'User_medior'@'localhost';
+GRANT SET PASSWORD ON DP_netflix.* TO 'User_medior'@'%';
 
 --
 -- User Senior
@@ -31,14 +31,14 @@ GRANT SET PASSWORD ON DP_Netflix.* TO 'User_medior'@'localhost';
 
 CREATE USER 'User_Senior'@'%' IDENTIFIED BY 'JanRulez';
 
-GRANT ALL PRIVILEGES ON *.* TO 'gebruikersnaam'@'host';
+GRANT ALL PRIVILEGES ON *.* TO 'gebruikersnaam'@'%';
 
 --
 -- User API
 --
 CREATE USER 'User_API'@'%' IDENTIFIED BY 'APIKEY';
 
-GRANT ALL PRIVILEGES ON DP_Netflix.* TO 'User_API'@'%' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON DP_netflix.* TO 'User_API'@'%' WITH GRANT OPTION;
 
 
 COMMIT;
