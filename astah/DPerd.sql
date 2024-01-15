@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Jan 15, 2024 at 01:47 PM
+-- Generation Time: Jan 15, 2024 at 02:01 PM
 -- Server version: 11.1.2-MariaDB-1:11.1.2+maria~ubu2204
 -- PHP Version: 8.2.10
 
@@ -298,18 +298,18 @@ CREATE TABLE `movie` (
 --
 
 INSERT INTO `movie` (`movie_id`, `title`, `movie_duration`, `age_restriction`) VALUES
-(1, 'The Shawshank Redemption', 142, '16+'),
-(2, 'The Godfather', 175, '18+'),
-(3, 'Pulp Fiction', 154, '18+'),
-(4, 'The Dark Knight', 152, '16+'),
-(5, 'Schindler\'s List', 195, '16+'),
-(6, 'Inception', 148, '16+'),
-(7, 'Fight Club', 139, '18+'),
-(8, 'Forrest Gump', 142, 'All Ages'),
-(9, 'The Matrix', 136, '16+'),
-(10, 'The Silence of the Lambs', 118, '18+'),
-(11, 'The Green Mile', 189, '16+'),
-(12, 'The Godfather: Part II', 202, '18+');
+(1, 'The Shawshank Redemption', 142, 'SIXTEEN_YEARS'),
+(2, 'The Godfather', 175, 'ALL_AGES'),
+(3, 'Pulp Fiction', 154, 'ALL_AGES'),
+(4, 'The Dark Knight', 152, 'SIXTEEN_YEARS'),
+(5, 'Schindler\'s List', 195, 'SIXTEEN_YEARS'),
+(6, 'Inception', 148, 'SIXTEEN_YEARS'),
+(7, 'Fight Club', 139, 'SIXTEEN_YEARS'),
+(8, 'Forrest Gump', 142, 'ALL_AGES'),
+(9, 'The Matrix', 136, 'SIX_YEARS'),
+(10, 'The Silence of the Lambs', 118, 'TWELVE_YEARS'),
+(11, 'The Green Mile', 189, 'SIXTEEN_YEARS'),
+(12, 'The Godfather: Part II', 202, 'TWELVE_YEARS');
 
 -- --------------------------------------------------------
 
