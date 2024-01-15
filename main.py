@@ -145,7 +145,6 @@ class Serie(SerieBase, table=True):
     serie_id: Optional[int] = Field(default=None, primary_key=True)
 
     episodes: List["Episode"] = Relationship(back_populates="serie")
-    serie_classification: List["Classification"] = Relationship(back_populates="classification_serie")
     serie_genre: List["Genres"] = Relationship(back_populates="genre_serie")
     serie_watchlists: List["Watchlist"] = Relationship(back_populates="watchlist_serie")
 
@@ -170,6 +169,7 @@ class Episode(EpisodeBase, table=True):
 
     serie: Serie = Relationship(back_populates="episodes")
     episode_subtitles: List["Subtitle"] = Relationship(back_populates="subtitle_episode")
+    episode_classification: List["Classification"] = Relationship(back_populates="classification_episode")
 
 
 class EpisodeRead(EpisodeBase):
@@ -183,15 +183,15 @@ class EpisodeCreate(EpisodeBase):
 class ClassificationBase(SQLModel):
     classification: str
 
-    serie_id: Optional[int] = Field(default=None, foreign_key="serie.serie_id")
+    episode_id: Optional[int] = Field(default=None, foreign_key="episode.episode_id")
     movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
 
 
 class Classification(ClassificationBase, table=True):
     classification_id: Optional[int] = Field(default=None, primary_key=True)
 
-    classification_serie: Serie = Relationship(back_populates="serie_classification")
-    classification_movie: Movie = Relationship(back_populates="movie_classification")
+    classification_episode: Optional[Episode] = Relationship(back_populates="episode_classification")
+    classification_movie: Optional[Movie] = Relationship(back_populates="movie_classification")
 
 
 class ClassificationRead(ClassificationBase):
@@ -210,7 +210,7 @@ class GenresBase(SQLModel):
 
 
 class Genres(GenresBase, table=True):
-    genre_id: int = Field(default=None, primary_key=True)
+    genres_id: int = Field(default=None, primary_key=True)
 
     genre_serie: Serie = Relationship(back_populates="serie_genre")
     genre_movie: Movie = Relationship(back_populates="movie_genre")
@@ -1181,5 +1181,143 @@ def update_profile(
 
         session.commit()
         return profile
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/movies/{movie_id}")
+def delete_movie(*, session: Session = Depends(get_session),
+                 movie_id: int,
+                 api_key_header: Optional[str] = Depends(api_key_header)
+                 ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
+
+        session.delete(movie)
+        session.commit()
+        return {"message": "Movie deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/series/{serie_id}")
+def delete_series(*, session: Session = Depends(get_session),
+                  serie_id: int,
+                  api_key_header: Optional[str] = Depends(api_key_header)
+                  ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        serie = session.get(Serie, serie_id)
+        if not serie:
+            raise HTTPException(status_code=404, detail="Series not found")
+
+        session.delete(serie)
+        session.commit()
+        return {"message": "Series deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/episodes/{episode_id}")
+def delete_episode(*, session: Session = Depends(get_session),
+                   episode_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        episode = session.get(Episode, episode_id)
+        if not episode:
+            raise HTTPException(status_code=404, detail="Episode not found")
+
+        session.delete(episode)
+        session.commit()
+        return {"message": "Episode deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/subtitles/{subtitle_id}")
+def delete_subtitle(*, session: Session = Depends(get_session),
+                    subtitle_id: int,
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        subtitle = session.get(Subtitle, subtitle_id)
+        if not subtitle:
+            raise HTTPException(status_code=404, detail="Subtitle not found")
+
+        session.delete(subtitle)
+        session.commit()
+        return {"message": "Subtitle deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/accounts/{account_id}")
+def delete_account(*, session: Session = Depends(get_session),
+                   account_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        account = session.get(Account, account_id)
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+
+        session.delete(account)
+        session.commit()
+        return {"message": "Account deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/profiles/{profile_id}")
+def delete_profile(*, session: Session = Depends(get_session),
+                   profile_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        profile = session.get(Profile, profile_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        session.delete(profile)
+        session.commit()
+        return {"message": "Profile deleted successfully"}
     else:
         raise HTTPException(status_code=403, detail="No permission")
