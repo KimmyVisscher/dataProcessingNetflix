@@ -449,7 +449,6 @@ def account_to_xml_string(accounts):
             f"  <account>\n"
             f"      <email>{account.email}</email>\n"
             f"      <payment_method>{account.payment_method}</payment_method>\n"
-            f"      <video_quality>{account.video_quality}</video_quality>\n"
             f"      <username>{account.username}</username>\n"
             f"      <subscription_id>{account.subscription_id}</subscription_id>\n"
             f"  </account>"
@@ -517,7 +516,7 @@ def read_movie(*, session: Session = Depends(get_session),
         if accept and "application/xml" in accept:
             # xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(movie), media_type="application/xml")
+            return Response(content=movie_to_xml_string([movie]), media_type="application/xml")
         else:
             return movie
     else:
@@ -629,7 +628,7 @@ def read_series(*, session: Session = Depends(get_session),
         if accept and "application/xml" in accept:
             # xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(serie), media_type="application/xml")
+            return Response(content=series_to_xml_string([serie]), media_type="application/xml")
         else:
             return serie
     else:
@@ -656,7 +655,7 @@ def read_episode(*, session: Session = Depends(get_session),
         if accept and "application/xml" in accept:
             # xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(episode), media_type="application/xml")
+            return Response(content=episode_to_xml_string([episode]), media_type="application/xml")
         else:
             return episode
     else:
@@ -690,7 +689,7 @@ def read_episodes_by_serie(
             # episodes_data = {"episode": [episode.dict() for episode in episodes]}
             # xml_content = xmltodict.unparse(episodes_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(serie), media_type="application/xml")
+            return Response(content=episode_to_xml_string(episodes), media_type="application/xml")
         else:
             return episodes
     else:
@@ -720,7 +719,7 @@ def read_series_by_genre(
             # series_data = {"serie": [serie.dict() for serie in series]}
             # xml_content = xmltodict.unparse(series_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(series), media_type="application/xml")
+            return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
     else:
@@ -750,7 +749,7 @@ def read_subtitles_by_movie(
             # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
             # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(subtitles), media_type="application/xml")
+            return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
     else:
@@ -780,7 +779,7 @@ def read_subtitles_by_episode(
             # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
             # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(subtitles), media_type="application/xml")
+            return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
     else:
@@ -808,7 +807,7 @@ def read_accounts(*,
             # account_data = {"account": [account.dict() for account in accounts]}
             # xml_content = xmltodict.unparse(account_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(accounts), media_type="application/xml")
+            return Response(content=account_to_xml_string(accounts), media_type="application/xml")
         else:
             return accounts
     else:
@@ -835,7 +834,7 @@ def read_account(*, session: Session = Depends(get_session),
         if accept and "application/xml" in accept:
             # xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(account), media_type="application/xml")
+            return Response(content=account_to_xml_string([account]), media_type="application/xml")
         else:
             return account
     else:
@@ -865,7 +864,7 @@ def read_profiles_by_account(
             # profiles_data = {"profile": [profile.dict() for profile in profiles]}
             # xml_content = xmltodict.unparse(profiles_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(profiles), media_type="application/xml")
+            return Response(content=profile_to_xml_string(profiles), media_type="application/xml")
         else:
             return profiles
     else:
@@ -892,7 +891,7 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
         if accept and "application/xml" in accept:
             # xml_content = xmltodict.unparse({"profile": profile.dict()}, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(profile), media_type="application/xml")
+            return Response(content=profile_to_xml_string([profile]), media_type="application/xml")
         else:
             return profile
     else:
@@ -922,7 +921,7 @@ def read_watchlist_by_profile(
             # watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
             # xml_content = xmltodict.unparse(watchlist_data, full_document=False)
             # return PlainTextResponse(content=xml_content, media_type="application/xml")
-            return Response(content=movie_to_xml_string(watchlists), media_type="application/xml")
+            return Response(content=watchlist_to_xml_string(watchlists), media_type="application/xml")
         else:
             return watchlists
     else:
