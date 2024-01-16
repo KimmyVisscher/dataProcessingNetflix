@@ -542,9 +542,10 @@ def read_movies(*,
             raise HTTPException(status_code=404, detail="No movies found")
 
         if accept and "application/xml" in accept:
-            movies_data = {"movie": [movie.dict() for movie in movies]}
-            xml_content = xmltodict.unparse(movies_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # movies_data = {"movie": [movie.dict() for movie in movies]}
+            # xml_content = xmltodict.unparse(movies_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
     else:
@@ -571,9 +572,10 @@ def read_movies_by_genre(
             raise HTTPException(status_code=404, detail="No movies found")
 
         if accept and "application/xml" in accept:
-            movies_data = {"movie": [movie.dict() for movie in movies]}
-            xml_content = xmltodict.unparse(movies_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # movies_data = {"movie": [movie.dict() for movie in movies]}
+            # xml_content = xmltodict.unparse(movies_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
     else:
@@ -625,8 +627,9 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(serie), media_type="application/xml")
         else:
             return serie
     else:
@@ -651,8 +654,9 @@ def read_episode(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Episode not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(episode), media_type="application/xml")
         else:
             return episode
     else:
@@ -683,9 +687,10 @@ def read_episodes_by_serie(
             raise HTTPException(status_code=404, detail="No episodes found for the serie")
 
         if accept and "application/xml" in accept:
-            episodes_data = {"episode": [episode.dict() for episode in episodes]}
-            xml_content = xmltodict.unparse(episodes_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # episodes_data = {"episode": [episode.dict() for episode in episodes]}
+            # xml_content = xmltodict.unparse(episodes_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(serie), media_type="application/xml")
         else:
             return episodes
     else:
@@ -712,9 +717,10 @@ def read_series_by_genre(
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            series_data = {"serie": [serie.dict() for serie in series]}
-            xml_content = xmltodict.unparse(series_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # series_data = {"serie": [serie.dict() for serie in series]}
+            # xml_content = xmltodict.unparse(series_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(series), media_type="application/xml")
         else:
             return series
     else:
@@ -741,9 +747,10 @@ def read_subtitles_by_movie(
             raise HTTPException(status_code=404, detail="No subtitles found")
 
         if accept and "application/xml" in accept:
-            subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
-            xml_content = xmltodict.unparse(subtitles_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
+            # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
     else:
@@ -770,9 +777,10 @@ def read_subtitles_by_episode(
             raise HTTPException(status_code=404, detail="No subtitles found")
 
         if accept and "application/xml" in accept:
-            subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
-            xml_content = xmltodict.unparse(subtitles_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
+            # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
     else:
@@ -797,9 +805,10 @@ def read_accounts(*,
             raise HTTPException(status_code=404, detail="No accounts found")
 
         if accept and "application/xml" in accept:
-            account_data = {"account": [account.dict() for account in accounts]}
-            xml_content = xmltodict.unparse(account_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # account_data = {"account": [account.dict() for account in accounts]}
+            # xml_content = xmltodict.unparse(account_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(accounts), media_type="application/xml")
         else:
             return accounts
     else:
@@ -824,8 +833,9 @@ def read_account(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Account not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(account), media_type="application/xml")
         else:
             return account
     else:
@@ -852,9 +862,10 @@ def read_profiles_by_account(
             raise HTTPException(status_code=404, detail="No profiles found")
 
         if accept and "application/xml" in accept:
-            profiles_data = {"profile": [profile.dict() for profile in profiles]}
-            xml_content = xmltodict.unparse(profiles_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # profiles_data = {"profile": [profile.dict() for profile in profiles]}
+            # xml_content = xmltodict.unparse(profiles_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(profiles), media_type="application/xml")
         else:
             return profiles
     else:
@@ -879,8 +890,9 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Profile not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"profile": profile.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"profile": profile.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(profile), media_type="application/xml")
         else:
             return profile
     else:
@@ -907,9 +919,10 @@ def read_watchlist_by_profile(
             raise HTTPException(status_code=404, detail="No watchlists found")
 
         if accept and "application/xml" in accept:
-            watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
-            xml_content = xmltodict.unparse(watchlist_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
+            # xml_content = xmltodict.unparse(watchlist_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(watchlists), media_type="application/xml")
         else:
             return watchlists
     else:
