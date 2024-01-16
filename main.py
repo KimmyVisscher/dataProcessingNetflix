@@ -2,11 +2,12 @@ from typing import List, Optional, Type, ForwardRef
 from enum import Enum
 
 import xmltodict
+import requests
 from fastapi import Depends, FastAPI, HTTPException, Query, Header
 from fastapi.responses import PlainTextResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from secrets import *
@@ -155,7 +156,6 @@ class Serie(SerieBase, table=True):
     serie_id: Optional[int] = Field(default=None, primary_key=True)
 
     episodes: List["Episode"] = Relationship(back_populates="serie")
-    serie_classification: List["Classification"] = Relationship(back_populates="classification_serie")
     serie_genre: List["Genres"] = Relationship(back_populates="genre_serie")
     serie_watchlists: List["Watchlist"] = Relationship(back_populates="watchlist_serie")
 
@@ -180,6 +180,7 @@ class Episode(EpisodeBase, table=True):
 
     serie: Serie = Relationship(back_populates="episodes")
     episode_subtitles: List["Subtitle"] = Relationship(back_populates="subtitle_episode")
+    episode_classification: List["Classification"] = Relationship(back_populates="classification_episode")
 
 
 class EpisodeRead(EpisodeBase):
@@ -193,15 +194,15 @@ class EpisodeCreate(EpisodeBase):
 class ClassificationBase(SQLModel):
     classification: str
 
-    serie_id: Optional[int] = Field(default=None, foreign_key="serie.serie_id")
+    episode_id: Optional[int] = Field(default=None, foreign_key="episode.episode_id")
     movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
 
 
 class Classification(ClassificationBase, table=True):
     classification_id: Optional[int] = Field(default=None, primary_key=True)
 
-    classification_serie: Serie = Relationship(back_populates="serie_classification")
-    classification_movie: Movie = Relationship(back_populates="movie_classification")
+    classification_episode: Optional[Episode] = Relationship(back_populates="episode_classification")
+    classification_movie: Optional[Movie] = Relationship(back_populates="movie_classification")
 
 
 class ClassificationRead(ClassificationBase):
@@ -220,7 +221,7 @@ class GenresBase(SQLModel):
 
 
 class Genres(GenresBase, table=True):
-    genre_id: int = Field(default=None, primary_key=True)
+    genres_id: int = Field(default=None, primary_key=True)
 
     genre_serie: Serie = Relationship(back_populates="serie_genre")
     genre_movie: Movie = Relationship(back_populates="movie_genre")
@@ -339,97 +340,165 @@ app.add_middleware(
 )
 
 
+def subscription_to_xml_string(subscriptions):
+    xml_string = "<subscriptions>\n"
 
-def subscription_to_xml_string(subscription):
-    xml_string = (
-        f"<subscription>\n"
-        f"  <description>{subscription.description}</description>\n"
-        f"  <subscription_price>{subscription.subscription_price}</subscription_price>\n"
-        f"  <quality>{subscription.quality}</quality>\n"
-        f"</subscription>"
-    )
+    for subscription in subscriptions:
+        xml_string += (
+            f"  <subscription>\n"
+            f"      <description>{subscription.description}</description>\n"
+            f"      <subscription_price>{subscription.subscription_price}</subscription_price>\n"
+            f"      <quality>{subscription.quality}</quality>\n"
+            f"  </subscription>"
+        )
+
+    xml_string += "</subscriptions>"
     return xml_string
 
 
-def movie_to_xml_string(movie):
-    xml_string = (
-        f"<movie>\n"
-        f"  <title>{movie.title}</title>\n"
-        f"  <movie_duration>{movie.movie_duration}</movie_duration>\n"
-        f"  <age_restriction>{movie.age_restriction}</age_restriction>\n"
-        f"</movie>"
-    )
+def movie_to_xml_string(movies):
+    xml_string = "<movies>\n"
+
+    for movie in movies:
+        xml_string += (
+            f"  <movie>\n"
+            f"      <title>{movie.title}</title>\n"
+            f"      <movie_duration>{movie.movie_duration}</movie_duration>\n"
+            f"      <age_restriction>{movie.age_restriction}</age_restriction>\n"
+            f"  </movie>"
+        )
+
+    xml_string += "</movies>"
     return xml_string
 
 
-def subtitle_to_xml_string(subtitle):
-    xml_string = (
-        f"<subtitle>\n"
-        f"  <language>{subtitle.language}</language>\n"
-        f"  <subtitle_location>{subtitle.subtitle_location}</subtitle_location>\n"
-        f"</subtitle>"
-    )
+def subtitle_to_xml_string(subtitles):
+    xml_string = "<subtitles>\n"
+
+    for subtitle in subtitles:
+        xml_string += (
+            f"  <subtitle>\n"
+            f"      <language>{subtitle.language}</language>\n"
+            f"      <subtitle_location>{subtitle.subtitle_location}</subtitle_location>\n"
+            f"      <movie_id>{subtitle.movie_id}</movie_id>\n"
+            f"      <episode_id>{subtitle.episode_id}</episode_id>\n"
+            f"  </subtitle>"
+        )
+
+    xml_string += "</subtitles>"
     return xml_string
 
 
-def series_to_xml_string(serie):
-    xml_string = (
-        f"<serie>\n"
-        f"  <serie_name>{serie.serie_name}</serie_name>\n"
-        f"  <age_restriction>{serie.age_restriction}</age_restriction>\n"
-        f"</serie>"
-    )
+def series_to_xml_string(series):
+    xml_string = "<series>\n"
+
+    for serie in series:
+        xml_string += (
+            f"  <serie>\n"
+            f"      <serie_name>{serie.serie_name}</serie_name>\n"
+            f"      <age_restriction>{serie.age_restriction}</age_restriction>\n"
+            f"  </serie>"
+        )
+
+    xml_string += "</series>"
     return xml_string
 
 
-def episode_to_xml_string(episode):
-    xml_string = (
-        f"<episode>\n"
-        f"  <title>{episode.title}</title>\n"
-        f"  <episode_duration>{episode.episode_duration}</episode_duration>\n"
-        f"</episode>"
-    )
+def episode_to_xml_string(episodes):
+    xml_string = "<episodes>\n"
+
+    for episode in episodes:
+        xml_string += (
+            f"  <episode>\n"
+            f"      <title>{episode.title}</title>\n"
+            f"      <episode_duration>{episode.episode_duration}</episode_duration>\n"
+            f"      <serie_id>{episode.serie_id}</serie_id>\n"
+            f"  </episode>"
+        )
+
+    xml_string += "</episodes>"
     return xml_string
 
 
-def classification_to_xml_string(classification):
-    xml_string = (
-        f"<classification>\n"
-        f"  <classification>{classification.classification}</classification>\n"
-        f"</classification>"
-    )
+def classification_to_xml_string(classifications):
+    xml_string = "<classifications>\n"
+
+    for classification in classifications:
+        xml_string += (
+            f"  <classification>\n"
+            f"      <classification>{classification.classification}</classification>\n"
+            f"      <serie_id>{classification.serie_id}</serie_id>\n"
+            f"      <movie_id>{classification.movie_id}</movie_id>\n"
+            f"  </classification>"
+        )
+
+    xml_string += "</classifications>"
     return xml_string
 
 
-def genre_to_xml_string(genres):
-    xml_string = (
-        f"<genre>\n"
-        f"  <genre>{genres.genre}</genre>\n"
-        f"</genre>"
-    )
+def genre_to_xml_string(genres_list):
+    xml_string = "<genres>\n"
+
+    for genres in genres_list:
+        xml_string += (
+            f"  <genre>\n"
+            f"      <genre>{genres.genre}</genre>\n"
+            f"      <serie_id>{genres.serie_id}</serie_id>\n"
+            f"      <movie_id>{genres.movie_id}</movie_id>\n"
+            f"  </genre>"
+        )
+
+    xml_string += "</genres>"
     return xml_string
 
 
-def account_to_xml_string(account):
-    xml_string = (
-        f"<account>\n"
-        f"  <email>{account.email}</email>\n"
-        f"  <payment_method>{account.payment_method}</payment_method>\n"
-        f"  <video_quality>{account.video_quality}</video_quality>\n"
-        f"  <username>{account.username}</username>\n"
-        f"</account>"
-    )
+def account_to_xml_string(accounts):
+    xml_string = "<accounts>\n"
+
+    for account in accounts:
+        xml_string += (
+            f"  <account>\n"
+            f"      <email>{account.email}</email>\n"
+            f"      <payment_method>{account.payment_method}</payment_method>\n"
+            f"      <username>{account.username}</username>\n"
+            f"      <subscription_id>{account.subscription_id}</subscription_id>\n"
+            f"  </account>"
+        )
+
+    xml_string += "</accounts>"
     return xml_string
 
 
-def profile_to_xml_string(profile):
-    xml_string = (
-        f"<profile>\n"
-        f"  <profile_image>{profile.profile_image}</profile_image>\n"
-        f"  <profile_child>{profile.profile_child}</profile_child>\n"
-        f"  <language>{profile.language}</language>\n"
-        f"</profile>"
-    )
+def profile_to_xml_string(profiles):
+    xml_string = "<profiles>\n"
+
+    for profile in profiles:
+        xml_string += (
+            f"  <profile>\n"
+            f"      <profile_image>{profile.profile_image}</profile_image>\n"
+            f"      <profile_child>{profile.profile_child}</profile_child>\n"
+            f"      <language>{profile.language}</language>\n"
+            f"      <account_id>{profile.account_id}</account_id>\n"
+            f"  </profile>"
+        )
+
+    xml_string += "</profiles>"
+    return xml_string
+
+
+def watchlist_to_xml_string(watchlists):
+    xml_string = "<watchlists>\n"
+
+    for watchlist in watchlists:
+        xml_string = (
+            f"  <watchlist>\n"
+            f"      <serie_id>{watchlist.serie_id}</serie_id>\n"
+            f"      <movie_id>{watchlist.movie_id}</movie_id>\n"
+            f"      <profile_id>{watchlist.profile_id}</profile_id>\n"
+            f" </watchlist>"
+        )
+
+    xml_string += "</watchlists>"
     return xml_string
 
 
@@ -456,8 +525,9 @@ def read_movie(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Movie not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string([movie]), media_type="application/xml")
         else:
             return movie
     else:
@@ -482,9 +552,10 @@ def read_movies(*,
             raise HTTPException(status_code=404, detail="No movies found")
 
         if accept and "application/xml" in accept:
-            movies_data = {"movie": [movie.dict() for movie in movies]}
-            xml_content = xmltodict.unparse(movies_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # movies_data = {"movie": [movie.dict() for movie in movies]}
+            # xml_content = xmltodict.unparse(movies_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
     else:
@@ -511,9 +582,10 @@ def read_movies_by_genre(
             raise HTTPException(status_code=404, detail="No movies found")
 
         if accept and "application/xml" in accept:
-            movies_data = {"movie": [movie.dict() for movie in movies]}
-            xml_content = xmltodict.unparse(movies_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # movies_data = {"movie": [movie.dict() for movie in movies]}
+            # xml_content = xmltodict.unparse(movies_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
     else:
@@ -537,9 +609,10 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            series_data = {"serie": [serie.dict() for serie in series]}
-            xml_content = xmltodict.unparse(series_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # series_data = {"serie": [serie.dict() for serie in series]}
+            # xml_content = xmltodict.unparse(series_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
     else:
@@ -564,8 +637,9 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=series_to_xml_string([serie]), media_type="application/xml")
         else:
             return serie
     else:
@@ -590,8 +664,9 @@ def read_episode(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Episode not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=episode_to_xml_string([episode]), media_type="application/xml")
         else:
             return episode
     else:
@@ -622,9 +697,10 @@ def read_episodes_by_serie(
             raise HTTPException(status_code=404, detail="No episodes found for the serie")
 
         if accept and "application/xml" in accept:
-            episodes_data = {"episode": [episode.dict() for episode in episodes]}
-            xml_content = xmltodict.unparse(episodes_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # episodes_data = {"episode": [episode.dict() for episode in episodes]}
+            # xml_content = xmltodict.unparse(episodes_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=episode_to_xml_string(episodes), media_type="application/xml")
         else:
             return episodes
     else:
@@ -651,9 +727,10 @@ def read_series_by_genre(
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            series_data = {"serie": [serie.dict() for serie in series]}
-            xml_content = xmltodict.unparse(series_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # series_data = {"serie": [serie.dict() for serie in series]}
+            # xml_content = xmltodict.unparse(series_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
     else:
@@ -680,9 +757,10 @@ def read_subtitles_by_movie(
             raise HTTPException(status_code=404, detail="No subtitles found")
 
         if accept and "application/xml" in accept:
-            subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
-            xml_content = xmltodict.unparse(subtitles_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
+            # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
     else:
@@ -709,9 +787,10 @@ def read_subtitles_by_episode(
             raise HTTPException(status_code=404, detail="No subtitles found")
 
         if accept and "application/xml" in accept:
-            subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
-            xml_content = xmltodict.unparse(subtitles_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
+            # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
     else:
@@ -736,9 +815,10 @@ def read_accounts(*,
             raise HTTPException(status_code=404, detail="No accounts found")
 
         if accept and "application/xml" in accept:
-            account_data = {"account": [account.dict() for account in accounts]}
-            xml_content = xmltodict.unparse(account_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # account_data = {"account": [account.dict() for account in accounts]}
+            # xml_content = xmltodict.unparse(account_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=account_to_xml_string(accounts), media_type="application/xml")
         else:
             return accounts
     else:
@@ -763,8 +843,9 @@ def read_account(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Account not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=account_to_xml_string([account]), media_type="application/xml")
         else:
             return account
     else:
@@ -791,9 +872,10 @@ def read_profiles_by_account(
             raise HTTPException(status_code=404, detail="No profiles found")
 
         if accept and "application/xml" in accept:
-            profiles_data = {"profile": [profile.dict() for profile in profiles]}
-            xml_content = xmltodict.unparse(profiles_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # profiles_data = {"profile": [profile.dict() for profile in profiles]}
+            # xml_content = xmltodict.unparse(profiles_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=profile_to_xml_string(profiles), media_type="application/xml")
         else:
             return profiles
     else:
@@ -818,8 +900,9 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Profile not found")
 
         if accept and "application/xml" in accept:
-            xml_content = xmltodict.unparse({"profile": profile.dict()}, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # xml_content = xmltodict.unparse({"profile": profile.dict()}, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=profile_to_xml_string([profile]), media_type="application/xml")
         else:
             return profile
     else:
@@ -846,9 +929,10 @@ def read_watchlist_by_profile(
             raise HTTPException(status_code=404, detail="No watchlists found")
 
         if accept and "application/xml" in accept:
-            watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
-            xml_content = xmltodict.unparse(watchlist_data, full_document=False)
-            return PlainTextResponse(content=xml_content, media_type="application/xml")
+            # watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
+            # xml_content = xmltodict.unparse(watchlist_data, full_document=False)
+            # return PlainTextResponse(content=xml_content, media_type="application/xml")
+            return Response(content=watchlist_to_xml_string(watchlists), media_type="application/xml")
         else:
             return watchlists
     else:
@@ -1193,3 +1277,175 @@ def update_profile(
         return profile
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/movies/{movie_id}")
+def delete_movie(*, session: Session = Depends(get_session),
+                 movie_id: int,
+                 api_key_header: Optional[str] = Depends(api_key_header)
+                 ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
+
+        session.delete(movie)
+        session.commit()
+        return {"message": "Movie deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/series/{serie_id}")
+def delete_series(*, session: Session = Depends(get_session),
+                  serie_id: int,
+                  api_key_header: Optional[str] = Depends(api_key_header)
+                  ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        serie = session.get(Serie, serie_id)
+        if not serie:
+            raise HTTPException(status_code=404, detail="Series not found")
+
+        session.delete(serie)
+        session.commit()
+        return {"message": "Series deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/episodes/{episode_id}")
+def delete_episode(*, session: Session = Depends(get_session),
+                   episode_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        episode = session.get(Episode, episode_id)
+        if not episode:
+            raise HTTPException(status_code=404, detail="Episode not found")
+
+        session.delete(episode)
+        session.commit()
+        return {"message": "Episode deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/subtitles/{subtitle_id}")
+def delete_subtitle(*, session: Session = Depends(get_session),
+                    subtitle_id: int,
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        subtitle = session.get(Subtitle, subtitle_id)
+        if not subtitle:
+            raise HTTPException(status_code=404, detail="Subtitle not found")
+
+        session.delete(subtitle)
+        session.commit()
+        return {"message": "Subtitle deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/accounts/{account_id}")
+def delete_account(*, session: Session = Depends(get_session),
+                   account_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        account = session.get(Account, account_id)
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+
+        session.delete(account)
+        session.commit()
+        return {"message": "Account deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/profiles/{profile_id}")
+def delete_profile(*, session: Session = Depends(get_session),
+                   profile_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        profile = session.get(Profile, profile_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        session.delete(profile)
+        session.commit()
+        return {"message": "Profile deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/movies/{movie_id}/imdb")
+def get_imdb_rating(movie_id: int,
+                    session: Session = Depends(get_session),
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
+
+        title = movie.title
+        omdb_url = f"http://www.omdbapi.com/?apikey={omdbkey}&t={title}"
+
+        response = requests.get(omdb_url)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to fetch IMDb rating")
+
+        imdb_data = response.json()
+        imdb_rating = imdb_data.get("imdbRating")
+        if not imdb_rating:
+            raise HTTPException(status_code=500, detail="IMDb rating not available")
+
+        return {"imdbRating": imdb_rating}
+
+    

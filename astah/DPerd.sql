@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Jan 15, 2024 at 02:01 PM
+-- Generation Time: Jan 16, 2024 at 01:04 PM
 -- Server version: 11.1.2-MariaDB-1:11.1.2+maria~ubu2204
 -- PHP Version: 8.2.10
 
@@ -343,30 +343,30 @@ CREATE TABLE `profile` (
 --
 
 INSERT INTO `profile` (`profile_id`, `profile_image`, `profile_child`, `language`, `account_id`) VALUES
-(1, NULL, NULL, 'Nederlands', 1),
-(2, NULL, NULL, 'Nederlands', 1),
-(3, NULL, NULL, 'Nederlands', 2),
-(4, NULL, NULL, 'English', 2),
-(5, NULL, NULL, 'English', 3),
-(6, NULL, NULL, 'Deutsch', 2),
-(7, NULL, 1, 'Deutsch', 4),
-(8, NULL, NULL, 'Nederlands', 5),
-(9, NULL, 1, 'Nederlands', 6),
-(10, NULL, NULL, 'Nederlands', 8),
-(11, NULL, NULL, 'Nederlands', 8),
-(12, NULL, 1, 'English', 7),
-(13, NULL, NULL, 'Nederlands', 8),
-(14, NULL, NULL, 'Nederlands', 9),
-(15, NULL, NULL, 'Nederlands', 10),
-(16, NULL, NULL, 'English', 12),
-(17, NULL, NULL, 'English', 11),
-(18, NULL, NULL, 'Deutsch', 12),
-(19, NULL, 1, 'Deutsch', 7),
-(20, NULL, NULL, 'Nederlands', 5),
-(21, NULL, 1, 'Nederlands', 6),
-(22, NULL, NULL, 'Nederlands', 5),
-(23, NULL, NULL, 'Nederlands', 10),
-(24, NULL, 1, 'English', 4);
+(1, NULL, NULL, 'DUTCH', 1),
+(2, NULL, NULL, 'DUTCH', 1),
+(3, NULL, NULL, 'DUTCH', 2),
+(4, NULL, NULL, 'ENGLISH', 2),
+(5, NULL, NULL, 'ENGLISH', 3),
+(6, NULL, NULL, 'DUTCH', 2),
+(7, NULL, 1, 'DUTCH', 4),
+(8, NULL, NULL, 'DUTCH', 5),
+(9, NULL, 1, 'DUTCH', 6),
+(10, NULL, NULL, 'DUTCH', 8),
+(11, NULL, NULL, 'DUTCH', 8),
+(12, NULL, 1, 'ENGLISH', 7),
+(13, NULL, NULL, 'DUTCH', 8),
+(14, NULL, NULL, 'DUTCH', 9),
+(15, NULL, NULL, 'DUTCH', 10),
+(16, NULL, NULL, 'ENGLISH', 12),
+(17, NULL, NULL, 'ENGLISH', 11),
+(18, NULL, NULL, 'DUTCH', 12),
+(19, NULL, 1, 'DUTCH', 7),
+(20, NULL, NULL, 'DUTCH', 5),
+(21, NULL, 1, 'DUTCH', 6),
+(22, NULL, NULL, 'DUTCH', 5),
+(23, NULL, NULL, 'DUTCH', 10),
+(24, NULL, 1, 'ENGLISH', 4);
 
 -- --------------------------------------------------------
 
