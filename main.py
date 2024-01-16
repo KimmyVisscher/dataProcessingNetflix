@@ -9,6 +9,8 @@ from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+import random
+import string
 
 from secrets import *
 
@@ -1491,4 +1493,55 @@ def get_imdb_rating_by_serie(serie_id: int,
             return {"imdbRating": imdb_rating}
 
 
+@app.post("/apikeys/")
+def create_api_key(*, session: Session = Depends(get_session),
+                   role: str,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
 
+    access_level = api_key_db.role.value
+    if access_level >= Role.SENIOR.value:
+        if role != "JUNIOR" and role != "MEDIOR" and role != "SENIOR":
+            raise HTTPException(status_code=400, detail="Invalid role")
+
+
+        key_length = 15
+        letters = string.ascii_letters
+
+        while True:
+            api_key = ''.join(random.choice(letters) for _ in range(key_length))
+            existing_api_key = session.get(APIKey, api_key)
+            if not existing_api_key:
+                break
+
+        apikey_model = APIKey(apikey=api_key, role=role)
+        session.add(apikey_model)
+        session.commit()
+
+        return {"api_key": api_key}
+
+
+@app.delete("/apikeys/{apikey}", response_model=dict)
+def delete_api_key(apikey: str,
+                   session: Session = Depends(get_session),
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.SENIOR.value:
+        delete_api_key = session.query(APIKey).filter(APIKey.apikey == apikey).first()
+        if not delete_api_key:
+            raise HTTPException(status_code=404, detail="API key not found")
+
+        session.delete(delete_api_key)
+        session.commit()
+
+        return {"message": "API key deleted successfully"}
