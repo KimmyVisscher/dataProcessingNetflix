@@ -2,6 +2,7 @@ from typing import List, Optional, Type, ForwardRef
 from enum import Enum
 
 import xmltodict
+import requests
 from fastapi import Depends, FastAPI, HTTPException, Query, Header
 from fastapi.responses import PlainTextResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
@@ -1404,3 +1405,37 @@ def delete_profile(*, session: Session = Depends(get_session),
         return {"message": "Profile deleted successfully"}
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/movies/{movie_id}/imdb")
+def get_imdb_rating(movie_id: int,
+                    session: Session = Depends(get_session),
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
+
+        title = movie.title
+        omdb_url = f"http://www.omdbapi.com/?apikey={omdbkey}&t={title}"
+
+        response = requests.get(omdb_url)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to fetch IMDb rating")
+
+        imdb_data = response.json()
+        imdb_rating = imdb_data.get("imdbRating")
+        if not imdb_rating:
+            raise HTTPException(status_code=500, detail="IMDb rating not available")
+
+        return {"imdbRating": imdb_rating}
+
+    
