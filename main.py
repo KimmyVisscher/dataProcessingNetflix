@@ -1410,7 +1410,8 @@ def delete_profile(*, session: Session = Depends(get_session),
 @app.get("/movies/{movie_id}/imdb")
 def get_imdb_rating(movie_id: int,
                     session: Session = Depends(get_session),
-                    api_key_header: Optional[str] = Depends(api_key_header)
+                    api_key_header: Optional[str] = Depends(api_key_header),
+                    accept: Optional[str] = Header(None)
                     ):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
@@ -1436,6 +1437,48 @@ def get_imdb_rating(movie_id: int,
         if not imdb_rating:
             raise HTTPException(status_code=500, detail="IMDb rating not available")
 
-        return {"imdbRating": imdb_rating}
+        if accept and "application/xml" in accept:
+            return PlainTextResponse(content=f"<imdbRating>{imdb_rating}</imdbRating>", media_type="application/xml")
 
-    
+        else:
+            return {"imdbRating": imdb_rating}
+
+
+@app.get("/series/{serie_id}/imdb")
+def get_imdb_rating_by_serie(serie_id: int,
+                    session: Session = Depends(get_session),
+                    api_key_header: Optional[str] = Depends(api_key_header),
+                    accept: Optional[str] = Header(None)
+                    ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        serie = session.get(Serie, serie_id)
+        if not serie:
+            raise HTTPException(status_code=404, detail="Serie not found")
+
+        title = serie.serie_name
+        omdb_url = f"http://www.omdbapi.com/?apikey={omdbkey}&t={title}"
+
+        response = requests.get(omdb_url)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to fetch IMDb rating")
+
+        imdb_data = response.json()
+        imdb_rating = imdb_data.get("imdbRating")
+        if not imdb_rating:
+            raise HTTPException(status_code=500, detail="IMDb rating not available")
+
+        if accept and "application/xml" in accept:
+            return PlainTextResponse(content=f"<imdbRating>{imdb_rating}</imdbRating>", media_type="application/xml")
+
+        else:
+            return {"imdbRating": imdb_rating}
+
+
+
