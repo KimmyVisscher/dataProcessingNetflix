@@ -61,6 +61,16 @@ class Role(Enum):
 class Language(Enum):
     ENGLISH = "ENGLISH"
     DUTCH = "DUTCH"
+    FRENCH = "FRENCH"
+    SPANISH = "SPANISH"
+    GERMAN = "GERMAN"
+    ITALIAN = "ITALIAN"
+    JAPANESE = "JAPANESE"
+    CHINESE = "CHINESE"
+    RUSSIAN = "RUSSIAN"
+    PORTUGUESE = "PORTUGUESE"
+    ARABIC = "ARABIC"
+    KOREAN = "KOREAN"
 
 
 class APIKey(SQLModel, table=True):
