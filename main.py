@@ -363,7 +363,7 @@ class Watchlist(WatchlistBase, table=True):
 
 
 class WatchlistRead(WatchlistBase):
-    pass
+    watchlist_id: int
 
 
 class WatchlistCreate(WatchlistBase):
@@ -1963,3 +1963,31 @@ def add_movie_to_watchlist(
     session.add(watchlist)
     session.commit()
     return watchlist
+
+
+@app.put("/watchlist/{watchlist_id}", response_model=WatchlistRead)
+def update_watchlist(
+        *,
+        session: Session = Depends(get_session),
+        watchlist_id: int,
+        watchlist_update: WatchlistCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        watchlist = session.get(Watchlist, watchlist_id)
+        if not watchlist:
+            raise HTTPException(status_code=404, detail="Watchlist not found")
+
+        for field, value in watchlist_update.dict().items():
+            setattr(watchlist, field, value)
+
+        session.commit()
+        return watchlist
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
