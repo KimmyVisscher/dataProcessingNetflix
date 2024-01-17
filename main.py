@@ -277,6 +277,7 @@ class Profile(ProfileBase, table=True):
 
     profile_account: Account = Relationship(back_populates="account_profiles")
     profile_genrepreference: list["Genrespreference"] = Relationship(back_populates="genrepreference_profile")
+    profile_indicationpreference: list["Indicationpreference"] = Relationship(back_populates="indicationpreference_profile")
 
 
 class ProfileCreate(ProfileBase):
@@ -303,7 +304,26 @@ class GenrespreferenceRead(GenrespreferenceBase):
     genrepreference_id: int
 
 
-class GenresplreferenceCreate(GenrespreferenceBase):
+class GenrespreferenceCreate(GenrespreferenceBase):
+    pass
+
+
+class IndicationpreferenceBase(SQLModel):
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+    indication: ViewerIndication
+
+
+class Indicationpreference(IndicationpreferenceBase, table=True):
+    indicationpreference_id: int = Field(default=None, primary_key=True)
+
+    indicationpreference_profile: Profile = Relationship(back_populates="profile_indicationpreference")
+
+
+class IndicationpreferenceRead(IndicationpreferenceBase):
+    indicationpreference_id: int
+
+
+class IndicationpreferenceCreate(IndicationpreferenceBase):
     pass
 
 
@@ -528,12 +548,28 @@ def genrepreferences_to_xml_string(genrepreference):
         xml_string += (
             f"  <genreprefence>\n"
             f"      <genrepreference_id>{genrepreference.genrepreference_id}</genrepreference_id>\n"
-            f"      <genre>{genrepreference.genre}</movie_id>\n"
+            f"      <genre>{genrepreference.genre}</genre>\n"
             f"      <profile_id>{genrepreference.profile_id}</profile_id>\n"
             f" </genrepreference>"
         )
 
     xml_string += "</genrepreferences>"
+    return xml_string
+
+
+def indicationpreferences_to_xml_string(indicationpreference):
+    xml_string = "<indicationpreferences>\n"
+
+    for indicationpreference in indicationpreference:
+        xml_string += (
+            f"  <indicationprefence>\n"
+            f"      <indicationpreference_id>{indicationpreference.indicationpreference_id}</gindicationpreference_id>\n"
+            f"      <indication>{indicationpreference.indication}</indication>\n"
+            f"      <profile_id>{indicationpreference.profile_id}</profile_id>\n"
+            f" </indicationpreference>"
+        )
+
+    xml_string += "</indicationpreferences>"
     return xml_string
 
 
@@ -1024,6 +1060,61 @@ def read_genrepreference_by_id(
             return Response(content=genrepreferences_to_xml_string(([genrepreference])), media_type="application/xml")
         else:
             return genrepreference
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+
+@app.get("/profiles/{profile_id}/indicationpreferences", response_model=List[IndicationpreferenceRead])
+def read_indicationpreference_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        indicationpreferences = session.query(Indicationpreference).filter(Indicationpreference.profile_id == profile_id).all()
+        if not indicationpreferences:
+            raise HTTPException(status_code=404, detail="No indicationpreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=indicationpreferences_to_xml_string(indicationpreferences), media_type="application/xml")
+        else:
+            return indicationpreferences
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/indicationpreferences/{indicationpreference_id}", response_model=IndicationpreferenceRead)
+def read_genrepreference_by_id(
+        *,
+        session: Session = Depends(get_session),
+        indicationpreference_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        indicationpreference = session.get(Indicationpreference, indicationpreference_id)
+        if not indicationpreference:
+            raise HTTPException(status_code=404, detail="No indicationpreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=indicationpreferences_to_xml_string(([indicationpreference])), media_type="application/xml")
+        else:
+            return indicationpreference
     else:
         raise HTTPException(status_code=403, detail="No permission")
 
