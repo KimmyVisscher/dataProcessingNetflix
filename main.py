@@ -1454,6 +1454,8 @@ def get_imdb_rating(movie_id: int,
 
         else:
             return {"imdbRating": imdb_rating}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series/{serie_id}/imdb")
@@ -1491,6 +1493,8 @@ def get_imdb_rating_by_serie(serie_id: int,
 
         else:
             return {"imdbRating": imdb_rating}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/apikeys/")
@@ -1523,6 +1527,8 @@ def create_api_key(*, session: Session = Depends(get_session),
         session.commit()
 
         return {"api_key": api_key}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/apikeys/{apikey}", response_model=dict)
@@ -1545,3 +1551,5 @@ def delete_api_key(apikey: str,
         session.commit()
 
         return {"message": "API key deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
