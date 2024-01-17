@@ -449,11 +449,11 @@ Right Side
 .right .recent_updates .updates:hover{
   box-shadow: none;
 }
+
+
 .right .recent_updates .update{
-   display: grid;
-   grid-template-columns: 2.6rem auto;
-   gap: 1rem;
-   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 

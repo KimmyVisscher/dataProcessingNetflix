@@ -9,6 +9,8 @@ from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+import random
+import string
 
 from secrets import *
 
@@ -61,6 +63,16 @@ class Role(Enum):
 class Language(Enum):
     ENGLISH = "ENGLISH"
     DUTCH = "DUTCH"
+    FRENCH = "FRENCH"
+    SPANISH = "SPANISH"
+    GERMAN = "GERMAN"
+    ITALIAN = "ITALIAN"
+    JAPANESE = "JAPANESE"
+    CHINESE = "CHINESE"
+    RUSSIAN = "RUSSIAN"
+    PORTUGUESE = "PORTUGUESE"
+    ARABIC = "ARABIC"
+    KOREAN = "KOREAN"
 
 
 class APIKey(SQLModel, table=True):
@@ -257,11 +269,18 @@ class ProfileBase(SQLModel):
     account_id: int = Field(default=None, foreign_key="account.account_id")
 
 
+Genrespreference = ForwardRef("Genrespreference")
+Indicationpreference = ForwardRef("Indicationpreference")
+Agepreference = ForwardRef("Agepreference")
+
+
 class Profile(ProfileBase, table=True):
     profile_id: int = Field(default=None, primary_key=True)
 
     profile_account: Account = Relationship(back_populates="account_profiles")
-    # profile_preference: Preference = Relationship(back_populates="preference_account")
+    profile_genrepreference: list["Genrespreference"] = Relationship(back_populates="genrepreference_profile")
+    profile_indicationpreference: list["Indicationpreference"] = Relationship(back_populates="indicationpreference_profile")
+    profile_agepreference: list["Agepreference"] = Relationship(back_populates="agepreference_profile")
 
 
 class ProfileCreate(ProfileBase):
@@ -271,12 +290,63 @@ class ProfileCreate(ProfileBase):
 class ProfileRead(ProfileBase):
     account_id: int = Field(default=None, foreign_key="account.account_id")
     profile_id: int
-    # preference_id: Preference = Field(default=None, foreign_key=
 
 
-class PreferenceBase(SQLModel):
-    preference_id: int = Field(default=None, primary_key=True)
-    username: str
+class GenrespreferenceBase(SQLModel):
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+    genre: Genre
+
+
+class Genrespreference(GenrespreferenceBase, table=True):
+    genrepreference_id: int = Field(default=None, primary_key=True)
+
+    genrepreference_profile: Profile = Relationship(back_populates="profile_genrepreference")
+
+
+class GenrespreferenceRead(GenrespreferenceBase):
+    genrepreference_id: int
+
+
+class GenrespreferenceCreate(GenrespreferenceBase):
+    pass
+
+
+class IndicationpreferenceBase(SQLModel):
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+    indication: ViewerIndication
+
+
+class Indicationpreference(IndicationpreferenceBase, table=True):
+    indicationpreference_id: int = Field(default=None, primary_key=True)
+
+    indicationpreference_profile: Profile = Relationship(back_populates="profile_indicationpreference")
+
+
+class IndicationpreferenceRead(IndicationpreferenceBase):
+    indicationpreference_id: int
+
+
+class IndicationpreferenceCreate(IndicationpreferenceBase):
+    pass
+
+
+class AgepreferenceBase(SQLModel):
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+    agerestriction: AgeRestriction
+
+
+class Agepreference(AgepreferenceBase, table=True):
+    agepreference_id: int = Field(default=None, primary_key=True)
+
+    agepreference_profile: Profile = Relationship(back_populates="profile_agepreference")
+
+
+class AgepreferenceRead(AgepreferenceBase):
+    agepreference_id: int
+
+
+class AgepreferenceCreate(AgepreferenceBase):
+    pass
 
 
 class WatchlistBase(SQLModel):
@@ -480,7 +550,7 @@ def watchlist_to_xml_string(watchlists):
     xml_string = "<watchlists>\n"
 
     for watchlist in watchlists:
-        xml_string = (
+        xml_string += (
             f"  <watchlist>\n"
             f"      <serie_id>{watchlist.serie_id}</serie_id>\n"
             f"      <movie_id>{watchlist.movie_id}</movie_id>\n"
@@ -489,6 +559,54 @@ def watchlist_to_xml_string(watchlists):
         )
 
     xml_string += "</watchlists>"
+    return xml_string
+
+
+def genrepreferences_to_xml_string(genrepreference):
+    xml_string = "<genrepreferences>\n"
+
+    for genrepreference in genrepreference:
+        xml_string += (
+            f"  <genreprefence>\n"
+            f"      <genrepreference_id>{genrepreference.genrepreference_id}</genrepreference_id>\n"
+            f"      <genre>{genrepreference.genre}</genre>\n"
+            f"      <profile_id>{genrepreference.profile_id}</profile_id>\n"
+            f" </genrepreference>"
+        )
+
+    xml_string += "</genrepreferences>"
+    return xml_string
+
+
+def indicationpreferences_to_xml_string(indicationpreference):
+    xml_string = "<indicationpreferences>\n"
+
+    for indicationpreference in indicationpreference:
+        xml_string += (
+            f"  <indicationprefence>\n"
+            f"      <indicationpreference_id>{indicationpreference.indicationpreference_id}</indicationpreference_id>\n"
+            f"      <indication>{indicationpreference.indication}</indication>\n"
+            f"      <profile_id>{indicationpreference.profile_id}</profile_id>\n"
+            f" </indicationpreference>"
+        )
+
+    xml_string += "</indicationpreferences>"
+    return xml_string
+
+
+def agepreferences_to_xml_string(agepreference):
+    xml_string = "<agepreferences>\n"
+
+    for agepreference in agepreference:
+        xml_string += (
+            f"  <agepreference>\n"
+            f"      <agepreference_id>{agepreference.agepreference_id}</agepreference_id>\n"
+            f"      <agerestriction>{agepreference.agerestriction}</agerestriction>\n"
+            f"      <profile_id>{agepreference.profile_id}</profile_id>\n"
+            f" </agepreference>"
+        )
+
+    xml_string += "</agepreferences>"
     return xml_string
 
 
@@ -929,6 +1047,170 @@ def read_watchlist_by_profile(
         raise HTTPException(status_code=403, detail="No permission")
 
 
+@app.get("/profiles/{profile_id}/genrepreference", response_model=List[GenrespreferenceRead])
+def read_genrepreference_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        genrepreferences = session.query(Genrespreference).filter(Genrespreference.profile_id == profile_id).all()
+        if not genrepreferences:
+            raise HTTPException(status_code=404, detail="No genrepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=genrepreferences_to_xml_string(genrepreferences), media_type="application/xml")
+        else:
+            return genrepreferences
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/genrepreferences/{genrepreference_id}", response_model=GenrespreferenceRead)
+def read_genrepreference_by_id(
+        *,
+        session: Session = Depends(get_session),
+        genrepreference_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        genrepreference = session.get(Genrespreference, genrepreference_id)
+        if not genrepreference:
+            raise HTTPException(status_code=404, detail="No genrepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=genrepreferences_to_xml_string(([genrepreference])), media_type="application/xml")
+        else:
+            return genrepreference
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/profiles/{profile_id}/indicationpreferences", response_model=List[IndicationpreferenceRead])
+def read_indicationpreference_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        indicationpreferences = session.query(Indicationpreference).filter(Indicationpreference.profile_id == profile_id).all()
+        if not indicationpreferences:
+            raise HTTPException(status_code=404, detail="No indicationpreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=indicationpreferences_to_xml_string(indicationpreferences), media_type="application/xml")
+        else:
+            return indicationpreferences
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/indicationpreferences/{indicationpreference_id}", response_model=IndicationpreferenceRead)
+def read_indicationpreference_by_id(
+        *,
+        session: Session = Depends(get_session),
+        indicationpreference_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        indicationpreference = session.get(Indicationpreference, indicationpreference_id)
+        if not indicationpreference:
+            raise HTTPException(status_code=404, detail="No indicationpreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=indicationpreferences_to_xml_string(([indicationpreference])), media_type="application/xml")
+        else:
+            return indicationpreference
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+
+
+@app.get("/profiles/{profile_id}/agepreferences", response_model=List[AgepreferenceRead])
+def read_agepreferences_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        agepreferences = session.query(Agepreference).filter(Agepreference.profile_id == profile_id).all()
+        if not agepreferences:
+            raise HTTPException(status_code=404, detail="No agepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=agepreferences_to_xml_string(agepreferences), media_type="application/xml")
+        else:
+            return agepreferences
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/agepreferences/{agepreference_id}", response_model=AgepreferenceRead)
+def read_agepreference_by_id(
+        *,
+        session: Session = Depends(get_session),
+        agepreference_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        agepreference = session.get(Agepreference, agepreference_id)
+        if not agepreference:
+            raise HTTPException(status_code=404, detail="No agepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=agepreferences_to_xml_string(([agepreference])), media_type="application/xml")
+        else:
+            return agepreference
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
 @app.post("/movies", response_model=MovieRead)
 def create_movie(*, session: Session = Depends(get_session),
                  movie_create: MovieCreate,
@@ -950,7 +1232,7 @@ def create_movie(*, session: Session = Depends(get_session),
 
 
 @app.post("/series", response_model=SerieRead)
-def create_movie(*, session: Session = Depends(get_session),
+def create_serie(*, session: Session = Depends(get_session),
                  serie_create: SerieCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
                  ):
@@ -1410,7 +1692,8 @@ def delete_profile(*, session: Session = Depends(get_session),
 @app.get("/movies/{movie_id}/imdb")
 def get_imdb_rating(movie_id: int,
                     session: Session = Depends(get_session),
-                    api_key_header: Optional[str] = Depends(api_key_header)
+                    api_key_header: Optional[str] = Depends(api_key_header),
+                    accept: Optional[str] = Header(None)
                     ):
     api_key = api_key_header
     api_key_db = session.get(APIKey, api_key)
@@ -1436,6 +1719,133 @@ def get_imdb_rating(movie_id: int,
         if not imdb_rating:
             raise HTTPException(status_code=500, detail="IMDb rating not available")
 
-        return {"imdbRating": imdb_rating}
+        if accept and "application/xml" in accept:
+            return PlainTextResponse(content=f"<imdbRating>{imdb_rating}</imdbRating>", media_type="application/xml")
 
-    
+        else:
+            return {"imdbRating": imdb_rating}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/series/{serie_id}/imdb")
+def get_imdb_rating_by_serie(serie_id: int,
+                    session: Session = Depends(get_session),
+                    api_key_header: Optional[str] = Depends(api_key_header),
+                    accept: Optional[str] = Header(None)
+                    ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        serie = session.get(Serie, serie_id)
+        if not serie:
+            raise HTTPException(status_code=404, detail="Serie not found")
+
+        title = serie.serie_name
+        omdb_url = f"http://www.omdbapi.com/?apikey={omdbkey}&t={title}"
+
+        response = requests.get(omdb_url)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to fetch IMDb rating")
+
+        imdb_data = response.json()
+        imdb_rating = imdb_data.get("imdbRating")
+        if not imdb_rating:
+            raise HTTPException(status_code=500, detail="IMDb rating not available")
+
+        if accept and "application/xml" in accept:
+            return PlainTextResponse(content=f"<imdbRating>{imdb_rating}</imdbRating>", media_type="application/xml")
+
+        else:
+            return {"imdbRating": imdb_rating}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.post("/apikeys/")
+def create_api_key(*, session: Session = Depends(get_session),
+                   role: str,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.SENIOR.value:
+        if role != "JUNIOR" and role != "MEDIOR" and role != "SENIOR":
+            raise HTTPException(status_code=400, detail="Invalid role")
+
+
+        key_length = 15
+        letters = string.ascii_letters
+
+        while True:
+            api_key = ''.join(random.choice(letters) for _ in range(key_length))
+            existing_api_key = session.get(APIKey, api_key)
+            if not existing_api_key:
+                break
+
+        apikey_model = APIKey(apikey=api_key, role=role)
+        session.add(apikey_model)
+        session.commit()
+
+        return {"api_key": api_key}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/apikeys/{apikey}", response_model=dict)
+def delete_api_key(apikey: str,
+                   session: Session = Depends(get_session),
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.SENIOR.value:
+        delete_api_key = session.query(APIKey).filter(APIKey.apikey == apikey).first()
+        if not delete_api_key:
+            raise HTTPException(status_code=404, detail="API key not found")
+
+        session.delete(delete_api_key)
+        session.commit()
+
+        return {"message": "API key deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/apikey/{apikey}", response_model=APIKey)
+def read_apikey(*, session: Session = Depends(get_session),
+                apikey: str,
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.SENIOR.value:
+        apikey = session.get(APIKey, apikey)
+        if not apikey:
+            raise HTTPException(status_code=404, detail="APIKey not found")
+
+        if accept and "application/xml" in accept:
+            xml_content = xmltodict.unparse({"apikey": apikey.dict()}, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return apikey
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
