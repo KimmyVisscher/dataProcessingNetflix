@@ -1849,3 +1849,63 @@ def read_apikey(*, session: Session = Depends(get_session),
             return apikey
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.post("/watchlist/serie", response_model=WatchlistRead)
+def add_serie_to_watchlist(
+        *,
+        session: Session = Depends(get_session),
+        watchlist_create: WatchlistCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    serie_id = watchlist_create.serie_id
+    if not session.query(Serie).filter(Serie.serie_id == serie_id).first():
+        raise HTTPException(status_code=404, detail="Serie not found")
+
+    profile_id = watchlist_create.profile_id
+    if not session.query(Profile).filter(Profile.profile_id == profile_id).first():
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    watchlist = Watchlist(**watchlist_create.dict())
+    session.add(watchlist)
+    session.commit()
+    return watchlist
+
+
+@app.post("/watchlist/movie", response_model=WatchlistRead)
+def add_movie_to_watchlist(
+        *,
+        session: Session = Depends(get_session),
+        watchlist_create: WatchlistCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    movie_id = watchlist_create.movie_id
+    if not session.query(Movie).filter(Movie.movie_id == movie_id).first():
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    profile_id = watchlist_create.profile_id
+    if not session.query(Profile).filter(Profile.profile_id == profile_id).first():
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    watchlist = Watchlist(**watchlist_create.dict())
+    session.add(watchlist)
+    session.commit()
+    return watchlist
