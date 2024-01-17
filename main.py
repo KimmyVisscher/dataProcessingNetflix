@@ -269,11 +269,14 @@ class ProfileBase(SQLModel):
     account_id: int = Field(default=None, foreign_key="account.account_id")
 
 
+Genrespreference = ForwardRef("Genrespreference")
+
+
 class Profile(ProfileBase, table=True):
     profile_id: int = Field(default=None, primary_key=True)
 
     profile_account: Account = Relationship(back_populates="account_profiles")
-    # profile_preference: Preference = Relationship(back_populates="preference_account")
+    profile_genrepreference: list["Genrespreference"] = Relationship(back_populates="genrepreference_profile")
 
 
 class ProfileCreate(ProfileBase):
@@ -283,12 +286,26 @@ class ProfileCreate(ProfileBase):
 class ProfileRead(ProfileBase):
     account_id: int = Field(default=None, foreign_key="account.account_id")
     profile_id: int
-    # preference_id: Preference = Field(default=None, foreign_key=
 
 
-class PreferenceBase(SQLModel):
-    preference_id: int = Field(default=None, primary_key=True)
-    username: str
+class GenrespreferenceBase(SQLModel):
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+    genre: Genre
+
+
+class Genrespreference(GenrespreferenceBase, table=True):
+    genrepreference_id: int = Field(default=None, primary_key=True)
+
+    genrepreference_profile: Profile = Relationship(back_populates="profile_genrepreference")
+
+
+class GenrespreferenceRead(GenrespreferenceBase):
+    genrepreference_id: int
+
+
+class GenresplreferenceCreate(GenrespreferenceBase):
+    pass
+
 
 
 class WatchlistBase(SQLModel):
@@ -492,7 +509,7 @@ def watchlist_to_xml_string(watchlists):
     xml_string = "<watchlists>\n"
 
     for watchlist in watchlists:
-        xml_string = (
+        xml_string += (
             f"  <watchlist>\n"
             f"      <serie_id>{watchlist.serie_id}</serie_id>\n"
             f"      <movie_id>{watchlist.movie_id}</movie_id>\n"
@@ -501,6 +518,22 @@ def watchlist_to_xml_string(watchlists):
         )
 
     xml_string += "</watchlists>"
+    return xml_string
+
+
+def genrepreferences_to_xml_string(genrepreference):
+    xml_string = "<genrepreferences>\n"
+
+    for genrepreference in genrepreference:
+        xml_string += (
+            f"  <genreprefence>\n"
+            f"      <genrepreference_id>{genrepreference.genrepreference_id}</genrepreference_id>\n"
+            f"      <genre>{genrepreference.genre}</movie_id>\n"
+            f"      <profile_id>{genrepreference.profile_id}</profile_id>\n"
+            f" </genrepreference>"
+        )
+
+    xml_string += "</genrepreferences>"
     return xml_string
 
 
@@ -937,6 +970,60 @@ def read_watchlist_by_profile(
             return Response(content=watchlist_to_xml_string(watchlists), media_type="application/xml")
         else:
             return watchlists
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/profiles/{profile_id}/genrepreference", response_model=List[GenrespreferenceRead])
+def read_genrepreference_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        genrepreferences = session.query(Genrespreference).filter(Genrespreference.profile_id == profile_id).all()
+        if not genrepreferences:
+            raise HTTPException(status_code=404, detail="No genrepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=genrepreferences_to_xml_string(genrepreferences), media_type="application/xml")
+        else:
+            return genrepreferences
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/genrepreferences/{genrepreference_id}", response_model=GenrespreferenceRead)
+def read_genrepreference_by_id(
+        *,
+        session: Session = Depends(get_session),
+        genrepreference_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        genrepreference = session.get(Genrespreference, genrepreference_id)
+        if not genrepreference:
+            raise HTTPException(status_code=404, detail="No genrepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=genrepreferences_to_xml_string(([genrepreference])), media_type="application/xml")
+        else:
+            return genrepreference
     else:
         raise HTTPException(status_code=403, detail="No permission")
 
