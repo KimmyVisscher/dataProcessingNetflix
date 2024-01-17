@@ -1731,3 +1731,29 @@ def delete_api_key(apikey: str,
         return {"message": "API key deleted successfully"}
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/apikey/{apikey}", response_model=APIKey)
+def read_apikey(*, session: Session = Depends(get_session),
+                apikey: str,
+                api_key_header: Optional[str] = Depends(api_key_header),
+                accept: Optional[str] = Header(None)
+                ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.SENIOR.value:
+        apikey = session.get(APIKey, apikey)
+        if not apikey:
+            raise HTTPException(status_code=404, detail="APIKey not found")
+
+        if accept and "application/xml" in accept:
+            xml_content = xmltodict.unparse({"apikey": apikey.dict()}, full_document=False)
+            return PlainTextResponse(content=xml_content, media_type="application/xml")
+        else:
+            return apikey
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
