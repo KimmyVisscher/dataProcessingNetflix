@@ -1991,3 +1991,26 @@ def update_watchlist(
         return watchlist
     else:
         raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.delete("/watchlist/{watchlist_id}")
+def delete_profile(*, session: Session = Depends(get_session),
+                   watchlist_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        watchlist = session.get(Watchlist, watchlist_id)
+        if not watchlist:
+            raise HTTPException(status_code=404, detail="Watchlist not found")
+
+        session.delete(watchlist)
+        session.commit()
+        return {"message": "Watchlist deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
