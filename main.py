@@ -845,6 +845,60 @@ def read_series_by_genre(
         raise HTTPException(status_code=403, detail="No permission")
 
 
+@app.get("/movies/{movie_id}/genres", response_model=List[GenresRead])
+def read_genre_by_movie(
+        *,
+        session: Session = Depends(get_session),
+        movie_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        genres = session.query(Genres).filter(Genres.movie_id == movie_id).all()
+        if not genres:
+            raise HTTPException(status_code=404, detail="No genres found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=genre_to_xml_string(genres), media_type="application/xml")
+        else:
+            return genres
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/series/{serie_id}/genres", response_model=List[GenresRead])
+def read_genre_by_serie(
+        *,
+        session: Session = Depends(get_session),
+        serie_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        genres = session.query(Genres).filter(Genres.serie_id == serie_id).all()
+        if not genres:
+            raise HTTPException(status_code=404, detail="No genres found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=genre_to_xml_string(genres), media_type="application/xml")
+        else:
+            return genres
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
 @app.get("/movies/{movie_id}/subtitles", response_model=List[SubtitleRead])
 def read_subtitles_by_movie(
         *,
