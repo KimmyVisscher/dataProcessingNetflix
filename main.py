@@ -2016,12 +2016,8 @@ def delete_profile(*, session: Session = Depends(get_session),
         raise HTTPException(status_code=403, detail="No permission")
 
 
-
-
-
-
 @app.post("/movies/{movie_id}/classification", response_model=ClassificationRead)
-def create_subtitle_for_movie(
+def create_classification_movie(
     *,
     session: Session = Depends(get_session),
     movie_id: int,
@@ -2051,7 +2047,7 @@ def create_subtitle_for_movie(
 
 
 @app.post("/episodes/{episode_id}/classification", response_model=ClassificationRead)
-def create_subtitle_for_movie(
+def create_classification_episode(
     *,
     session: Session = Depends(get_session),
     episode_id: int,
@@ -2081,7 +2077,7 @@ def create_subtitle_for_movie(
 
 
 @app.delete("/classifications/{classification_id}")
-def delete_profile(*, session: Session = Depends(get_session),
+def delete_classification(*, session: Session = Depends(get_session),
                    classification_id: int,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
@@ -2099,5 +2095,33 @@ def delete_profile(*, session: Session = Depends(get_session),
         session.delete(classification)
         session.commit()
         return {"message": "Classification deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.put("/classifications/{classification_id}", response_model=ClassificationRead)
+def update_watchlist(
+        *,
+        session: Session = Depends(get_session),
+        classification_id: int,
+        watchlist_update: WatchlistCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        classification = session.get(Classification, classification_id)
+        if not classification:
+            raise HTTPException(status_code=404, detail="Classification not found")
+
+        for field, value in watchlist_update.dict().items():
+            setattr(classification, field, value)
+
+        session.commit()
+        return classification
     else:
         raise HTTPException(status_code=403, detail="No permission")
