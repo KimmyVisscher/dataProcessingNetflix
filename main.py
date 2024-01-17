@@ -194,7 +194,7 @@ class EpisodeCreate(EpisodeBase):
 
 
 class ClassificationBase(SQLModel):
-    classification: str
+    classification: ViewerIndication
 
     episode_id: Optional[int] = Field(default=None, foreign_key="episode.episode_id")
     movie_id: Optional[int] = Field(default=None, foreign_key="movie.movie_id")
@@ -2012,5 +2012,92 @@ def delete_profile(*, session: Session = Depends(get_session),
         session.delete(watchlist)
         session.commit()
         return {"message": "Watchlist deleted successfully"}
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+
+
+
+
+@app.post("/movies/{movie_id}/classification", response_model=ClassificationRead)
+def create_subtitle_for_movie(
+    *,
+    session: Session = Depends(get_session),
+    movie_id: int,
+    classification_create: ClassificationCreate,
+    api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    movie = session.get(Movie, movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    classification_data = classification_create.dict()
+    classification_data["movie_id"] = movie_id
+
+    classification = Classification(**classification_data)
+    session.add(classification)
+    session.commit()
+    return classification
+
+
+@app.post("/episodes/{episode_id}/classification", response_model=ClassificationRead)
+def create_subtitle_for_movie(
+    *,
+    session: Session = Depends(get_session),
+    episode_id: int,
+    classification_create: ClassificationCreate,
+    api_key_header: Optional[str] = Depends(api_key_header),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level < Role.JUNIOR.value:
+        raise HTTPException(status_code=403, detail="No permission")
+
+    episode = session.get(Episode, episode_id)
+    if not episode:
+        raise HTTPException(status_code=404, detail="Episode not found")
+
+    classification_data = classification_create.dict()
+    classification_data["episode_id"] = episode_id
+
+    classification = Classification(**classification_data)
+    session.add(classification)
+    session.commit()
+    return classification
+
+
+@app.delete("/classifications/{classification_id}")
+def delete_profile(*, session: Session = Depends(get_session),
+                   classification_id: int,
+                   api_key_header: Optional[str] = Depends(api_key_header)
+                   ):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        classification = session.get(Classification, classification_id)
+        if not classification:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        session.delete(classification)
+        session.commit()
+        return {"message": "Classification deleted successfully"}
     else:
         raise HTTPException(status_code=403, detail="No permission")
