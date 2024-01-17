@@ -270,6 +270,8 @@ class ProfileBase(SQLModel):
 
 
 Genrespreference = ForwardRef("Genrespreference")
+Indicationpreference = ForwardRef("Indicationpreference")
+Agepreference = ForwardRef("Agepreference")
 
 
 class Profile(ProfileBase, table=True):
@@ -278,6 +280,7 @@ class Profile(ProfileBase, table=True):
     profile_account: Account = Relationship(back_populates="account_profiles")
     profile_genrepreference: list["Genrespreference"] = Relationship(back_populates="genrepreference_profile")
     profile_indicationpreference: list["Indicationpreference"] = Relationship(back_populates="indicationpreference_profile")
+    profile_agepreference: list["Agepreference"] = Relationship(back_populates="agepreference_profile")
 
 
 class ProfileCreate(ProfileBase):
@@ -326,6 +329,24 @@ class IndicationpreferenceRead(IndicationpreferenceBase):
 class IndicationpreferenceCreate(IndicationpreferenceBase):
     pass
 
+
+class AgepreferenceBase(SQLModel):
+    profile_id: int = Field(default=None, foreign_key="profile.profile_id")
+    agerestriction: AgeRestriction
+
+
+class Agepreference(AgepreferenceBase, table=True):
+    agepreference_id: int = Field(default=None, primary_key=True)
+
+    agepreference_profile: Profile = Relationship(back_populates="profile_agepreference")
+
+
+class AgepreferenceRead(AgepreferenceBase):
+    agepreference_id: int
+
+
+class AgepreferenceCreate(AgepreferenceBase):
+    pass
 
 
 class WatchlistBase(SQLModel):
@@ -563,13 +584,29 @@ def indicationpreferences_to_xml_string(indicationpreference):
     for indicationpreference in indicationpreference:
         xml_string += (
             f"  <indicationprefence>\n"
-            f"      <indicationpreference_id>{indicationpreference.indicationpreference_id}</gindicationpreference_id>\n"
+            f"      <indicationpreference_id>{indicationpreference.indicationpreference_id}</indicationpreference_id>\n"
             f"      <indication>{indicationpreference.indication}</indication>\n"
             f"      <profile_id>{indicationpreference.profile_id}</profile_id>\n"
             f" </indicationpreference>"
         )
 
     xml_string += "</indicationpreferences>"
+    return xml_string
+
+
+def agepreferences_to_xml_string(agepreference):
+    xml_string = "<agepreferences>\n"
+
+    for agepreference in agepreference:
+        xml_string += (
+            f"  <agepreference>\n"
+            f"      <agepreference_id>{agepreference.agepreference_id}</agepreference_id>\n"
+            f"      <agerestriction>{agepreference.agerestriction}</agerestriction>\n"
+            f"      <profile_id>{agepreference.profile_id}</profile_id>\n"
+            f" </agepreference>"
+        )
+
+    xml_string += "</agepreferences>"
     return xml_string
 
 
@@ -1064,7 +1101,6 @@ def read_genrepreference_by_id(
         raise HTTPException(status_code=403, detail="No permission")
 
 
-
 @app.get("/profiles/{profile_id}/indicationpreferences", response_model=List[IndicationpreferenceRead])
 def read_indicationpreference_by_profile(
         *,
@@ -1093,7 +1129,7 @@ def read_indicationpreference_by_profile(
 
 
 @app.get("/indicationpreferences/{indicationpreference_id}", response_model=IndicationpreferenceRead)
-def read_genrepreference_by_id(
+def read_indicationpreference_by_id(
         *,
         session: Session = Depends(get_session),
         indicationpreference_id: int,
@@ -1119,6 +1155,62 @@ def read_genrepreference_by_id(
         raise HTTPException(status_code=403, detail="No permission")
 
 
+
+
+@app.get("/profiles/{profile_id}/agepreferences", response_model=List[AgepreferenceRead])
+def read_agepreferences_by_profile(
+        *,
+        session: Session = Depends(get_session),
+        profile_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        agepreferences = session.query(Agepreference).filter(Agepreference.profile_id == profile_id).all()
+        if not agepreferences:
+            raise HTTPException(status_code=404, detail="No agepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=agepreferences_to_xml_string(agepreferences), media_type="application/xml")
+        else:
+            return agepreferences
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
+@app.get("/agepreferences/{agepreference_id}", response_model=AgepreferenceRead)
+def read_agepreference_by_id(
+        *,
+        session: Session = Depends(get_session),
+        agepreference_id: int,
+        api_key_header: str = Depends(api_key_header),
+        accept: str = Header(None),
+):
+    api_key = api_key_header
+    api_key_db = session.get(APIKey, api_key)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    access_level = api_key_db.role.value
+    if access_level >= Role.JUNIOR.value:
+        agepreference = session.get(Agepreference, agepreference_id)
+        if not agepreference:
+            raise HTTPException(status_code=404, detail="No agepreferences found")
+
+        if accept and "application/xml" in accept:
+            return Response(content=agepreferences_to_xml_string(([agepreference])), media_type="application/xml")
+        else:
+            return agepreference
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
 @app.post("/movies", response_model=MovieRead)
 def create_movie(*, session: Session = Depends(get_session),
                  movie_create: MovieCreate,
@@ -1140,7 +1232,7 @@ def create_movie(*, session: Session = Depends(get_session),
 
 
 @app.post("/series", response_model=SerieRead)
-def create_movie(*, session: Session = Depends(get_session),
+def create_serie(*, session: Session = Depends(get_session),
                  serie_create: SerieCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
                  ):
