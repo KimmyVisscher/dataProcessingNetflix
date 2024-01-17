@@ -163,8 +163,6 @@ CREATE TABLE `subtitle` (
 CREATE TABLE `viewing_behavior` (
   `viewing_behavior_id` int(11) NOT NULL,
   `pause_time` int(11) DEFAULT NULL,
-  `viewing_history` varchar(255) DEFAULT NULL,
-  `times_watched` int(11) DEFAULT NULL,
   `profile_id` int(11),
   `movie_id` int(11),
   `episode_id` int(11)
