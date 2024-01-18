@@ -2100,7 +2100,7 @@ def delete_classification(*, session: Session = Depends(get_session),
 
 
 @app.put("/classifications/{classification_id}", response_model=ClassificationRead)
-def update_watchlist(
+def update_classification(
         *,
         session: Session = Depends(get_session),
         classification_id: int,
