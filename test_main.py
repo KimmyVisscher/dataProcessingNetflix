@@ -75,6 +75,12 @@ def test_read_movies_json_response():
     assert response.json() == expected_data
 
 
+def test_read_movies_xml_response():
+    response = client.get("/movies", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<movies>\n  <movie>\n      <title>The Shawshank Redemption</title>\n      <movie_duration>142</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>The Godfather</title>\n      <movie_duration>175</movie_duration>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </movie>  <movie>\n      <title>Pulp Fiction</title>\n      <movie_duration>154</movie_duration>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </movie>  <movie>\n      <title>The Dark Knight</title>\n      <movie_duration>152</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>Schindler's List</title>\n      <movie_duration>195</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>Inception</title>\n      <movie_duration>148</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>Fight Club</title>\n      <movie_duration>139</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>Forrest Gump</title>\n      <movie_duration>142</movie_duration>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </movie>  <movie>\n      <title>The Matrix</title>\n      <movie_duration>136</movie_duration>\n      <age_restriction>AgeRestriction.SIX_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>The Silence of the Lambs</title>\n      <movie_duration>118</movie_duration>\n      <age_restriction>AgeRestriction.TWELVE_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>The Green Mile</title>\n      <movie_duration>189</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>The Godfather: Part II</title>\n      <movie_duration>202</movie_duration>\n      <age_restriction>AgeRestriction.TWELVE_YEARS</age_restriction>\n  </movie></movies>"
+
+
 def test_read_movies_unauthorized():
     response = client.get("/movies")
     assert response.status_code == 401
@@ -92,9 +98,97 @@ def test_read_movies_no_permission():
 
 
 # GET all movies by genre
-#
+
+def test_read_movies_by_genre_json_response():
+    response = client.get("/movies/genre/ACTION", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 200
+
+    expected_data = [
+        {
+            "title": "The Shawshank Redemption",
+            "movie_duration": 142,
+            "age_restriction": "SIXTEEN_YEARS",
+            "movie_id": 1
+        },
+        {
+            "title": "The Godfather",
+            "movie_duration": 175,
+            "age_restriction": "ALL_AGES",
+            "movie_id": 2
+        }
+    ]
+
+    assert response.json() == expected_data
+
+
+def test_read_movies_by_genre_xml_response():
+    response = client.get("/movies/genre/ACTION", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<movies>\n  <movie>\n      <title>The Shawshank Redemption</title>\n      <movie_duration>142</movie_duration>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </movie>  <movie>\n      <title>The Godfather</title>\n      <movie_duration>175</movie_duration>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </movie></movies>"
+
+
+def test_read_movies_by_genre_unauthorized():
+    response = client.get("/movies/genre/ACTION")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_read_movies_by_genre_no_permission():
+    response = client.get("/movies/genre/ACTION", headers={"X-API-KEY": "unauthorized"})
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
 # GET all series
-#
+
+def test_read_all_series_json_response():
+    response = client.get("/series", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 200
+
+    expected_data = [
+        {"serie_name": "Stranger Things", "age_restriction": "SIXTEEN_YEARS", "serie_id": 1},
+        {"serie_name": "The Crown", "age_restriction": "SIXTEEN_YEARS", "serie_id": 2},
+        {"serie_name": "Breaking Bad", "age_restriction": "SIXTEEN_YEARS", "serie_id": 3},
+        {"serie_name": "Friends", "age_restriction": "ALL_AGES", "serie_id": 4},
+        {"serie_name": "Black Mirror", "age_restriction": "SIXTEEN_YEARS", "serie_id": 5},
+        {"serie_name": "The Mandalorian", "age_restriction": "TWELVE_YEARS", "serie_id": 6},
+        {"serie_name": "Money Heist", "age_restriction": "SIXTEEN_YEARS", "serie_id": 7},
+        {"serie_name": "Narcos", "age_restriction": "SIXTEEN_YEARS", "serie_id": 8},
+        {"serie_name": "The Witcher", "age_restriction": "SIXTEEN_YEARS", "serie_id": 9},
+        {"serie_name": "Peaky Blinders", "age_restriction": "ALL_AGES", "serie_id": 10},
+        {"serie_name": "The Office", "age_restriction": "ALL_AGES", "serie_id": 11},
+        {"serie_name": "Game of Thrones", "age_restriction": "SIXTEEN_YEARS", "serie_id": 12}
+    ]
+
+    assert response.json() == expected_data
+
+
+def test_read_all_series_xml_response():
+    response = client.get("/series", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<series>\n  <serie>\n      <serie_name>Stranger Things</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Crown</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Breaking Bad</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Friends</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>Black Mirror</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Mandalorian</serie_name>\n      <age_restriction>AgeRestriction.TWELVE_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Money Heist</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Narcos</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Witcher</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Peaky Blinders</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Office</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>Game of Thrones</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie></series>"
+
+
+def test_read_all_series_unauthorized():
+    response = client.get("/series")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_read_all_series_no_permission():
+    response = client.get("/series", headers={"X-API-KEY": "unauthorized"})
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
 # GET series by ID
 
 def test_read_series_json_response():
