@@ -1,8 +1,0 @@
-/*
-
-*/
-START TRANSACTION;
-
-
-
-CREATE VIEW 
