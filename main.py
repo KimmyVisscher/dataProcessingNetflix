@@ -52,6 +52,7 @@ class Quality(Enum):
 
 
 class Role(Enum):
+    UNAUTHORIZED = 0
     JUNIOR = 1
     MEDIOR = 2
     SENIOR = 3
