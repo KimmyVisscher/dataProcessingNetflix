@@ -616,19 +616,23 @@ def on_startup():
     create_db_and_tables()
 
 
+def check_apikey_role(session, apikey, rolevalue):
+    api_key_db = session.get(APIKey, apikey)
+    if not api_key_db:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    elif api_key_db.role.value >= rolevalue:
+        return True
+    else:
+        raise HTTPException(status_code=403, detail="No permission")
+
+
 @app.get("/movies/{movie_id}", response_model=MovieRead)
 def read_movie(*, session: Session = Depends(get_session),
                movie_id: int,
                api_key_header: Optional[str] = Depends(api_key_header),
                accept: Optional[str] = Header(None)
                ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movie = session.get(Movie, movie_id)
         if not movie:
             raise HTTPException(status_code=404, detail="Movie not found")
@@ -639,8 +643,6 @@ def read_movie(*, session: Session = Depends(get_session),
             return Response(content=movie_to_xml_string([movie]), media_type="application/xml")
         else:
             return movie
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/movies", response_model=List[MovieRead])
@@ -649,13 +651,7 @@ def read_movies(*,
                 api_key_header: Optional[str] = Depends(api_key_header),
                 accept: Optional[str] = Header(None)
                 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movies = session.query(Movie).all()
         if not movies:
             raise HTTPException(status_code=404, detail="No movies found")
@@ -667,8 +663,6 @@ def read_movies(*,
             return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/movies/genre/{genre}", response_model=List[MovieRead])
@@ -679,13 +673,7 @@ def read_movies_by_genre(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movies = session.query(Movie).filter(Movie.movie_genre.any(genre=genre.value)).all()
         if not movies:
             raise HTTPException(status_code=404, detail="No movies found")
@@ -697,8 +685,6 @@ def read_movies_by_genre(
             return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series", response_model=List[SerieRead])
@@ -706,13 +692,7 @@ def read_series(*, session: Session = Depends(get_session),
                 api_key_header: Optional[str] = Depends(api_key_header),
                 accept: Optional[str] = Header(None)
                 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         series = session.query(Serie).all()
         if not series:
             raise HTTPException(status_code=404, detail="No series found")
@@ -724,8 +704,6 @@ def read_series(*, session: Session = Depends(get_session),
             return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series/{serie_id}", response_model=SerieRead)
@@ -734,13 +712,7 @@ def read_series(*, session: Session = Depends(get_session),
                 api_key_header: Optional[str] = Depends(api_key_header),
                 accept: Optional[str] = Header(None)
                 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         serie = session.get(Serie, serie_id)
         if not serie:
             raise HTTPException(status_code=404, detail="No series found")
@@ -751,8 +723,6 @@ def read_series(*, session: Session = Depends(get_session),
             return Response(content=series_to_xml_string([serie]), media_type="application/xml")
         else:
             return serie
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/episodes/{episode_id}", response_model=EpisodeRead)
@@ -761,13 +731,7 @@ def read_episode(*, session: Session = Depends(get_session),
                 api_key_header: Optional[str] = Depends(api_key_header),
                 accept: Optional[str] = Header(None)
                 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         episode = session.get(Episode, episode_id)
         if not episode:
             raise HTTPException(status_code=404, detail="Episode not found")
@@ -778,8 +742,6 @@ def read_episode(*, session: Session = Depends(get_session),
             return Response(content=episode_to_xml_string([episode]), media_type="application/xml")
         else:
             return episode
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series/{serie_id}/episodes", response_model=List[EpisodeRead])
@@ -790,13 +752,7 @@ def read_episodes_by_serie(
     api_key_header: Optional[str] = Depends(api_key_header),
     accept: Optional[str] = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         serie = session.get(Serie, serie_id)
         if not serie:
             raise HTTPException(status_code=404, detail="Serie not found")
@@ -812,8 +768,6 @@ def read_episodes_by_serie(
             return Response(content=episode_to_xml_string(episodes), media_type="application/xml")
         else:
             return episodes
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series/genre/{genre}", response_model=List[SerieRead])
@@ -824,13 +778,7 @@ def read_series_by_genre(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         series = session.query(Serie).filter(Serie.serie_genre.any(genre=genre.value)).all()
         if not series:
             raise HTTPException(status_code=404, detail="No series found")
@@ -842,8 +790,6 @@ def read_series_by_genre(
             return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/movies/{movie_id}/genres", response_model=List[GenresRead])
@@ -854,13 +800,7 @@ def read_genre_by_movie(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         genres = session.query(Genres).filter(Genres.movie_id == movie_id).all()
         if not genres:
             raise HTTPException(status_code=404, detail="No genres found")
@@ -869,8 +809,6 @@ def read_genre_by_movie(
             return Response(content=genre_to_xml_string(genres), media_type="application/xml")
         else:
             return genres
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series/{serie_id}/genres", response_model=List[GenresRead])
@@ -881,13 +819,7 @@ def read_genre_by_serie(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         genres = session.query(Genres).filter(Genres.serie_id == serie_id).all()
         if not genres:
             raise HTTPException(status_code=404, detail="No genres found")
@@ -896,8 +828,6 @@ def read_genre_by_serie(
             return Response(content=genre_to_xml_string(genres), media_type="application/xml")
         else:
             return genres
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/movies/{movie_id}/subtitles", response_model=List[SubtitleRead])
@@ -908,13 +838,7 @@ def read_subtitles_by_movie(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         subtitles = session.query(Subtitle).filter(Subtitle.movie_id == movie_id).all()
         if not subtitles:
             raise HTTPException(status_code=404, detail="No subtitles found")
@@ -926,8 +850,6 @@ def read_subtitles_by_movie(
             return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/episodes/{episode_id}/subtitles", response_model=List[SubtitleRead])
@@ -938,13 +860,7 @@ def read_subtitles_by_episode(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         subtitles = session.query(Subtitle).filter(Subtitle.episode_id == episode_id).all()
         if not subtitles:
             raise HTTPException(status_code=404, detail="No subtitles found")
@@ -956,8 +872,6 @@ def read_subtitles_by_episode(
             return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/accounts", response_model=List[AccountRead])
@@ -966,13 +880,7 @@ def read_accounts(*,
                 api_key_header: Optional[str] = Depends(api_key_header),
                 accept: Optional[str] = Header(None)
                 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         accounts = session.query(Account).all()
         if not accounts:
             raise HTTPException(status_code=404, detail="No accounts found")
@@ -984,8 +892,6 @@ def read_accounts(*,
             return Response(content=account_to_xml_string(accounts), media_type="application/xml")
         else:
             return accounts
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/accounts/{account_id}", response_model=AccountRead)
@@ -994,13 +900,7 @@ def read_account(*, session: Session = Depends(get_session),
                api_key_header: Optional[str] = Depends(api_key_header),
                accept: Optional[str] = Header(None)
                ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         account = session.get(Account, account_id)
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
@@ -1011,8 +911,6 @@ def read_account(*, session: Session = Depends(get_session),
             return Response(content=account_to_xml_string([account]), media_type="application/xml")
         else:
             return account
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/accounts/{account_id}/profiles", response_model=List[ProfileRead])
@@ -1023,13 +921,7 @@ def read_profiles_by_account(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         profiles = session.query(Profile).filter(Profile.account_id == account_id).all()
         if not profiles:
             raise HTTPException(status_code=404, detail="No profiles found")
@@ -1041,8 +933,6 @@ def read_profiles_by_account(
             return Response(content=profile_to_xml_string(profiles), media_type="application/xml")
         else:
             return profiles
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/profiles/{profile_id}", response_model=ProfileRead)
@@ -1051,13 +941,7 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
                api_key_header: Optional[str] = Depends(api_key_header),
                accept: Optional[str] = Header(None)
                ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         profile = session.get(Profile, profile_id)
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
@@ -1068,8 +952,6 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
             return Response(content=profile_to_xml_string([profile]), media_type="application/xml")
         else:
             return profile
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/profiles/{profile_id}/watchlist", response_model=List[WatchlistRead])
@@ -1080,13 +962,7 @@ def read_watchlist_by_profile(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         watchlists = session.query(Watchlist).filter(Watchlist.profile_id == profile_id).all()
         if not watchlists:
             raise HTTPException(status_code=404, detail="No watchlists found")
@@ -1098,8 +974,6 @@ def read_watchlist_by_profile(
             return Response(content=watchlist_to_xml_string(watchlists), media_type="application/xml")
         else:
             return watchlists
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/profiles/{profile_id}/genrepreference", response_model=List[GenrespreferenceRead])
@@ -1110,13 +984,7 @@ def read_genrepreference_by_profile(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         genrepreferences = session.query(Genrespreference).filter(Genrespreference.profile_id == profile_id).all()
         if not genrepreferences:
             raise HTTPException(status_code=404, detail="No genrepreferences found")
@@ -1125,8 +993,6 @@ def read_genrepreference_by_profile(
             return Response(content=genrepreferences_to_xml_string(genrepreferences), media_type="application/xml")
         else:
             return genrepreferences
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/genrepreferences/{genrepreference_id}", response_model=GenrespreferenceRead)
@@ -1137,13 +1003,7 @@ def read_genrepreference_by_id(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         genrepreference = session.get(Genrespreference, genrepreference_id)
         if not genrepreference:
             raise HTTPException(status_code=404, detail="No genrepreferences found")
@@ -1152,8 +1012,6 @@ def read_genrepreference_by_id(
             return Response(content=genrepreferences_to_xml_string(([genrepreference])), media_type="application/xml")
         else:
             return genrepreference
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/profiles/{profile_id}/indicationpreferences", response_model=List[IndicationpreferenceRead])
@@ -1164,13 +1022,7 @@ def read_indicationpreference_by_profile(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         indicationpreferences = session.query(Indicationpreference).filter(Indicationpreference.profile_id == profile_id).all()
         if not indicationpreferences:
             raise HTTPException(status_code=404, detail="No indicationpreferences found")
@@ -1179,8 +1031,6 @@ def read_indicationpreference_by_profile(
             return Response(content=indicationpreferences_to_xml_string(indicationpreferences), media_type="application/xml")
         else:
             return indicationpreferences
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/indicationpreferences/{indicationpreference_id}", response_model=IndicationpreferenceRead)
@@ -1191,13 +1041,7 @@ def read_indicationpreference_by_id(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         indicationpreference = session.get(Indicationpreference, indicationpreference_id)
         if not indicationpreference:
             raise HTTPException(status_code=404, detail="No indicationpreferences found")
@@ -1206,10 +1050,6 @@ def read_indicationpreference_by_id(
             return Response(content=indicationpreferences_to_xml_string(([indicationpreference])), media_type="application/xml")
         else:
             return indicationpreference
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
-
-
 
 
 @app.get("/profiles/{profile_id}/agepreferences", response_model=List[AgepreferenceRead])
@@ -1220,13 +1060,7 @@ def read_agepreferences_by_profile(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         agepreferences = session.query(Agepreference).filter(Agepreference.profile_id == profile_id).all()
         if not agepreferences:
             raise HTTPException(status_code=404, detail="No agepreferences found")
@@ -1235,8 +1069,6 @@ def read_agepreferences_by_profile(
             return Response(content=agepreferences_to_xml_string(agepreferences), media_type="application/xml")
         else:
             return agepreferences
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/agepreferences/{agepreference_id}", response_model=AgepreferenceRead)
@@ -1247,13 +1079,7 @@ def read_agepreference_by_id(
         api_key_header: str = Depends(api_key_header),
         accept: str = Header(None),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         agepreference = session.get(Agepreference, agepreference_id)
         if not agepreference:
             raise HTTPException(status_code=404, detail="No agepreferences found")
@@ -1262,8 +1088,6 @@ def read_agepreference_by_id(
             return Response(content=agepreferences_to_xml_string(([agepreference])), media_type="application/xml")
         else:
             return agepreference
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/movies", response_model=MovieRead)
@@ -1271,19 +1095,11 @@ def create_movie(*, session: Session = Depends(get_session),
                  movie_create: MovieCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
                  ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movie = Movie(**movie_create.dict())
         session.add(movie)
         session.commit()
         return movie
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/series", response_model=SerieRead)
@@ -1291,19 +1107,11 @@ def create_serie(*, session: Session = Depends(get_session),
                  serie_create: SerieCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
                  ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         serie = Serie(**serie_create.dict())
         session.add(serie)
         session.commit()
         return serie
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/episodes", response_model=EpisodeRead)
@@ -1313,23 +1121,15 @@ def create_episode(
         episode_create: EpisodeCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        serie_id = episode_create.serie_id
+        if not session.query(Serie).filter(Serie.serie_id == serie_id).first():
+            raise HTTPException(status_code=404, detail="Serie not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
-
-    serie_id = episode_create.serie_id
-    if not session.query(Serie).filter(Serie.serie_id == serie_id).first():
-        raise HTTPException(status_code=404, detail="Serie not found")
-
-    episode = Episode(**episode_create.dict())
-    session.add(episode)
-    session.commit()
-    return episode
+        episode = Episode(**episode_create.dict())
+        session.add(episode)
+        session.commit()
+        return episode
 
 
 @app.post("/episodes/{episode_id}/subtitles", response_model=SubtitleRead)
@@ -1340,26 +1140,18 @@ def create_subtitle_for_episode(
     subtitle_create: SubtitleCreate,
     api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        episode = session.get(Episode, episode_id)
+        if not episode:
+            raise HTTPException(status_code=404, detail="Episode not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
+        subtitle_data = subtitle_create.dict()
+        subtitle_data["episode_id"] = episode_id
 
-    episode = session.get(Episode, episode_id)
-    if not episode:
-        raise HTTPException(status_code=404, detail="Episode not found")
-
-    subtitle_data = subtitle_create.dict()
-    subtitle_data["episode_id"] = episode_id
-
-    subtitle = Subtitle(**subtitle_data)
-    session.add(subtitle)
-    session.commit()
-    return subtitle
+        subtitle = Subtitle(**subtitle_data)
+        session.add(subtitle)
+        session.commit()
+        return subtitle
 
 
 @app.post("/movies/{movie_id}/subtitles", response_model=SubtitleRead)
@@ -1370,26 +1162,18 @@ def create_subtitle_for_movie(
     subtitle_create: SubtitleCreate,
     api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
+        subtitle_data = subtitle_create.dict()
+        subtitle_data["movie_id"] = movie_id
 
-    movie = session.get(Movie, movie_id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-
-    subtitle_data = subtitle_create.dict()
-    subtitle_data["movie_id"] = movie_id
-
-    subtitle = Subtitle(**subtitle_data)
-    session.add(subtitle)
-    session.commit()
-    return subtitle
+        subtitle = Subtitle(**subtitle_data)
+        session.add(subtitle)
+        session.commit()
+        return subtitle
 
 
 @app.post("/accounts", response_model=AccountRead)
@@ -1397,19 +1181,11 @@ def create_account(*, session: Session = Depends(get_session),
                  account_create: AccountCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
                  ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         account = Account(**account_create.dict())
         session.add(account)
         session.commit()
         return account
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/profiles", response_model=ProfileRead)
@@ -1419,23 +1195,15 @@ def create_profile(
         profile_create: ProfileCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        account_id = profile_create.account_id
+        if not session.query(Account).filter(Account.account_id == account_id).first():
+            raise HTTPException(status_code=404, detail="Account not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
-
-    account_id = profile_create.account_id
-    if not session.query(Account).filter(Account.account_id == account_id).first():
-        raise HTTPException(status_code=404, detail="Account not found")
-
-    profile = Profile(**profile_create.dict())
-    session.add(profile)
-    session.commit()
-    return profile
+        profile = Profile(**profile_create.dict())
+        session.add(profile)
+        session.commit()
+        return profile
 
 
 @app.put("/movies/{movie_id}", response_model=MovieRead)
@@ -1446,13 +1214,7 @@ def update_movie(
         movie_update: MovieCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movie = session.get(Movie, movie_id)
         if not movie:
             raise HTTPException(status_code=404, detail="Movie not found")
@@ -1462,8 +1224,6 @@ def update_movie(
 
         session.commit()
         return movie
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.put("/series/{serie_id}", response_model=SerieRead)
@@ -1474,13 +1234,7 @@ def update_serie(
         serie_update: SerieCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         serie = session.get(Serie, serie_id)
         if not serie:
             raise HTTPException(status_code=404, detail="Serie not found")
@@ -1490,8 +1244,6 @@ def update_serie(
 
         session.commit()
         return serie
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.put("/episodes/{episode_id}", response_model=EpisodeRead)
@@ -1502,13 +1254,7 @@ def update_episode(
         episode_update: EpisodeCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         episode = session.get(Episode, episode_id)
         if not episode:
             raise HTTPException(status_code=404, detail="Episode not found")
@@ -1518,8 +1264,6 @@ def update_episode(
 
         session.commit()
         return episode
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.put("/subtitles/{subtitle_id}", response_model=SubtitleRead)
@@ -1530,13 +1274,7 @@ def update_subtitle(
         subtitle_update: SubtitleCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         subtitle = session.get(Subtitle, subtitle_id)
         if not subtitle:
             raise HTTPException(status_code=404, detail="Subtitle not found")
@@ -1546,8 +1284,6 @@ def update_subtitle(
 
         session.commit()
         return subtitle
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.put("/accounts/{account_id}", response_model=AccountRead)
@@ -1558,13 +1294,7 @@ def update_account(
         account_update: AccountCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         account = session.get(Account, account_id)
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
@@ -1574,8 +1304,6 @@ def update_account(
 
         session.commit()
         return account
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.put("/profiles/{profile_id}", response_model=ProfileRead)
@@ -1586,13 +1314,7 @@ def update_profile(
         profile_update: ProfileCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         profile = session.get(Profile, profile_id)
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
@@ -1602,8 +1324,6 @@ def update_profile(
 
         session.commit()
         return profile
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/movies/{movie_id}")
@@ -1611,13 +1331,7 @@ def delete_movie(*, session: Session = Depends(get_session),
                  movie_id: int,
                  api_key_header: Optional[str] = Depends(api_key_header)
                  ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movie = session.get(Movie, movie_id)
         if not movie:
             raise HTTPException(status_code=404, detail="Movie not found")
@@ -1625,8 +1339,6 @@ def delete_movie(*, session: Session = Depends(get_session),
         session.delete(movie)
         session.commit()
         return {"message": "Movie deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/series/{serie_id}")
@@ -1634,13 +1346,7 @@ def delete_series(*, session: Session = Depends(get_session),
                   serie_id: int,
                   api_key_header: Optional[str] = Depends(api_key_header)
                   ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         serie = session.get(Serie, serie_id)
         if not serie:
             raise HTTPException(status_code=404, detail="Series not found")
@@ -1648,8 +1354,6 @@ def delete_series(*, session: Session = Depends(get_session),
         session.delete(serie)
         session.commit()
         return {"message": "Series deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/episodes/{episode_id}")
@@ -1657,13 +1361,7 @@ def delete_episode(*, session: Session = Depends(get_session),
                    episode_id: int,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         episode = session.get(Episode, episode_id)
         if not episode:
             raise HTTPException(status_code=404, detail="Episode not found")
@@ -1671,8 +1369,6 @@ def delete_episode(*, session: Session = Depends(get_session),
         session.delete(episode)
         session.commit()
         return {"message": "Episode deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/subtitles/{subtitle_id}")
@@ -1680,13 +1376,7 @@ def delete_subtitle(*, session: Session = Depends(get_session),
                     subtitle_id: int,
                     api_key_header: Optional[str] = Depends(api_key_header)
                     ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         subtitle = session.get(Subtitle, subtitle_id)
         if not subtitle:
             raise HTTPException(status_code=404, detail="Subtitle not found")
@@ -1694,8 +1384,6 @@ def delete_subtitle(*, session: Session = Depends(get_session),
         session.delete(subtitle)
         session.commit()
         return {"message": "Subtitle deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/accounts/{account_id}")
@@ -1703,13 +1391,7 @@ def delete_account(*, session: Session = Depends(get_session),
                    account_id: int,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         account = session.get(Account, account_id)
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
@@ -1717,8 +1399,6 @@ def delete_account(*, session: Session = Depends(get_session),
         session.delete(account)
         session.commit()
         return {"message": "Account deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/profiles/{profile_id}")
@@ -1726,13 +1406,7 @@ def delete_profile(*, session: Session = Depends(get_session),
                    profile_id: int,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         profile = session.get(Profile, profile_id)
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
@@ -1740,8 +1414,6 @@ def delete_profile(*, session: Session = Depends(get_session),
         session.delete(profile)
         session.commit()
         return {"message": "Profile deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/movies/{movie_id}/imdb")
@@ -1750,13 +1422,7 @@ def get_imdb_rating(movie_id: int,
                     api_key_header: Optional[str] = Depends(api_key_header),
                     accept: Optional[str] = Header(None)
                     ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         movie = session.get(Movie, movie_id)
         if not movie:
             raise HTTPException(status_code=404, detail="Movie not found")
@@ -1779,8 +1445,6 @@ def get_imdb_rating(movie_id: int,
 
         else:
             return {"imdbRating": imdb_rating}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/series/{serie_id}/imdb")
@@ -1789,13 +1453,7 @@ def get_imdb_rating_by_serie(serie_id: int,
                     api_key_header: Optional[str] = Depends(api_key_header),
                     accept: Optional[str] = Header(None)
                     ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         serie = session.get(Serie, serie_id)
         if not serie:
             raise HTTPException(status_code=404, detail="Serie not found")
@@ -1818,8 +1476,6 @@ def get_imdb_rating_by_serie(serie_id: int,
 
         else:
             return {"imdbRating": imdb_rating}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/apikeys/")
@@ -1827,13 +1483,7 @@ def create_api_key(*, session: Session = Depends(get_session),
                    role: str,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.SENIOR.value:
+    if check_apikey_role(session, api_key_header, Role.SENIOR.value):
         if role != "JUNIOR" and role != "MEDIOR" and role != "SENIOR":
             raise HTTPException(status_code=400, detail="Invalid role")
 
@@ -1852,8 +1502,6 @@ def create_api_key(*, session: Session = Depends(get_session),
         session.commit()
 
         return {"api_key": api_key}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/apikeys/{apikey}", response_model=dict)
@@ -1861,13 +1509,7 @@ def delete_api_key(apikey: str,
                    session: Session = Depends(get_session),
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.SENIOR.value:
+    if check_apikey_role(session, api_key_header, Role.SENIOR.value):
         delete_api_key = session.query(APIKey).filter(APIKey.apikey == apikey).first()
         if not delete_api_key:
             raise HTTPException(status_code=404, detail="API key not found")
@@ -1876,8 +1518,6 @@ def delete_api_key(apikey: str,
         session.commit()
 
         return {"message": "API key deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.get("/apikey/{apikey}", response_model=APIKey)
@@ -1886,13 +1526,7 @@ def read_apikey(*, session: Session = Depends(get_session),
                 api_key_header: Optional[str] = Depends(api_key_header),
                 accept: Optional[str] = Header(None)
                 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.SENIOR.value:
+    if check_apikey_role(session, api_key_header, Role.SENIOR.value):
         apikey = session.get(APIKey, apikey)
         if not apikey:
             raise HTTPException(status_code=404, detail="APIKey not found")
@@ -1902,8 +1536,6 @@ def read_apikey(*, session: Session = Depends(get_session),
             return PlainTextResponse(content=xml_content, media_type="application/xml")
         else:
             return apikey
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/watchlist/serie", response_model=WatchlistRead)
@@ -1913,27 +1545,19 @@ def add_serie_to_watchlist(
         watchlist_create: WatchlistCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        serie_id = watchlist_create.serie_id
+        if not session.query(Serie).filter(Serie.serie_id == serie_id).first():
+            raise HTTPException(status_code=404, detail="Serie not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
+        profile_id = watchlist_create.profile_id
+        if not session.query(Profile).filter(Profile.profile_id == profile_id).first():
+            raise HTTPException(status_code=404, detail="Profile not found")
 
-    serie_id = watchlist_create.serie_id
-    if not session.query(Serie).filter(Serie.serie_id == serie_id).first():
-        raise HTTPException(status_code=404, detail="Serie not found")
-
-    profile_id = watchlist_create.profile_id
-    if not session.query(Profile).filter(Profile.profile_id == profile_id).first():
-        raise HTTPException(status_code=404, detail="Profile not found")
-
-    watchlist = Watchlist(**watchlist_create.dict())
-    session.add(watchlist)
-    session.commit()
-    return watchlist
+        watchlist = Watchlist(**watchlist_create.dict())
+        session.add(watchlist)
+        session.commit()
+        return watchlist
 
 
 @app.post("/watchlist/movie", response_model=WatchlistRead)
@@ -1943,27 +1567,19 @@ def add_movie_to_watchlist(
         watchlist_create: WatchlistCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        movie_id = watchlist_create.movie_id
+        if not session.query(Movie).filter(Movie.movie_id == movie_id).first():
+            raise HTTPException(status_code=404, detail="Movie not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
+        profile_id = watchlist_create.profile_id
+        if not session.query(Profile).filter(Profile.profile_id == profile_id).first():
+            raise HTTPException(status_code=404, detail="Profile not found")
 
-    movie_id = watchlist_create.movie_id
-    if not session.query(Movie).filter(Movie.movie_id == movie_id).first():
-        raise HTTPException(status_code=404, detail="Movie not found")
-
-    profile_id = watchlist_create.profile_id
-    if not session.query(Profile).filter(Profile.profile_id == profile_id).first():
-        raise HTTPException(status_code=404, detail="Profile not found")
-
-    watchlist = Watchlist(**watchlist_create.dict())
-    session.add(watchlist)
-    session.commit()
-    return watchlist
+        watchlist = Watchlist(**watchlist_create.dict())
+        session.add(watchlist)
+        session.commit()
+        return watchlist
 
 
 @app.put("/watchlist/{watchlist_id}", response_model=WatchlistRead)
@@ -1974,13 +1590,7 @@ def update_watchlist(
         watchlist_update: WatchlistCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         watchlist = session.get(Watchlist, watchlist_id)
         if not watchlist:
             raise HTTPException(status_code=404, detail="Watchlist not found")
@@ -1990,8 +1600,6 @@ def update_watchlist(
 
         session.commit()
         return watchlist
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.delete("/watchlist/{watchlist_id}")
@@ -1999,13 +1607,7 @@ def delete_profile(*, session: Session = Depends(get_session),
                    watchlist_id: int,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         watchlist = session.get(Watchlist, watchlist_id)
         if not watchlist:
             raise HTTPException(status_code=404, detail="Watchlist not found")
@@ -2013,8 +1615,6 @@ def delete_profile(*, session: Session = Depends(get_session),
         session.delete(watchlist)
         session.commit()
         return {"message": "Watchlist deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.post("/movies/{movie_id}/classification", response_model=ClassificationRead)
@@ -2025,26 +1625,18 @@ def create_classification_movie(
     classification_create: ClassificationCreate,
     api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        movie = session.get(Movie, movie_id)
+        if not movie:
+            raise HTTPException(status_code=404, detail="Movie not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
+        classification_data = classification_create.dict()
+        classification_data["movie_id"] = movie_id
 
-    movie = session.get(Movie, movie_id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-
-    classification_data = classification_create.dict()
-    classification_data["movie_id"] = movie_id
-
-    classification = Classification(**classification_data)
-    session.add(classification)
-    session.commit()
-    return classification
+        classification = Classification(**classification_data)
+        session.add(classification)
+        session.commit()
+        return classification
 
 
 @app.post("/episodes/{episode_id}/classification", response_model=ClassificationRead)
@@ -2055,26 +1647,18 @@ def create_classification_episode(
     classification_create: ClassificationCreate,
     api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        episode = session.get(Episode, episode_id)
+        if not episode:
+            raise HTTPException(status_code=404, detail="Episode not found")
 
-    access_level = api_key_db.role.value
-    if access_level < Role.JUNIOR.value:
-        raise HTTPException(status_code=403, detail="No permission")
+        classification_data = classification_create.dict()
+        classification_data["episode_id"] = episode_id
 
-    episode = session.get(Episode, episode_id)
-    if not episode:
-        raise HTTPException(status_code=404, detail="Episode not found")
-
-    classification_data = classification_create.dict()
-    classification_data["episode_id"] = episode_id
-
-    classification = Classification(**classification_data)
-    session.add(classification)
-    session.commit()
-    return classification
+        classification = Classification(**classification_data)
+        session.add(classification)
+        session.commit()
+        return classification
 
 
 @app.delete("/classifications/{classification_id}")
@@ -2082,13 +1666,7 @@ def delete_classification(*, session: Session = Depends(get_session),
                    classification_id: int,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         classification = session.get(Classification, classification_id)
         if not classification:
             raise HTTPException(status_code=404, detail="Profile not found")
@@ -2096,8 +1674,6 @@ def delete_classification(*, session: Session = Depends(get_session),
         session.delete(classification)
         session.commit()
         return {"message": "Classification deleted successfully"}
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
 
 
 @app.put("/classifications/{classification_id}", response_model=ClassificationRead)
@@ -2108,13 +1684,7 @@ def update_classification(
         watchlist_update: WatchlistCreate,
         api_key_header: Optional[str] = Depends(api_key_header),
 ):
-    api_key = api_key_header
-    api_key_db = session.get(APIKey, api_key)
-    if not api_key_db:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-
-    access_level = api_key_db.role.value
-    if access_level >= Role.JUNIOR.value:
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
         classification = session.get(Classification, classification_id)
         if not classification:
             raise HTTPException(status_code=404, detail="Classification not found")
@@ -2124,5 +1694,3 @@ def update_classification(
 
         session.commit()
         return classification
-    else:
-        raise HTTPException(status_code=403, detail="No permission")
