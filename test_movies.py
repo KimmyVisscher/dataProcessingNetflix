@@ -248,3 +248,39 @@ def test_update_movie_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# DELETE movie by ID
+
+def test_delete_movie_success():
+    response = client.delete("/movies/11", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Movie deleted successfully"}
+
+
+def test_delete_movie_unauthorized():
+    response = client.delete("/movies/11")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_movie_not_found():
+    response = client.delete("/movies/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Movie not found"
+    }
+
+
+def test_delete_movie_no_permission():
+    response = client.delete("/movies/11", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

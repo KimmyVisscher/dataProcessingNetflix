@@ -423,3 +423,39 @@ def test_update_subtitle_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# DELETE subtitle by ID
+
+def test_delete_subtitle_success():
+    response = client.delete("/subtitles/11", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Subtitle deleted successfully"}
+
+
+def test_delete_subtitle_unauthorized():
+    response = client.delete("/subtitles/11")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_subtitle_not_found():
+    response = client.delete("/subtitles/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Subtitle not found"
+    }
+
+
+def test_delete_subtitle_no_permission():
+    response = client.delete("/subtitles/11", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

@@ -511,3 +511,75 @@ def test_update_profile_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# DELETE account by ID
+
+def test_delete_account_success():
+    response = client.delete("/accounts/11", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Account deleted successfully"}
+
+
+def test_delete_account_unauthorized():
+    response = client.delete("/accounts/11")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_account_not_found():
+    response = client.delete("/accounts/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Account not found"
+    }
+
+
+def test_delete_account_no_permission():
+    response = client.delete("/accounts/11", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# DELETE profile by ID
+
+def test_delete_profile_success():
+    response = client.delete("/profiles/11", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Profile deleted successfully"}
+
+
+def test_delete_profile_unauthorized():
+    response = client.delete("/profiles/11")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_profile_not_found():
+    response = client.delete("/profiles/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Profile not found"
+    }
+
+
+def test_delete_profile_no_permission():
+    response = client.delete("/profiles/11", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

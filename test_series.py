@@ -507,3 +507,75 @@ def test_update_episode_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# DELETE series by ID
+
+def test_delete_series_success():
+    response = client.delete("/series/11", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Series deleted successfully"}
+
+
+def test_delete_series_unauthorized():
+    response = client.delete("/series/11")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_series_not_found():
+    response = client.delete("/series/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Series not found"
+    }
+
+
+def test_delete_series_no_permission():
+    response = client.delete("/series/11", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# DELETE episode by ID
+
+def test_delete_episode_success():
+    response = client.delete("/episodes/11", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Episode deleted successfully"}
+
+
+def test_delete_episode_unauthorized():
+    response = client.delete("/episodes/11")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_episode_not_found():
+    response = client.delete("/episodes/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Episode not found"
+    }
+
+
+def test_delete_episode_no_permission():
+    response = client.delete("/episodes/11", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
