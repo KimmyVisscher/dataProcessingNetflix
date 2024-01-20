@@ -140,11 +140,11 @@ def test_read_movies_by_genre_no_permission():
 
 # POST movie
 
-def test_create_movie_success(mock_db_session, mock_check_apikey_role):
+def test_create_movie_success():
     movie_data = {
         "title": "The Good, the Bad and the Ugly",
         "movie_duration": 161,
-        "movie_id": 21,
+        "movie_id": 13,
         "age_restriction": "TWELVE_YEARS"
     }
 
@@ -154,5 +154,33 @@ def test_create_movie_success(mock_db_session, mock_check_apikey_role):
     assert response.json() == movie_data
 
 
-# def test_create_movie_unauthorized():
-# def test_create_movie_no_premission():
+def test_create_movie_unauthorized():
+    movie_data = {
+        "title": "The Good, the Bad and the Ugly",
+        "movie_duration": 161,
+        "movie_id": 13,
+        "age_restriction": "TWELVE_YEARS"
+    }
+
+    response = client.post("/movies", json=movie_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_create_movie_no_permission():
+    movie_data = {
+        "title": "The Good, the Bad and the Ugly",
+        "movie_duration": 161,
+        "movie_id": 13,
+        "age_restriction": "TWELVE_YEARS"
+    }
+
+    response = client.post("/movies", json=movie_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

@@ -8,21 +8,6 @@ from main import app
 client = TestClient(app)
 
 
-#
-
-#
-# POST series
-#
-# POST episode
-#
-# POST subtitle by episode ID
-#
-# POST subtitle by movie ID
-#
-# POST account
-#
-# POST profile
-#
 # PUT movie by ID
 #
 # PUT series by ID

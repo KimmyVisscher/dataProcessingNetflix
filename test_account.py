@@ -250,3 +250,108 @@ def test_read_profile_by_id_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# POST account
+
+def test_create_account_success():
+    account_data = {
+        "account_id": 13,
+        "email": "alex.lee@example.com",
+        "username": "alex_lee",
+        "password": "hashed_password",
+        "payment_method": "paypal",
+        "subscription_id": 1
+    }
+
+    response = client.post("/accounts", json=account_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == account_data
+
+
+def test_create_account_unauthorized():
+    account_data = {
+        "account_id": 13,
+        "email": "alex.lee@example.com",
+        "username": "alex_lee",
+        "password": "hashed_password",
+        "payment_method": "paypal",
+        "subscription_id": 1
+    }
+
+    response = client.post("/accounts", json=account_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_create_account_no_permission():
+    account_data = {
+        "account_id": 13,
+        "email": "alex.lee@example.com",
+        "username": "alex_lee",
+        "password": "hashed_password",
+        "payment_method": "paypal",
+        "subscription_id": 1
+    }
+
+    response = client.post("/accounts", json=account_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# POST profile
+
+def test_create_profile_success():
+    profile_data = {
+        "profile_id": 25,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "ENGLISH",
+        "account_id": 1
+    }
+
+    response = client.post("/profiles", json=profile_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == profile_data
+
+
+def test_create_profile_unauthorized():
+    profile_data = {
+        "profile_id": 25,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "ENGLISH",
+        "account_id": 1
+    }
+
+    response = client.post("/profiles", json=profile_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_create_profile_no_permission():
+    profile_data = {
+        "profile_id": 25,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "ENGLISH",
+        "account_id": 1
+    }
+
+    response = client.post("/profiles", json=profile_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

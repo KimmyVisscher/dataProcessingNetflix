@@ -290,3 +290,96 @@ def test_read_series_by_genre_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# POST series
+
+def test_create_series_success():
+    series_data = {
+        "serie_name": "Planet Earth",
+        "serie_id": 13,
+        "age_restriction": "SIX_YEARS"
+    }
+
+    response = client.post("/series", json=series_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == series_data
+
+
+def test_create_series_unauthorized():
+    series_data = {
+        "serie_name": "Planet Earth",
+        "serie_id": 13,
+        "age_restriction": "SIX_YEARS"
+    }
+
+    response = client.post("/series", json=series_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_create_series_no_permission():
+    series_data = {
+        "serie_id": 13,
+        "serie_name": "Planet Earth",
+        "age_restriction": "SIX_YEARS"
+    }
+
+    response = client.post("/series", json=series_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# POST episode
+
+def test_create_episode_success():
+    episode_data = {
+        "episode_id": 37,
+        "title": "From Pole to Pole",
+        "episode_duration": 49,
+        "serie_id": 13
+    }
+
+    response = client.post("/episodes", json=episode_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == episode_data
+
+
+def test_create_episode_unauthorized():
+    episode_data = {
+        "episode_id": 37,
+        "title": "From Pole to Pole",
+        "episode_duration": 49,
+        "serie_id": 13
+    }
+
+    response = client.post("/episodes", json=episode_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_create_episode_no_permission():
+    episode_data = {
+        "episode_id": 37,
+        "title": "From Pole to Pole",
+        "episode_duration": 49,
+        "serie_id": 13
+    }
+
+    response = client.post("/episodes", json=episode_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
