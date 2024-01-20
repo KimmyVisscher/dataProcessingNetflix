@@ -1,0 +1,6 @@
+fastapi
+pymysql
+requests
+sqlmodel
+xmltodict
+uvicorn[standard]
