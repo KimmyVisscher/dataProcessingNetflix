@@ -383,3 +383,127 @@ def test_create_episode_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# PUT series by ID
+
+def test_update_serie_success():
+    updated_data = {
+        "serie_id": 6,
+        "title": "The Mandalorian",
+        "age_restriction": "SIX_YEARS"
+    }
+
+    response = client.put("/series/6", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_serie_unauthorized():
+    updated_data = {
+        "serie_id": 6,
+        "serie_name": "The Mandalorian",
+        "age_restriction": "SIX_YEARS"
+    }
+
+    response = client.put("/series/6", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_serie_not_found():
+    updated_data = {
+        "serie_id": 6,
+        "serie_name": "The Mandalorian",
+        "age_restriction": "SIX_YEARS"
+    }
+
+    response = client.put("/series/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Serie not found"
+    }
+
+
+def test_update_serie_no_permission():
+    updated_data = {
+        "serie_name": "The Mandalorian",
+        "age_restriction": "SIX_YEARS",
+        "serie_id": 6
+    }
+
+    response = client.put("/series/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# PUT episode by ID
+
+def test_update_episode_success():
+    updated_data = {
+        "episode_id": 6,
+        "title": "Deception",
+        "episode_duration": 55,
+        "serie_id": 1
+    }
+
+    response = client.put("/episodes/6", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_episode_unauthorized():
+    updated_data = {
+        "episode_id": 6,
+        "title": "Deception",
+        "episode_duration": 55,
+        "serie_id": 1
+    }
+
+    response = client.put("/episodes/6", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_episode_not_found():
+    updated_data = {
+        "episode_id": 6,
+        "title": "Deception",
+        "episode_duration": 55,
+        "serie_id": 1
+    }
+
+    response = client.put("/episodes/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Episode not found"
+    }
+
+
+def test_update_episode_no_permission():
+    updated_data = {
+        "episode_id": 6,
+        "title": "Deception",
+        "episode_duration": 55,
+        "serie_id": 1
+    }
+
+    response = client.put("/episodes/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

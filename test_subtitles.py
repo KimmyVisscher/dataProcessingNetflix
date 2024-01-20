@@ -355,3 +355,71 @@ def test_create_subtitle_for_movie_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# PUT subtitle by ID
+
+def test_update_subtitle_success():
+    updated_data = {
+        "subtitle_id": 6,
+        "language": "ITALIAN",
+        "subtitle_location": "/path/to/subtitles/movie5_it.srt",
+        "movie_id": 5,
+        "serie_id": None
+    }
+
+    response = client.put("/subtitles/6", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_subtitle_unauthorized():
+    updated_data = {
+        "subtitle_id": 6,
+        "language": "ITALIAN",
+        "subtitle_location": "/path/to/subtitles/movie5_it.srt",
+        "movie_id": 5,
+        "serie_id": None
+    }
+
+    response = client.put("/subtitles/6", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_subtitle_not_found():
+    updated_data = {
+        "subtitle_id": 6,
+        "language": "ITALIAN",
+        "subtitle_location": "/path/to/subtitles/movie5_it.srt",
+        "movie_id": 5,
+        "serie_id": None
+    }
+
+    response = client.put("/subtitles/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Subtitle not found"
+    }
+
+
+def test_update_subtitle_no_permission():
+    updated_data = {
+        "subtitle_id": 6,
+        "language": "ITALIAN",
+        "subtitle_location": "/path/to/subtitles/movie5_it.srt",
+        "movie_id": 5,
+        "serie_id": None
+    }
+
+    response = client.put("/subtitles/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

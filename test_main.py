@@ -8,18 +8,6 @@ from main import app
 client = TestClient(app)
 
 
-# PUT movie by ID
-#
-# PUT series by ID
-#
-# PUT episode by ID
-#
-# PUT subtitle by ID
-#
-# PUT account by ID
-#
-# PUT profile by ID
-#
 # DELETE movie by ID
 #
 # DELETE series by ID

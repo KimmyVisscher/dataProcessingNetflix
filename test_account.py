@@ -355,3 +355,159 @@ def test_create_profile_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# PUT account by ID
+
+def test_update_account_success():
+    updated_data = {
+        "account_id": 6,
+        "email": "james.smith@example.com",
+        "username": "james_smith",
+        "password": "hashed_password",
+        "address": None,
+        "zip_code": None,
+        "city": None,
+        "payment_method": "paypal",
+        "blocked": None,
+        "subscription_id": "1"
+    }
+
+    response = client.put("/accounts/6", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_account_unauthorized():
+    updated_data = {
+        "account_id": 6,
+        "email": "james.smith@example.com",
+        "username": "james_smith",
+        "password": "hashed_password",
+        "address": None,
+        "zip_code": None,
+        "city": None,
+        "payment_method": "paypal",
+        "blocked": None,
+        "subscription_id": "1"
+    }
+
+    response = client.put("/accounts/6", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_account_not_found():
+    updated_data = {
+        "account_id": 6,
+        "email": "james.smith@example.com",
+        "username": "james_smith",
+        "password": "hashed_password",
+        "address": None,
+        "zip_code": None,
+        "city": None,
+        "payment_method": "paypal",
+        "blocked": None,
+        "subscription_id": "1"
+    }
+
+    response = client.put("/accounts/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Account not found"
+    }
+
+
+def test_update_account_no_permission():
+    updated_data = {
+        "account_id": 6,
+        "email": "james.smith@example.com",
+        "username": "james_smith",
+        "password": "hashed_password",
+        "address": None,
+        "zip_code": None,
+        "city": None,
+        "payment_method": "paypal",
+        "blocked": None,
+        "subscription_id": "1"
+    }
+
+    response = client.put("/accounts/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# PUT profile by ID
+
+def test_update_profile_success():
+    updated_data = {
+        "profile_id": 6,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "GERMAN",
+        "account_id": 2
+    }
+
+    response = client.put("/profiles/6", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_profile_unauthorized():
+    updated_data = {
+        "profile_id": 6,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "GERMAN",
+        "account_id": 2
+    }
+
+    response = client.put("/profiles/6", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_profile_not_found():
+    updated_data = {
+        "profile_id": 6,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "GERMAN",
+        "account_id": 2
+    }
+
+    response = client.put("/profiles/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Profile not found"
+    }
+
+
+def test_update_profile_no_permission():
+    updated_data = {
+        "profile_id": 6,
+        "profile_image": "/path/to/image",
+        "profile_child": 0,
+        "language": "GERMAN",
+        "account_id": 2
+    }
+
+    response = client.put("/profiles/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }

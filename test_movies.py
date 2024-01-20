@@ -184,3 +184,67 @@ def test_create_movie_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# PUT movie by ID
+
+def test_update_movie_success():
+    updated_data = {
+        "movie_id": 6,
+        "title": "Inception",
+        "movie_duration": 160,
+        "age_restriction": "TWELVE_YEARS"
+    }
+
+    response = client.put("/movies/6", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_movie_unauthorized():
+    updated_data = {
+        "movie_id": 6,
+        "title": "Inception",
+        "movie_duration": 160,
+        "age_restriction": "TWELVE_YEARS"
+    }
+
+    response = client.put("/movies/6", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_movie_not_found():
+    updated_data = {
+        "movie_id": 999,
+        "title": "Inception",
+        "movie_duration": 160,
+        "age_restriction": "TWELVE_YEARS"
+    }
+
+    response = client.put("/movies/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Movie not found"
+    }
+
+
+def test_update_movie_no_permission():
+    updated_data = {
+        "movie_id": 6,
+        "title": "Inception",
+        "movie_duration": 160,
+        "age_restriction": "TWELVE_YEARS"
+    }
+
+    response = client.put("/movies/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
