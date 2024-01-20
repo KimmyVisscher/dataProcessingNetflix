@@ -30,6 +30,7 @@ END //
 DELIMITER ;
 -- returns 1 single value with the monthly revenue
 
+
 DELIMITER //
 
 CREATE PROCEDURE CalculateTotalMonthlyRevenue()
@@ -65,6 +66,30 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+--Name = calculateTotalSubscriptionSD
+BEGIN
+    SELECT COUNT(*) AS account_count
+    FROM account
+    WHERE subscription_id = 1;
+END
+
+--Name = calculateTotalSubscriptionHD
+BEGIN
+    SELECT COUNT(*) AS account_count
+    FROM account
+    WHERE subscription_id = 2;
+END
+
+--Name = calculateTotalSubscriptionUHD
+BEGIN
+    SELECT COUNT(*) AS account_count
+    FROM account
+    WHERE subscription_id = 3;
+END
+
 
 --
 -- Trigger
