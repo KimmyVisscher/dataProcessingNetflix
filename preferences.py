@@ -113,3 +113,69 @@ def read_agepreference_by_id(
             return Response(content=agepreferences_to_xml_string(([agepreference])), media_type="application/xml")
         else:
             return agepreference
+
+
+@app.post("/profiles/{profile_id}/genrepreferences", response_model=GenrespreferenceRead)
+def create_genrepreference(
+    *,
+    session: Session = Depends(get_session),
+    profile_id: int,
+    genrepreference_create: GenrespreferenceCreate,
+    api_key_header: Optional[str] = Depends(api_key_header),
+):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        profile = session.get(Profile, profile_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        preference_data = genrepreference_create.dict()
+        preference_data["profile_id"] = profile_id
+
+        preference = Genrespreference(**preference_data)
+        session.add(preference)
+        session.commit()
+        return preference
+
+
+@app.post("/profiles/{profile_id}/indicationpreferences", response_model=IndicationpreferenceRead)
+def create_indicationpreference(
+    *,
+    session: Session = Depends(get_session),
+    profile_id: int,
+    indicationpreference_create: IndicationpreferenceCreate,
+    api_key_header: Optional[str] = Depends(api_key_header),
+):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        profile = session.get(Profile, profile_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        preference_data = indicationpreference_create.dict()
+        preference_data["profile_id"] = profile_id
+
+        preference = Indicationpreference(**preference_data)
+        session.add(preference)
+        session.commit()
+        return preference
+
+
+@app.post("/profiles/{profile_id}/indicationpreferences", response_model=AgepreferenceRead)
+def create_agepreference(
+    *,
+    session: Session = Depends(get_session),
+    profile_id: int,
+    agepreference_create: AgepreferenceCreate,
+    api_key_header: Optional[str] = Depends(api_key_header),
+):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        profile = session.get(Profile, profile_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        preference_data = agepreference_create.dict()
+        preference_data["profile_id"] = profile_id
+
+        preference = Agepreference(**preference_data)
+        session.add(preference)
+        session.commit()
+        return preference
