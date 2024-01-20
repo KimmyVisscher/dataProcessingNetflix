@@ -196,3 +196,20 @@ def read_totalrevenue(*, session: Session = Depends(get_session),
             pass
         else:
             return {"revenue": f"{total_revenue}"}
+
+
+@app.get("/accounts/totalaccounts/")
+def read_totalaccounts(*, session: Session = Depends(get_session),
+               api_key_header: Optional[str] = Depends(api_key_header),
+               accept: Optional[str] = Header(None)
+               ):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        result = session.exec(text('CALL `calculateTotalAccounts`();'))
+        total_accounts_row = result.fetchone()
+        total_accounts = total_accounts_row[0]
+
+        if accept and "application/xml" in accept:
+            return PlainTextResponse(content=f"<amount>{total_accounts}</amount>", media_type="application/xml")
+            pass
+        else:
+            return {"amount": f"{total_accounts}"}
