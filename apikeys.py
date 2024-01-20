@@ -3,13 +3,11 @@ from main import *
 
 @app.post("/apikeys/")
 def create_api_key(*, session: Session = Depends(get_session),
-                   role: str,
+                   apikey_create: APIKeyCreate,
                    api_key_header: Optional[str] = Depends(api_key_header)
                    ):
     if check_apikey_role(session, api_key_header, Role.SENIOR.value):
-        if role != "JUNIOR" and role != "MEDIOR" and role != "SENIOR":
-            raise HTTPException(status_code=400, detail="Invalid role")
-
+        role = apikey_create.role
 
         key_length = 15
         letters = string.ascii_letters

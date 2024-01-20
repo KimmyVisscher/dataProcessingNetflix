@@ -52,10 +52,10 @@ class Quality(Enum):
 
 
 class Role(Enum):
-    UNAUTHORIZED = 0
-    JUNIOR = 1
-    MEDIOR = 2
-    SENIOR = 3
+    UNAUTHORIZED = "UNAUTHORIZED"
+    JUNIOR = "JUNIOR"
+    MEDIOR = "MEDIOR"
+    SENIOR = "SENIOR"
 
     def get_value(role):
         return role.value
@@ -78,6 +78,10 @@ class Language(Enum):
 
 class APIKey(SQLModel, table=True):
     apikey: str = Field(default=None, primary_key=True)
+    role: Role
+
+
+class APIKeyCreate(SQLModel):
     role: Role
 
 
@@ -616,11 +620,22 @@ def on_startup():
     create_db_and_tables()
 
 
+def check_role_value(role):
+    if role == Role.JUNIOR.value:
+        return 1
+    elif role == Role.MEDIOR.value:
+        return 2
+    elif role == Role.SENIOR.value:
+        return 3
+    elif role == Role.UNAUTHORIZED.value:
+        return 0
+
+
 def check_apikey_role(session, apikey, rolevalue):
     api_key_db = session.get(APIKey, apikey)
     if not api_key_db:
         raise HTTPException(status_code=401, detail="Invalid API key")
-    elif api_key_db.role.value >= rolevalue:
+    elif check_role_value(api_key_db.role.value) >= check_role_value(rolevalue):
         return True
     else:
         raise HTTPException(status_code=403, detail="No permission")
