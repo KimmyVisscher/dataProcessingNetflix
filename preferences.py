@@ -179,3 +179,108 @@ def create_agepreference(
         session.add(preference)
         session.commit()
         return preference
+
+
+@app.put("/agepreferences/{agepreference_id}", response_model=AgepreferenceRead)
+def update_agepreference(
+        *,
+        session: Session = Depends(get_session),
+        agepreference_id: int,
+        agepreference_update: AgepreferenceCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        agepreference = session.get(Agepreference, agepreference_id)
+        if not agepreference:
+            raise HTTPException(status_code=404, detail="Agepreference not found")
+
+        for field, value in agepreference_update.dict().items():
+            setattr(agepreference, field, value)
+
+        session.commit()
+        return agepreference
+
+
+@app.delete("/agepreferences/{agepreference_id}")
+def delete_agepreference(*, session: Session = Depends(get_session),
+                    agepreference_id: int,
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        agepreference = session.get(Agepreference, agepreference_id)
+        if not agepreference:
+            raise HTTPException(status_code=404, detail="Agepreference not found")
+
+        session.delete(agepreference)
+        session.commit()
+        return {"message": "Agepreference deleted successfully"}
+
+
+@app.put("/indicationpreferences/{indicationpreference_id}", response_model=IndicationpreferenceRead)
+def update_indicationpreference(
+        *,
+        session: Session = Depends(get_session),
+        indicationpreference_id: int,
+        indicationpreference_update: IndicationpreferenceCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        indicationpreference = session.get(Indicationpreference, indicationpreference_id)
+        if not indicationpreference:
+            raise HTTPException(status_code=404, detail="Indicationpreference not found")
+
+        for field, value in indicationpreference_update.dict().items():
+            setattr(indicationpreference, field, value)
+
+        session.commit()
+        return indicationpreference
+
+
+@app.delete("/indicationpreferences/{indicationpreference_id}")
+def delete_indicationpreference(*, session: Session = Depends(get_session),
+                    indicationpreference_id: int,
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        indicationpreference = session.get(Indicationpreference, indicationpreference_id)
+        if not indicationpreference:
+            raise HTTPException(status_code=404, detail="Indicationpreference not found")
+
+        session.delete(indicationpreference)
+        session.commit()
+        return {"messindication": "Indicationpreference deleted successfully"}
+
+
+@app.put("/genrepreferences/{genrepreference_id}", response_model=GenrespreferenceRead)
+def update_genrepreference(
+        *,
+        session: Session = Depends(get_session),
+        genrepreference_id: int,
+        genrepreference_update: GenrespreferenceCreate,
+        api_key_header: Optional[str] = Depends(api_key_header),
+):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        genrepreference = session.get(Genrespreference, genrepreference_id)
+        if not genrepreference:
+            raise HTTPException(status_code=404, detail="Genrepreference not found")
+
+        for field, value in genrepreference_update.dict().items():
+            setattr(genrepreference, field, value)
+
+        session.commit()
+        return genrepreference
+
+
+@app.delete("/genrepreferences/{genrepreference_id}")
+def delete_genrepreference(*, session: Session = Depends(get_session),
+                    genrepreference_id: int,
+                    api_key_header: Optional[str] = Depends(api_key_header)
+                    ):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        genrepreference = session.get(Genrespreference, genrepreference_id)
+        if not genrepreference:
+            raise HTTPException(status_code=404, detail="Genrepreference not found")
+
+        session.delete(genrepreference)
+        session.commit()
+        return {"messgenre": "Genrepreference deleted successfully"}
