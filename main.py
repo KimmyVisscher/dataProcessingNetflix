@@ -9,6 +9,7 @@ from fastapi.security import APIKeyHeader, APIKeyQuery
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 import random
 import string
 

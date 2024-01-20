@@ -179,3 +179,20 @@ def delete_profile(*, session: Session = Depends(get_session),
         session.delete(profile)
         session.commit()
         return {"message": "Profile deleted successfully"}
+
+
+@app.get("/accounts/totalrevenue/")
+def read_totalrevenue(*, session: Session = Depends(get_session),
+               api_key_header: Optional[str] = Depends(api_key_header),
+               accept: Optional[str] = Header(None)
+               ):
+    if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
+        result = session.exec(text('CALL `CalculateTotalMonthlyRevenue`();'))
+        total_revenue_row = result.fetchone()
+        total_revenue = total_revenue_row[0]
+
+        if accept and "application/xml" in accept:
+            return PlainTextResponse(content=f"<revenue>{total_revenue}</revenue>", media_type="application/xml")
+            pass
+        else:
+            return {"revenue": f"{total_revenue}"}
