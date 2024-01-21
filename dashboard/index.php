@@ -43,7 +43,7 @@
               <span class="material-symbols-sharp">subscriptions </span>
               <h3>Abonnementen</h3>
            </a>
-           <a href="./login/login.html">
+           <a href="./login/login.php">
               <span class="material-symbols-sharp">logout </span>
               <h3>uitloggen</h3>
            </a>
@@ -343,43 +343,6 @@
       // Close cURL session
       curl_close($ch);
 ?>
-   <div class="sales-analytics">
-     <h2>Verkoop analyse</h2>
-
-      <div class="item onlion">
-        <div class="icon">
-          <span class="material-symbols-sharp">subscriptions</span>
-        </div>
-        <div class="right_text">
-          <div class="info">
-            <h3>Basis</h3>
-            <small class="text-muted">Laatste keer verkocht 2 uur geleden</small>
-          </div>
-        </div>
-      </div>
-      <div class="item onlion">
-        <div class="icon">
-          <span class="material-symbols-sharp">subscriptions</span>
-        </div>
-        <div class="right_text">
-          <div class="info">
-            <h3>Standaard</h3>
-            <small class="text-muted">Laatste keer verkocht 1.5 uur geleden</small>
-          </div>
-        </div>
-      </div>
-      <div class="item onlion">
-        <div class="icon">
-          <span class="material-symbols-sharp">subscriptions</span>
-        </div>
-        <div class="right_text">
-          <div class="info">
-            <h3>Premium</h3>
-            <small class="text-muted">Laatste keer verkocht 20 minuten geleden</small>
-          </div>
-        </div>
-      </div>
-  	</div>
   </div>
    <script src="script.js"></script>
 </body>
