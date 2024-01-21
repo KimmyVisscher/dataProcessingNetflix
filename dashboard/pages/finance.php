@@ -27,7 +27,7 @@
               <span class="material-symbols-sharp">grid_view </span>
               <h3>Dashboard</h3>
            </a>
-           <a href="account.html">
+           <a href="account.php">
               <span class="material-symbols-sharp">person_outline </span>
               <h3>Accounts</h3>
            </a>
@@ -109,10 +109,46 @@
                 <div class="middle">
                   <div class="left">
                     <h3>Omzet abonnementen</h3>
-                    <h1>€25,024</h1>
+                    <?php
+                      $endpoint = 'http://127.0.0.1:8000/accounts/totalrevenue/';
+
+                        $headers = [
+                            'X-API-KEY: kimvissss',
+                            'Accept: application/json'
+                        ];
+
+                        // Initialize cURL session
+                        $ch = curl_init($endpoint);
+
+                        // Set cURL options including headers
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+                        // Execute cURL session and get the response
+                        $response = curl_exec($ch);
+
+                        // Check for cURL errors
+                        if (curl_errno($ch)) {
+                            echo 'Curl error: ' . curl_error($ch);
+                        } else {
+                            // Process the response
+                            $data = json_decode($response, true);
+                        }
+
+                        if ($data) {
+                            foreach ($data as $revenue) {
+                              echo "<h1>€ $revenue</h1>";
+                            }
+                        } else {
+                            // Handle invalid JSON response
+                            echo 'Invalid JSON response.';
+                        }
+
+                        // Close cURL session
+                        curl_close($ch);
+                      ?>
                   </div>
                 </div>
-                <small>Laatste 24 uur</small>
              </div>
         </div>
       
