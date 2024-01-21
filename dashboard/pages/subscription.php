@@ -57,7 +57,44 @@
                <div class="middle">
                  <div class="left">
                    <h3>Basis abonnement</h3>
-                   <h1>750x</h1>
+                   <?php
+                      $endpoint = 'http://127.0.0.1:8000/subscriptions/gettotal?quality=SD';
+
+                        $headers = [
+                            'X-API-KEY: kimvissss',
+                            'Accept: application/json'
+                        ];
+
+                        // Initialize cURL session
+                        $ch = curl_init($endpoint);
+
+                        // Set cURL options including headers
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+                        // Execute cURL session and get the response
+                        $response = curl_exec($ch);
+
+                        // Check for cURL errors
+                        if (curl_errno($ch)) {
+                            echo 'Curl error: ' . curl_error($ch);
+                        } else {
+                            // Process the response
+                            $data = json_decode($response, true);
+                        }
+
+                        if ($data) {
+                            foreach ($data as $SD) {
+                              echo "<h1>$SD</h1>";
+                            }
+                        } else {
+                            // Handle invalid JSON response
+                            echo 'Invalid JSON response.';
+                        }
+
+                        // Close cURL session
+                        curl_close($ch);
+                      ?>
                  </div>
                </div>
                <small>SD</small>
@@ -68,7 +105,44 @@
                 <div class="middle">
                   <div class="left">
                     <h3>Standaard abonnement</h3>
-                    <h1>300x</h1>
+                    <?php
+                      $endpoint = 'http://127.0.0.1:8000/subscriptions/gettotal?quality=HD';
+
+                        $headers = [
+                            'X-API-KEY: kimvissss',
+                            'Accept: application/json'
+                        ];
+
+                        // Initialize cURL session
+                        $ch = curl_init($endpoint);
+
+                        // Set cURL options including headers
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+                        // Execute cURL session and get the response
+                        $response = curl_exec($ch);
+
+                        // Check for cURL errors
+                        if (curl_errno($ch)) {
+                            echo 'Curl error: ' . curl_error($ch);
+                        } else {
+                            // Process the response
+                            $data = json_decode($response, true);
+                        }
+
+                        if ($data) {
+                            foreach ($data as $HD) {
+                              echo "<h1>$HD</h1>";
+                            }
+                        } else {
+                            // Handle invalid JSON response
+                            echo 'Invalid JSON response.';
+                        }
+
+                        // Close cURL session
+                        curl_close($ch);
+                      ?>
                   </div>
                 </div>
                 <small>HD</small>
@@ -79,7 +153,44 @@
                 <div class="middle">
                   <div class="left">
                     <h3>Premium abonnement</h3>
-                    <h1>500x</h1>
+                    <?php
+                      $endpoint = 'http://127.0.0.1:8000/subscriptions/gettotal?quality=UHD';
+
+                        $headers = [
+                            'X-API-KEY: kimvissss',
+                            'Accept: application/json'
+                        ];
+
+                        // Initialize cURL session
+                        $ch = curl_init($endpoint);
+
+                        // Set cURL options including headers
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+                        // Execute cURL session and get the response
+                        $response = curl_exec($ch);
+
+                        // Check for cURL errors
+                        if (curl_errno($ch)) {
+                            echo 'Curl error: ' . curl_error($ch);
+                        } else {
+                            // Process the response
+                            $data = json_decode($response, true);
+                        }
+
+                        if ($data) {
+                            foreach ($data as $UHD) {
+                              echo "<h1>$UHD</h1>";
+                            }
+                        } else {
+                            // Handle invalid JSON response
+                            echo 'Invalid JSON response.';
+                        }
+
+                        // Close cURL session
+                        curl_close($ch);
+                      ?>
                   </div>
                 </div>
                 <small>UHD</small>
