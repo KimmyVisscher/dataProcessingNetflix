@@ -649,3 +649,4 @@ import watchlist
 import preferences
 import apikeys
 import classification
+import subscription
