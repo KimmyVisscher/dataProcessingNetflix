@@ -159,7 +159,7 @@ def create_indicationpreference(
         return preference
 
 
-@app.post("/profiles/{profile_id}/indicationpreferences", response_model=AgepreferenceRead)
+@app.post("/profiles/{profile_id}/agepreferences", response_model=AgepreferenceRead)
 def create_agepreference(
     *,
     session: Session = Depends(get_session),
