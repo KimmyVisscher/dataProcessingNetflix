@@ -145,6 +145,48 @@
 						"type": "string"
 					}
 				}
+			},
+			"Genrepreference": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"profile": {
+						"$ref": "#/components/schemas/Profile"
+					},
+					"genre": {
+						"type": "string"
+					}
+				}
+			},
+			"Indicationpreference": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"profile": {
+						"$ref": "#/components/schemas/Profile"
+					},
+					"indication": {
+						"type": "string"
+					}
+				}
+			},
+			"Agepreference": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"profile": {
+						"$ref": "#/components/schemas/Profile"
+					},
+					"age": {
+						"type": "string"
+					}
+				}
 			}
 		}
 	},
@@ -1431,155 +1473,78 @@
 				}
 			}
 		},
-		"/accounts": {
+		"/accounts/{account_name}": {
 			"get": {
-				"description": "Returns all accounts the user has access to",
-				"responses": {
-					"200": {
-						"description": "An array of account objects",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "#components/schemas/Account"
-									}
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "#components/schemas/Account"
-									}
-								}
+				"description": "Login with username",
+				"requestBody": {
+					"description": "A username for login check",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Account"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Account"
 							}
 						}
-					},
-					"400": {
-						"description": "Bad request",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
+					}
+				},
+				"400": {
+					"description": "Bad request",
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
 							}
 						}
-					},
-					"401": {
-						"description": "Invalid authentication credentials",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
+					}
+				},
+				"401": {
+					"description": "Invalid authentication credentials",
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
 							}
 						}
-					},
-					"403": {
-						"description": "Access forbidden",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
+					}
+				},
+				"403": {
+					"description": "Access forbidden",
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
 							}
 						}
-					},
-					"404": {
-						"description": "Page not found",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
+					}
+				},
+				"404": {
+					"description": "Page not found",
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
 							}
 						}
-					},
-					"default": {
-						"description": "error",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
+					}
+				},
+				"default": {
+					"description": "error",
+					"content": {
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
 							}
 						}
 					}
 				}
-			},
-			"/accounts/{account_name}": {
-				"get": {
-					"description": "Login with username",
-					"requestBody": {
-						"description": "A username for login check",
-						"required": true,
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Account"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/Account"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad request",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Invalid authentication credentials",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Access forbidden",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Page not found",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
-							}
-						}
-					},
-					"default": {
-						"description": "error",
-						"content": {
-							"text/html": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorModel"
-								}
-							}
-						}
-					}
-					}
 				}
-			},
+			}
+		},
 		"/accounts/{account_id}": {
 			"get": {
 				"description": "Returns the account with id {account_id}",
@@ -1826,6 +1791,312 @@
 				}
 			}
 		},
+		"/profiles/{profile_id}/genrepreferences": {
+			"get": {
+				"description": "Returns the genrepreferences that belong to the profile with id {profile_id}",
+				"responses": {
+					"200": {
+						"description": "An array of genrepreference objects that belongs to the give profile id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Genrepreference"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Add a new genrepreference to a profile",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Genrepreference"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Genrepreference"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/{profile_id}/indicationpreferences": {
+			"get": {
+				"description": "Returns the indicationpreference that belong to the profile with id {profile_id}",
+				"responses": {
+					"200": {
+						"description": "An array of indicationpreference objects that belongs to the give profile id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Indicationpreference"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Add a new indicationpreference to a profile",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Indicationpreference"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Indicationpreference"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/{profile_id}/agepreferences": {
+			"get": {
+				"description": "Returns the agepreferences that belong to the profile with id {profile_id}",
+				"responses": {
+					"200": {
+						"description": "An array of agepreference objects that belongs to the give profile id",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Agepreference"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Add a new agepreference to a profile",
+				"requestBody": {
+					"description": "Required elements of the post request",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Agepreference"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Agepreference"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Created"
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/profiles/{account_id}": {
 			"get": {
 				"description": "Returns the profile(s) that are attached to the account with id {account_id}",
@@ -1975,6 +2246,374 @@
 					}
 				}
 			}
+		},
+		"/genrepreferences/{genrepreference_id}": {
+			"get": {
+				"description": "Returns the genrepreference with the specified {genrepreference_id}",
+				"responses": {
+					"200": {
+						"description": "A genrepreference object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Genrepreference"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Genrepreference"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the genrepreference object with id {genrepreference_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Genrepreference"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Genrepreference"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {genrepreference_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
+					}
+				}
+			}
+		},
+		"/indicationpreferences/{indicationpreference_id}": {
+			"get": {
+				"description": "Returns the indicationpreference with the specified {indicationpreference_id}",
+				"responses": {
+					"200": {
+						"description": "An indicationpreference object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Indicationpreference"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Indicationpreference"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the indicationpreference object with id {indicationpreference_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Indicationpreference"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Indicationpreference"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {indicationpreference_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
+					}
+				}
+			}
+		},
+		"/agepreferences/{agepreference_id}": {
+			"get": {
+				"description": "Returns the agepreference with the specified {agepreference_id}",
+				"responses": {
+					"200": {
+						"description": "An agepreference object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Agepreference"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Agepreference"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid authentication credentials",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access forbidden",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Page not found",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "error",
+						"content": {
+							"text/html": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorModel"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"description": "Updates the agepreference object with id {agepreference_id}",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Agepreference"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/Agepreference"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Resource updated succesfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessModel"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"text/html": {
+							"schema": {
+								"$ref": "#/components/schemas/ErrorModel"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Deletes the resource with id {agepreference_id}",
+				"responses": {
+					"204": {
+						"description": "Resource deleted succesfully"
+					}
+				}
+			}
 		}
-	}
 }

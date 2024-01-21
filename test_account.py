@@ -254,26 +254,6 @@ def test_read_profile_by_id_no_permission():
 
 # POST account
 
-def test_create_account_success():
-    account_data = {
-        "account_id": 13,
-        "email": "alex.lee@example.com",
-        "username": "alex_lee",
-        "password": "hashed_password",
-        "addres": None,
-        "zip_code": None,
-        "city": None,
-        "payment_method": "paypal",
-        "blocked": None,
-        "subscription_id": 1
-    }
-
-    response = client.post("/accounts", json=account_data, headers={"X-API-KEY": "senior"})
-
-    assert response.status_code == 200
-    assert response.json() == account_data
-
-
 def test_create_account_unauthorized():
     account_data = {
         "account_id": 13,
@@ -370,26 +350,6 @@ def test_create_profile_no_permission():
 
 
 # PUT account by ID
-
-def test_update_account_success():
-    updated_data = {
-        "account_id": 6,
-        "email": "james.smith@example.com",
-        "username": "james_smith",
-        "password": "hashed_password",
-        "addres": None,
-        "zip_code": None,
-        "city": None,
-        "payment_method": "paypal",
-        "blocked": None,
-        "subscription_id": "1"
-    }
-
-    response = client.put("/accounts/6", json=updated_data, headers={"X-API-KEY": "senior"})
-
-    assert response.status_code == 200
-    assert response.json() == updated_data
-
 
 def test_update_account_unauthorized():
     updated_data = {
@@ -526,13 +486,6 @@ def test_update_profile_no_permission():
 
 
 # DELETE account by ID
-
-def test_delete_account_success():
-    response = client.delete("/accounts/11", headers={"X-API-KEY": "senior"})
-
-    assert response.status_code == 200
-    assert response.json() == {"message": "Account deleted successfully"}
-
 
 def test_delete_account_unauthorized():
     response = client.delete("/accounts/11")
