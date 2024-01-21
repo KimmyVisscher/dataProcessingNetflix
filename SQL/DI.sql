@@ -88,16 +88,21 @@ DELIMITER //
 
 CREATE PROCEDURE daily_incremental_backup()
 BEGIN
-
   DECLARE last_incremental_backup_time TIMESTAMP;
 
   -- Retrieve the last incremental backup time for all tables
   SELECT MAX(last_incremental_backup_time) INTO last_incremental_backup_time
   FROM backup_log;
 
+  -- Generate a unique timestamp for the current backup
+  SET @current_timestamp = DATE_FORMAT(NOW(), '%Y%m%d_%H%i%s');
+
+  -- Construct the filename for the incremental backup
+  SET @backup_filename = CONCAT('C:\\Users\\Bram\\Desktop\\incremental_backup_', @current_timestamp, '.sql');
+
   -- Make an incremental backup of the changes since the last backup
   -- Assuming all tables have the column 'modification_timestamp'
-  SELECT * INTO OUTFILE 'C:\\Users\\Bram\\Desktop\\incremental_backup.sql'
+  SELECT * INTO OUTFILE @backup_filename
   FROM `account`, `profile`, `subscription`, `watchlist`
   WHERE modification_timestamp > last_incremental_backup_time;
 
@@ -108,6 +113,7 @@ BEGIN
 END //
 
 DELIMITER ;
+
 
 -- Monthly full backup. -------------------------------------------------------------
 
