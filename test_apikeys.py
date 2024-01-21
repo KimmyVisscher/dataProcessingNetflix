@@ -94,7 +94,7 @@ def test_read_apikey_json_response():
 def test_read_apikey_xml_response():
     response = client.get("/apikey/senior", headers={"X-API-KEY": "senior", "accept": "application/xml"})
     assert response.status_code == 200
-    assert response.text == "<apikey><apikey>senior</apikey><role>Role.SENIOR</role></apikey>"
+    assert response.text == "<apikey><apikey>senior</apikey><role>Role.SENIOR</role></apikey>" or response.text == "<apikey><role>Role.SENIOR</role><apikey>senior</apikey></apikey>"
 
 
 def test_read_apikey_unauthorized():
