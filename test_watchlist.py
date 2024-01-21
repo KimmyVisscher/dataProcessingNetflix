@@ -55,3 +55,199 @@ def test_read_watchlist_by_profile_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# POST movie to watchlist
+
+def test_add_movie_to_watchlist_success():
+    watchlist_data = {
+        "watchlist_id": 3,
+        "movie_id": 2,
+        "serie_id": None,
+        "profile_id": 2
+    }
+
+    response = client.post("/watchlist/movie", json=watchlist_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == watchlist_data
+
+
+def test_add_movie_to_watchlist_unauthorized():
+    watchlist_data = {
+        "watchlist_id": 3,
+        "movie_id": 2,
+        "serie_id": None,
+        "profile_id": 2
+    }
+
+    response = client.post("/watchlist/movie", json=watchlist_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_add_movie_to_watchlist_no_permission():
+    watchlist_data = {
+        "watchlist_id": 3,
+        "movie_id": 2,
+        "serie_id": None,
+        "profile_id": 2
+    }
+
+    response = client.post("/watchlist/movie", json=watchlist_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# POST series to watchlist
+
+def test_add_serie_to_watchlist_success():
+    watchlist_data = {
+        "watchlist_id": 3,
+        "movie_id": None,
+        "serie_id": 2,
+        "profile_id": 2
+    }
+
+    response = client.post("/watchlist/serie", json=watchlist_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == watchlist_data
+
+
+def test_add_serie_to_watchlist_unauthorized():
+    watchlist_data = {
+        "watchlist_id": 3,
+        "movie_id": None,
+        "serie_id": 2,
+        "profile_id": 2
+    }
+
+    response = client.post("/watchlist/serie", json=watchlist_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_add_serie_to_watchlist_no_permission():
+    watchlist_data = {
+        "watchlist_id": 3,
+        "movie_id": None,
+        "serie_id": 2,
+        "profile_id": 2
+    }
+
+    response = client.post("/watchlist/serie", json=watchlist_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# PUT watchlist by ID
+
+def test_update_watchlist_success():
+    updated_data = {
+        "watchlist_id": 1,
+        "movie_id": 3,
+        "serie_id": None,
+        "profile_id": 1
+    }
+
+    response = client.put("/watchlist/1", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == updated_data
+
+
+def test_update_watchlist_unauthorized():
+    updated_data = {
+        "watchlist_id": 1,
+        "movie_id": 3,
+        "serie_id": None,
+        "profile_id": 1
+    }
+
+    response = client.put("/watchlist/1", json=updated_data)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_update_watchlist_not_found():
+    updated_data = {
+        "watchlist_id": 999,
+        "movie_id": 3,
+        "serie_id": None,
+        "profile_id": 1
+    }
+
+    response = client.put("/watchlist/999", json=updated_data, headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Watchlist not found"
+    }
+
+
+def test_update_watchlist_no_permission():
+    updated_data = {
+        "watchlist_id": 1,
+        "movie_id": 3,
+        "serie_id": None,
+        "profile_id": 1
+    }
+
+    response = client.put("/watchlist/1", json=updated_data, headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# DELETE watchlist by ID
+
+def test_delete_watchlist_success():
+    response = client.delete("/watchlist/2", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Watchlist deleted successfully"}
+
+
+def test_delete_watchlist_unauthorized():
+    response = client.delete("/watchlist/2")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_delete_watchlist_not_found():
+    response = client.delete("/watchlist/999", headers={"X-API-KEY": "senior"})
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Watchlist not found"
+    }
+
+
+def test_delete_watchlist_no_permission():
+    response = client.delete("/watchlist/2", headers={"X-API-KEY": "unauthorized"})
+
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
