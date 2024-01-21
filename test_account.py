@@ -260,7 +260,11 @@ def test_create_account_success():
         "email": "alex.lee@example.com",
         "username": "alex_lee",
         "password": "hashed_password",
+        "addres": None,
+        "zip_code": None,
+        "city": None,
         "payment_method": "paypal",
+        "blocked": None,
         "subscription_id": 1
     }
 
@@ -276,7 +280,11 @@ def test_create_account_unauthorized():
         "email": "alex.lee@example.com",
         "username": "alex_lee",
         "password": "hashed_password",
+        "addres": None,
+        "zip_code": None,
+        "city": None,
         "payment_method": "paypal",
+        "blocked": None,
         "subscription_id": 1
     }
 
@@ -294,7 +302,11 @@ def test_create_account_no_permission():
         "email": "alex.lee@example.com",
         "username": "alex_lee",
         "password": "hashed_password",
+        "addres": None,
+        "zip_code": None,
+        "city": None,
         "payment_method": "paypal",
+        "blocked": None,
         "subscription_id": 1
     }
 
@@ -365,7 +377,7 @@ def test_update_account_success():
         "email": "james.smith@example.com",
         "username": "james_smith",
         "password": "hashed_password",
-        "address": None,
+        "addres": None,
         "zip_code": None,
         "city": None,
         "payment_method": "paypal",
@@ -385,7 +397,7 @@ def test_update_account_unauthorized():
         "email": "james.smith@example.com",
         "username": "james_smith",
         "password": "hashed_password",
-        "address": None,
+        "addres": None,
         "zip_code": None,
         "city": None,
         "payment_method": "paypal",
@@ -403,11 +415,11 @@ def test_update_account_unauthorized():
 
 def test_update_account_not_found():
     updated_data = {
-        "account_id": 6,
+        "account_id": 999,
         "email": "james.smith@example.com",
         "username": "james_smith",
         "password": "hashed_password",
-        "address": None,
+        "addres": None,
         "zip_code": None,
         "city": None,
         "payment_method": "paypal",
@@ -429,7 +441,7 @@ def test_update_account_no_permission():
         "email": "james.smith@example.com",
         "username": "james_smith",
         "password": "hashed_password",
-        "address": None,
+        "addres": None,
         "zip_code": None,
         "city": None,
         "payment_method": "paypal",

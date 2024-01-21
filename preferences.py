@@ -248,7 +248,7 @@ def delete_indicationpreference(*, session: Session = Depends(get_session),
 
         session.delete(indicationpreference)
         session.commit()
-        return {"messindication": "Indicationpreference deleted successfully"}
+        return {"message": "Indicationpreference deleted successfully"}
 
 
 @app.put("/genrepreferences/{genrepreference_id}", response_model=GenrespreferenceRead)
@@ -283,4 +283,4 @@ def delete_genrepreference(*, session: Session = Depends(get_session),
 
         session.delete(genrepreference)
         session.commit()
-        return {"messgenre": "Genrepreference deleted successfully"}
+        return {"message": "Genrepreference deleted successfully"}

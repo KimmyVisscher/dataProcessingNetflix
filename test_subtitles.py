@@ -365,7 +365,7 @@ def test_update_subtitle_success():
         "language": "ITALIAN",
         "subtitle_location": "/path/to/subtitles/movie5_it.srt",
         "movie_id": 5,
-        "serie_id": None
+        "episode_id": None
     }
 
     response = client.put("/subtitles/6", json=updated_data, headers={"X-API-KEY": "senior"})
@@ -380,7 +380,7 @@ def test_update_subtitle_unauthorized():
         "language": "ITALIAN",
         "subtitle_location": "/path/to/subtitles/movie5_it.srt",
         "movie_id": 5,
-        "serie_id": None
+        "episode_id": None
     }
 
     response = client.put("/subtitles/6", json=updated_data)
@@ -397,7 +397,7 @@ def test_update_subtitle_not_found():
         "language": "ITALIAN",
         "subtitle_location": "/path/to/subtitles/movie5_it.srt",
         "movie_id": 5,
-        "serie_id": None
+        "episode_id": None
     }
 
     response = client.put("/subtitles/999", json=updated_data, headers={"X-API-KEY": "senior"})
@@ -414,7 +414,7 @@ def test_update_subtitle_no_permission():
         "language": "ITALIAN",
         "subtitle_location": "/path/to/subtitles/movie5_it.srt",
         "movie_id": 5,
-        "serie_id": None
+        "episode_id": None
     }
 
     response = client.put("/subtitles/6", json=updated_data, headers={"X-API-KEY": "unauthorized"})

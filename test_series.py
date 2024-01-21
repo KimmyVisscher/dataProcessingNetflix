@@ -21,7 +21,8 @@ def test_read_all_series_json_response():
         {"serie_name": "The Witcher", "age_restriction": "SIXTEEN_YEARS", "serie_id": 9},
         {"serie_name": "Peaky Blinders", "age_restriction": "ALL_AGES", "serie_id": 10},
         {"serie_name": "The Office", "age_restriction": "ALL_AGES", "serie_id": 11},
-        {"serie_name": "Game of Thrones", "age_restriction": "SIXTEEN_YEARS", "serie_id": 12}
+        {"serie_name": "Game of Thrones", "age_restriction": "SIXTEEN_YEARS", "serie_id": 12},
+        {"serie_name": "unavailable series", "age_restriction": "SIX_YEARS", "serie_id": 13}
     ]
 
     assert response.json() == expected_data
@@ -30,7 +31,7 @@ def test_read_all_series_json_response():
 def test_read_all_series_xml_response():
     response = client.get("/series", headers={"X-API-KEY": "senior", "accept": "application/xml"})
     assert response.status_code == 200
-    assert response.text == "<series>\n  <serie>\n      <serie_name>Stranger Things</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Crown</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Breaking Bad</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Friends</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>Black Mirror</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Mandalorian</serie_name>\n      <age_restriction>AgeRestriction.TWELVE_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Money Heist</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Narcos</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Witcher</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Peaky Blinders</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Office</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>Game of Thrones</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie></series>"
+    assert response.text == "<series>\n  <serie>\n      <serie_name>Stranger Things</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Crown</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Breaking Bad</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Friends</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>Black Mirror</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Mandalorian</serie_name>\n      <age_restriction>AgeRestriction.TWELVE_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Money Heist</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Narcos</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Witcher</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>Peaky Blinders</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>The Office</serie_name>\n      <age_restriction>AgeRestriction.ALL_AGES</age_restriction>\n  </serie>  <serie>\n      <serie_name>Game of Thrones</serie_name>\n      <age_restriction>AgeRestriction.SIXTEEN_YEARS</age_restriction>\n  </serie>  <serie>\n      <serie_name>unavailable series</serie_name>\n      <age_restriction>AgeRestriction.SIX_YEARS</age_restriction>\n  </serie></series>"
 
 
 def test_read_all_series_unauthorized():
@@ -390,7 +391,7 @@ def test_create_episode_no_permission():
 def test_update_serie_success():
     updated_data = {
         "serie_id": 6,
-        "title": "The Mandalorian",
+        "serie_name": "The Mandalorian",
         "age_restriction": "SIX_YEARS"
     }
 

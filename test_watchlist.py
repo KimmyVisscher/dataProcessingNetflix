@@ -109,7 +109,7 @@ def test_add_movie_to_watchlist_no_permission():
 
 def test_add_serie_to_watchlist_success():
     watchlist_data = {
-        "watchlist_id": 3,
+        "watchlist_id": 4,
         "movie_id": None,
         "serie_id": 2,
         "profile_id": 2
@@ -123,7 +123,7 @@ def test_add_serie_to_watchlist_success():
 
 def test_add_serie_to_watchlist_unauthorized():
     watchlist_data = {
-        "watchlist_id": 3,
+        "watchlist_id": 4,
         "movie_id": None,
         "serie_id": 2,
         "profile_id": 2
@@ -139,7 +139,7 @@ def test_add_serie_to_watchlist_unauthorized():
 
 def test_add_serie_to_watchlist_no_permission():
     watchlist_data = {
-        "watchlist_id": 3,
+        "watchlist_id": 4,
         "movie_id": None,
         "serie_id": 2,
         "profile_id": 2
