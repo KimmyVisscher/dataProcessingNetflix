@@ -297,7 +297,7 @@ def test_read_series_by_genre_no_permission():
 def test_create_series_success():
     series_data = {
         "serie_name": "Planet Earth",
-        "serie_id": 13,
+        "serie_id": 14,
         "age_restriction": "SIX_YEARS"
     }
 
@@ -310,7 +310,7 @@ def test_create_series_success():
 def test_create_series_unauthorized():
     series_data = {
         "serie_name": "Planet Earth",
-        "serie_id": 13,
+        "serie_id": 14,
         "age_restriction": "SIX_YEARS"
     }
 
@@ -324,7 +324,7 @@ def test_create_series_unauthorized():
 
 def test_create_series_no_permission():
     series_data = {
-        "serie_id": 13,
+        "serie_id": 14,
         "serie_name": "Planet Earth",
         "age_restriction": "SIX_YEARS"
     }
@@ -344,7 +344,7 @@ def test_create_episode_success():
         "episode_id": 37,
         "title": "From Pole to Pole",
         "episode_duration": 49,
-        "serie_id": 13
+        "serie_id": 14
     }
 
     response = client.post("/episodes", json=episode_data, headers={"X-API-KEY": "senior"})
@@ -358,7 +358,7 @@ def test_create_episode_unauthorized():
         "episode_id": 37,
         "title": "From Pole to Pole",
         "episode_duration": 49,
-        "serie_id": 13
+        "serie_id": 14
     }
 
     response = client.post("/episodes", json=episode_data)
@@ -374,7 +374,7 @@ def test_create_episode_no_permission():
         "episode_id": 37,
         "title": "From Pole to Pole",
         "episode_duration": 49,
-        "serie_id": 13
+        "serie_id": 14
     }
 
     response = client.post("/episodes", json=episode_data, headers={"X-API-KEY": "unauthorized"})
@@ -578,4 +578,52 @@ def test_delete_episode_no_permission():
     assert response.status_code == 403
     assert response.json() == {
         "detail": "No permission"
+    }
+
+
+# GET imdbrating by series ID
+
+def test_get_imdbrating_by_serie_json_response():
+    response = client.get("/series/1/imdb", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "imdbRating": "8.7"
+    }
+
+
+def test_get_imdbrating_by_serie_xml_response():
+    response = client.get("/series/1/imdb", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<imdbRating>8.7</imdbRating>"
+
+
+def test_get_imdbrating_by_serie_unauthorized():
+    response = client.get("/series/1/imdb")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_get_imdbrating_by_serie_not_found():
+    response = client.get("/series/999/imdb", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Serie not found"
+    }
+
+
+def test_get_imdbrating_by_serie_no_permission():
+    response = client.get("/series/1/imdb", headers={"X-API-KEY": "unauthorized"})
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+def test_get_imdbrating_by_serie_unavailable():
+    response = client.get("/series/13/imdb", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "IMDb rating not available"
     }

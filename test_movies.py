@@ -144,7 +144,7 @@ def test_create_movie_success():
     movie_data = {
         "title": "The Good, the Bad and the Ugly",
         "movie_duration": 161,
-        "movie_id": 13,
+        "movie_id": 14,
         "age_restriction": "TWELVE_YEARS"
     }
 
@@ -158,7 +158,7 @@ def test_create_movie_unauthorized():
     movie_data = {
         "title": "The Good, the Bad and the Ugly",
         "movie_duration": 161,
-        "movie_id": 13,
+        "movie_id": 14,
         "age_restriction": "TWELVE_YEARS"
     }
 
@@ -174,7 +174,7 @@ def test_create_movie_no_permission():
     movie_data = {
         "title": "The Good, the Bad and the Ugly",
         "movie_duration": 161,
-        "movie_id": 13,
+        "movie_id": 14,
         "age_restriction": "TWELVE_YEARS"
     }
 
@@ -283,4 +283,52 @@ def test_delete_movie_no_permission():
     assert response.status_code == 403
     assert response.json() == {
         "detail": "No permission"
+    }
+
+
+# GET imdbrating by movie ID
+
+def test_get_movie_imdbrating_json_response():
+    response = client.get("/movies/1/imdb", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "imdbRating": "9.3"
+    }
+
+
+def test_get_movie_imdbrating_xml_response():
+    response = client.get("/movies/1/imdb", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<imdbRating>9.3</imdbRating>"
+
+
+def test_get_movie_imdbrating_unauthorized():
+    response = client.get("/movies/1/imdb")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_get_movie_imdbrating_not_found():
+    response = client.get("/movies/999/imdb", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Movie not found"
+    }
+
+
+def test_get_movie_imdbrating_no_permission():
+    response = client.get("/movies/1/imdb", headers={"X-API-KEY": "unauthorized"})
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+def test_get_movie_imdbrating_unavailable():
+    response = client.get("/movies/13/imdb", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "IMDb rating not available"
     }
