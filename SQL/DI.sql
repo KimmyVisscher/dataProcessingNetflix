@@ -63,6 +63,25 @@ END //
 
 DELIMITER ;
 
+--  returns total number of accounts with the given video_quality paramater. -------
+
+DELIMITER //
+
+CREATE PROCEDURE calculateTotalAccountsWithParam(IN video_quality VARCHAR(255))
+BEGIN
+    DECLARE totalAccounts INT;
+
+    SELECT COUNT(DISTINCT a.account_id) INTO totalAccounts
+    FROM account a
+    INNER JOIN subscription s ON a.subscription_id = s.subscription_id
+    WHERE s.video_quality = video_quality;
+
+    SELECT totalAccounts AS TotalAccounts;
+END //
+
+DELIMITER ;
+
+
 --returns number of accounts with an SD subscription. ------------------------------
 
 DELIMITER //
@@ -111,24 +130,25 @@ DELIMITER //
 CREATE PROCEDURE daily_incremental_backup()
 BEGIN
 
-  DECLARE last_backup_time TIMESTAMP;
+  DECLARE last_incremental_backup_time TIMESTAMP;
 
-  -- retrieve the last backup time for the account table
-  SELECT last_account_backup_time INTO last_backup_time FROM backup_log;
+  -- Retrieve the last incremental backup time for all tables
+  SELECT MAX(last_incremental_backup_time) INTO last_incremental_backup_time
+  FROM backup_log;
 
-  -- Make a backup of the changes since the last backup
+  -- Make an incremental backup of the changes since the last backup
+  -- Assuming all tables have the column 'modification_timestamp'
   SELECT * INTO OUTFILE 'C:\\Users\\Bram\\Desktop\\incremental_backup.sql'
-  FROM `account`
-  WHERE modification_timestamp > last_backup_time;
+  FROM `account`, `profile`, `subscription`, `watchlist`
+  WHERE modification_timestamp > last_incremental_backup_time;
 
   -- Update the backup-log with the current time
   UPDATE backup_log
-  SET last_account_backup_time = CURRENT_TIMESTAMP;
+  SET last_incremental_backup_time = CURRENT_TIMESTAMP;
 
 END //
 
 DELIMITER ;
-
 
 -- Monthly full backup. -------------------------------------------------------------
 
