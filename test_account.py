@@ -583,3 +583,67 @@ def test_delete_profile_no_permission():
     assert response.json() == {
         "detail": "No permission"
     }
+
+
+# GET total revenue
+
+def test_read_totalrevenue_json_response():
+    response = client.get("/accounts/totalrevenue/", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "revenue": "100.90"
+    }
+
+
+def test_read_totalrevenue_xml_response():
+    response = client.get("/accounts/totalrevenue/", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<revenue>100.90</revenue>"
+
+
+def test_read_totalrevenue_unauthorized():
+    response = client.get("/accounts/totalrevenue/")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_read_totalrevenue_no_permission():
+    response = client.get("/accounts/totalrevenue/", headers={"X-API-KEY": "unauthorized"})
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
+
+
+# GET total accounts
+
+def test_read_totalaccounts_json_response():
+    response = client.get("/accounts/totalaccounts/", headers={"X-API-KEY": "senior"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "amount": "12"
+    }
+
+
+def test_read_totalaccounts_xml_response():
+    response = client.get("/accounts/totalaccounts/", headers={"X-API-KEY": "senior", "accept": "application/xml"})
+    assert response.status_code == 200
+    assert response.text == "<amount>12</amount>"
+
+
+def test_read_totalaccounts_unauthorized():
+    response = client.get("/accounts/totalaccounts/")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid API key"
+    }
+
+
+def test_read_totalaccounts_no_permission():
+    response = client.get("/accounts/totalaccounts/", headers={"X-API-KEY": "unauthorized"})
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "No permission"
+    }
