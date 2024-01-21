@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Jan 21, 2024 at 12:53 PM
--- Server version: 11.2.2-MariaDB-1:11.2.2+maria~ubu2204
--- PHP Version: 8.2.13
+-- Generation Time: Jan 21, 2024 at 07:19 PM
+-- Server version: 11.1.2-MariaDB-1:11.1.2+maria~ubu2204
+-- PHP Version: 8.2.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `DP_netflix`
+-- Database: `DP5`
 --
 
 DELIMITER $$
@@ -49,6 +49,17 @@ CREATE DEFINER=`root`@`%` PROCEDURE `calculateTotalAccounts` ()   BEGIN
     SELECT totalAccounts AS TotalAccounts;
 END$$
 
+CREATE DEFINER=`root`@`%` PROCEDURE `calculateTotalAccountsWithParam` (IN `video_quality` VARCHAR(255))   BEGIN
+    DECLARE totalAccounts INT;
+
+    SELECT COUNT(DISTINCT a.account_id) INTO totalAccounts
+    FROM account a
+    INNER JOIN subscription s ON a.subscription_id = s.subscription_id
+    WHERE s.video_quality = video_quality;
+
+    SELECT totalAccounts AS TotalAccounts;
+END$$
+
 CREATE DEFINER=`root`@`%` PROCEDURE `CalculateTotalMonthlyRevenue` ()   BEGIN
     DECLARE total_revenue DECIMAL(10, 2);
 
@@ -62,6 +73,48 @@ CREATE DEFINER=`root`@`%` PROCEDURE `CalculateTotalMonthlyRevenue` ()   BEGIN
         a.blocked IS NULL OR a.blocked = 0;
 
     SELECT total_revenue AS total_monthly_revenue;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `daily_incremental_backup` ()   BEGIN
+
+  DECLARE last_incremental_backup_time TIMESTAMP;
+
+  -- Retrieve the last incremental backup time for all tables
+  SELECT MAX(last_incremental_backup_time) INTO last_incremental_backup_time
+  FROM backup_log;
+
+  -- Make an incremental backup of the changes since the last backup
+  -- Assuming all tables have the column 'modification_timestamp'
+  SELECT * INTO OUTFILE 'C:\\Users\\Bram\\Desktop\\incremental_backup.sql'
+  FROM `account`, `profile`, `subscription`, `watchlist`
+  WHERE modification_timestamp > last_incremental_backup_time;
+
+  -- Update the backup-log with the current time
+  UPDATE backup_log
+  SET last_incremental_backup_time = CURRENT_TIMESTAMP;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `monthly_full_backup` ()   BEGIN
+
+  -- Setting an dynamic query to collect all of the tables for an full back-up.
+  SET SESSION group_concat_max_len = 1000000;
+  SET @tables_query = (
+    SELECT GROUP_CONCAT(table_name SEPARATOR ', ')
+    FROM information_schema.tables
+    WHERE table_schema = 'DP5'
+  );
+
+  -- Run the dynamic query.
+  SET @current_datetime = DATE_FORMAT(NOW(), '%Y%m%d_%H%i%s');
+  SET @full_backup_query = CONCAT('SELECT * INTO OUTFILE ''C:\\Users\\Bram\\Desktop\\full_backup_', @current_datetime, '.sql'' FROM ', @tables_query);
+  PREPARE full_backup_stmt FROM @full_backup_query;
+  EXECUTE full_backup_stmt;
+  DEALLOCATE PREPARE full_backup_stmt;
+
+  -- Update the back-up log
+  INSERT INTO backup_log (last_full_backup_timestamp) VALUES (CURRENT_TIMESTAMP);
+
 END$$
 
 DELIMITER ;
@@ -145,6 +198,27 @@ INSERT INTO `apikey` (`apikey`, `role`) VALUES
 ('seniorkey', 'SENIOR'),
 ('unauthorized', 'UNAUTHORIZED'),
 ('unauthorizedkey', 'UNAUTHORIZED');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `backup_log`
+--
+
+CREATE TABLE `backup_log` (
+  `last_full_backup_timestamp` timestamp NULL DEFAULT NULL,
+  `last_incremental_backup_time` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `backup_log`
+--
+
+INSERT INTO `backup_log` (`last_full_backup_timestamp`, `last_incremental_backup_time`) VALUES
+('2024-01-21 17:38:26', NULL),
+('2024-01-21 17:41:40', NULL),
+('2024-01-21 17:42:14', NULL),
+('2024-01-21 18:01:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -454,6 +528,27 @@ INSERT INTO `profile` (`profile_id`, `profile_image`, `profile_child`, `language
 (22, NULL, NULL, 'DUTCH', 5),
 (23, NULL, NULL, 'DUTCH', 10),
 (24, NULL, 1, 'ENGLISH', 4);
+
+--
+-- Triggers `profile`
+--
+DELIMITER $$
+CREATE TRIGGER `before_insert_profile` BEFORE INSERT ON `profile` FOR EACH ROW BEGIN
+    DECLARE profile_count INT;
+
+    -- Controleer het aantal profielen voor het account
+    SELECT COUNT(*) INTO profile_count
+    FROM profile
+    WHERE account_id = NEW.account_id;
+
+    -- Als het aantal profielen groter is dan 4, voorkom het invoegen
+    IF profile_count >= 4 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert more than 4 profiles for an account';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 

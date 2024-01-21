@@ -63,7 +63,7 @@ END //
 
 DELIMITER ;
 
---  returns total number of accounts with the given video_quality paramater. -------
+-- returns total number of accounts with the given video_quality paramater. -------
 
 DELIMITER //
 
@@ -77,47 +77,6 @@ BEGIN
     WHERE s.video_quality = video_quality;
 
     SELECT totalAccounts AS TotalAccounts;
-END //
-
-DELIMITER ;
-
-
---returns number of accounts with an SD subscription. ------------------------------
-
-DELIMITER //
-
-CREATE PROCEDURE calculateTotalSubscriptionSD()
-BEGIN
-    SELECT COUNT(*) AS account_count
-    FROM account
-    WHERE subscription_id = 1;
-END //
-
-DELIMTER ;
-
-
---returns number of accounts with an HD subscription. ------------------------------
-
-DELIMTER //
-
-CREATE PROCEDURE calculateTotalSubscriptionHD()
-BEGIN
-    SELECT COUNT(*) AS account_count
-    FROM account
-    WHERE subscription_id = 2;
-END //
-
-DELIMITER ;
-
---returns number of accounts with an UHD subscription. -----------------------------
-
-DELIMITER //
-
-CREATE PROCEDURE calculateTotalSubscriptionUHD()
-BEGIN
-    SELECT COUNT(*) AS account_count
-    FROM account
-    WHERE subscription_id = 3;
 END //
 
 DELIMITER ;

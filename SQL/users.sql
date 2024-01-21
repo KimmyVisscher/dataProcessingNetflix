@@ -23,8 +23,6 @@ CREATE USER IF NOT EXISTS 'User_Medior'@'%' IDENTIFIED BY 'RobRulez';
 
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EVENT, TRIGGER, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `dp_netflix`.* TO 'User_Medior'@'%';
 
--- GRANT SET PASSWORD ON dp_netflix.* TO 'User_medior'@'%';
-
 --
 -- User Senior
 --
