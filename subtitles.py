@@ -15,9 +15,6 @@ def read_subtitles_by_episode(
             raise HTTPException(status_code=404, detail="No subtitles found")
 
         if accept and "application/xml" in accept:
-            # subtitles_data = {"subtitle": [subtitle.dict() for subtitle in subtitles]}
-            # xml_content = xmltodict.unparse(subtitles_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=subtitle_to_xml_string(subtitles), media_type="application/xml")
         else:
             return subtitles

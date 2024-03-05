@@ -1,5 +1,6 @@
 from main import *
 
+
 @app.get("/series", response_model=List[SerieRead])
 def read_series(*, session: Session = Depends(get_session),
                 api_key_header: Optional[str] = Depends(api_key_header),
@@ -11,9 +12,6 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            # series_data = {"serie": [serie.dict() for serie in series]}
-            # xml_content = xmltodict.unparse(series_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
@@ -31,8 +29,6 @@ def read_series(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            # xml_content = xmltodict.unparse({"serie": serie.dict()}, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=series_to_xml_string([serie]), media_type="application/xml")
         else:
             return serie
@@ -50,8 +46,6 @@ def read_episode(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Episode not found")
 
         if accept and "application/xml" in accept:
-            # xml_content = xmltodict.unparse({"episode": episode.dict()}, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=episode_to_xml_string([episode]), media_type="application/xml")
         else:
             return episode
@@ -75,9 +69,6 @@ def read_episodes_by_serie(
             raise HTTPException(status_code=404, detail="No episodes found for the serie")
 
         if accept and "application/xml" in accept:
-            # episodes_data = {"episode": [episode.dict() for episode in episodes]}
-            # xml_content = xmltodict.unparse(episodes_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=episode_to_xml_string(episodes), media_type="application/xml")
         else:
             return episodes
@@ -97,9 +88,6 @@ def read_series_by_genre(
             raise HTTPException(status_code=404, detail="No series found")
 
         if accept and "application/xml" in accept:
-            # series_data = {"serie": [serie.dict() for serie in series]}
-            # xml_content = xmltodict.unparse(series_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=series_to_xml_string(series), media_type="application/xml")
         else:
             return series
@@ -155,9 +143,6 @@ def create_episode(
         session.add(episode)
         session.commit()
         return episode
-
-
-
 
 
 @app.put("/series/{serie_id}", response_model=SerieRead)

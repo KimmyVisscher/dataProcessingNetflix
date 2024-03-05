@@ -13,9 +13,6 @@ def read_accounts(*,
             raise HTTPException(status_code=404, detail="No accounts found")
 
         if accept and "application/xml" in accept:
-            # account_data = {"account": [account.dict() for account in accounts]}
-            # xml_content = xmltodict.unparse(account_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=account_to_xml_string(accounts), media_type="application/xml")
         else:
             return accounts
@@ -33,8 +30,6 @@ def read_account(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Account not found")
 
         if accept and "application/xml" in accept:
-            # xml_content = xmltodict.unparse({"account": account.dict()}, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=account_to_xml_string([account]), media_type="application/xml")
         else:
             return account
@@ -54,9 +49,6 @@ def read_profiles_by_account(
             raise HTTPException(status_code=404, detail="No profiles found")
 
         if accept and "application/xml" in accept:
-            # profiles_data = {"profile": [profile.dict() for profile in profiles]}
-            # xml_content = xmltodict.unparse(profiles_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=profile_to_xml_string(profiles), media_type="application/xml")
         else:
             return profiles
@@ -74,8 +66,6 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Profile not found")
 
         if accept and "application/xml" in accept:
-            # xml_content = xmltodict.unparse({"profile": profile.dict()}, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=profile_to_xml_string([profile]), media_type="application/xml")
         else:
             return profile

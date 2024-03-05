@@ -15,9 +15,6 @@ def read_watchlist_by_profile(
             raise HTTPException(status_code=404, detail="No watchlists found")
 
         if accept and "application/xml" in accept:
-            # watchlist_data = {"watchlist": [watchlist.dict() for watchlist in watchlists]}
-            # xml_content = xmltodict.unparse(watchlist_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=watchlist_to_xml_string(watchlists), media_type="application/xml")
         else:
             return watchlists

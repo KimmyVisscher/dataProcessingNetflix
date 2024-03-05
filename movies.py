@@ -1,5 +1,6 @@
 from main import *
 
+
 @app.get("/movies/{movie_id}", response_model=MovieRead)
 def read_movie(*, session: Session = Depends(get_session),
                movie_id: int,
@@ -12,8 +13,6 @@ def read_movie(*, session: Session = Depends(get_session),
             raise HTTPException(status_code=404, detail="Movie not found")
 
         if accept and "application/xml" in accept:
-            # xml_content = xmltodict.unparse({"movie": movie.dict()}, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=movie_to_xml_string([movie]), media_type="application/xml")
         else:
             return movie
@@ -31,9 +30,6 @@ def read_movies(*,
             raise HTTPException(status_code=404, detail="No movies found")
 
         if accept and "application/xml" in accept:
-            # movies_data = {"movie": [movie.dict() for movie in movies]}
-            # xml_content = xmltodict.unparse(movies_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
@@ -53,9 +49,6 @@ def read_movies_by_genre(
             raise HTTPException(status_code=404, detail="No movies found")
 
         if accept and "application/xml" in accept:
-            # movies_data = {"movie": [movie.dict() for movie in movies]}
-            # xml_content = xmltodict.unparse(movies_data, full_document=False)
-            # return PlainTextResponse(content=xml_content, media_type="application/xml")
             return Response(content=movie_to_xml_string(movies), media_type="application/xml")
         else:
             return movies
