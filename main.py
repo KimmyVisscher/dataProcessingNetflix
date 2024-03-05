@@ -601,6 +601,14 @@ def agepreferences_to_xml_string(agepreference):
     return xml_string
 
 
+def return_created():
+    return Response(status_code=201, content="Created")
+
+
+def return_deleted():
+    return Response(status_code=204, content="Deleted succesfully")
+
+
 app = FastAPI()
 
 origins = [
