@@ -112,10 +112,7 @@ def read_genre_by_serie(
             return genres
 
 
-
-
-
-@app.post("/series", response_model=SerieRead)
+@app.post("/series")
 def create_serie(*, session: Session = Depends(get_session),
                  serie_create: SerieCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
@@ -124,10 +121,10 @@ def create_serie(*, session: Session = Depends(get_session),
         serie = Serie(**serie_create.dict())
         session.add(serie)
         session.commit()
-        return serie
+        return return_created()
 
 
-@app.post("/episodes", response_model=EpisodeRead)
+@app.post("/episodes")
 def create_episode(
         *,
         session: Session = Depends(get_session),
@@ -142,7 +139,7 @@ def create_episode(
         episode = Episode(**episode_create.dict())
         session.add(episode)
         session.commit()
-        return episode
+        return return_created()
 
 
 @app.put("/series/{serie_id}", response_model=SerieRead)
@@ -185,9 +182,6 @@ def update_episode(
         return episode
 
 
-
-
-
 @app.delete("/series/{serie_id}")
 def delete_series(*, session: Session = Depends(get_session),
                   serie_id: int,
@@ -200,7 +194,7 @@ def delete_series(*, session: Session = Depends(get_session),
 
         session.delete(serie)
         session.commit()
-        return {"message": "Series deleted successfully"}
+        return return_deleted()
 
 
 @app.delete("/episodes/{episode_id}")
@@ -215,7 +209,7 @@ def delete_episode(*, session: Session = Depends(get_session),
 
         session.delete(episode)
         session.commit()
-        return {"message": "Episode deleted successfully"}
+        return return_deleted()
 
 
 @app.get("/series/{serie_id}/imdb")
@@ -249,7 +243,7 @@ def get_imdb_rating_by_serie(serie_id: int,
             return {"imdbRating": imdb_rating}
 
 
-@app.post("/watchlist/serie", response_model=WatchlistRead)
+@app.post("/watchlist/serie")
 def add_serie_to_watchlist(
         *,
         session: Session = Depends(get_session),
@@ -268,4 +262,4 @@ def add_serie_to_watchlist(
         watchlist = Watchlist(**watchlist_create.dict())
         session.add(watchlist)
         session.commit()
-        return watchlist
+        return return_created()

@@ -71,7 +71,7 @@ def read_profile_by_id(*, session: Session = Depends(get_session),
             return profile
 
 
-@app.post("/accounts", response_model=AccountRead)
+@app.post("/accounts")
 def create_account(*, session: Session = Depends(get_session),
                  account_create: AccountCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
@@ -80,10 +80,10 @@ def create_account(*, session: Session = Depends(get_session),
         account = Account(**account_create.dict())
         session.add(account)
         session.commit()
-        return account
+        return return_created()
 
 
-@app.post("/profiles", response_model=ProfileRead)
+@app.post("/profiles")
 def create_profile(
         *,
         session: Session = Depends(get_session),
@@ -98,7 +98,7 @@ def create_profile(
         profile = Profile(**profile_create.dict())
         session.add(profile)
         session.commit()
-        return profile
+        return return_created()
 
 
 @app.put("/accounts/{account_id}", response_model=AccountRead)
@@ -153,7 +153,7 @@ def delete_account(*, session: Session = Depends(get_session),
 
         session.delete(account)
         session.commit()
-        return {"message": "Account deleted successfully"}
+        return return_deleted()
 
 
 @app.delete("/profiles/{profile_id}")
@@ -168,7 +168,7 @@ def delete_profile(*, session: Session = Depends(get_session),
 
         session.delete(profile)
         session.commit()
-        return {"message": "Profile deleted successfully"}
+        return return_deleted()
 
 
 @app.get("/accounts/totalrevenue/")

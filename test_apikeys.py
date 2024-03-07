@@ -13,7 +13,7 @@ def test_create_api_key_success():
 
     response = client.post("/apikeys", json=apikey_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 
 def test_create_api_key_unauthorized():
@@ -49,8 +49,7 @@ def test_create_api_key_no_permission():
 def test_delete_api_key_success():
     response = client.delete("/apikeys/unauthorizedkey", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "API key deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_api_key_unauthorized():

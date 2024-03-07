@@ -268,8 +268,7 @@ def test_create_subtitle_for_episode_success():
 
     response = client.post("/episodes/2/subtitles", json=subtitle_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == subtitle_data
+    assert response.status_code == 201
 
 
 def test_create_subtitle_for_episode_unauthorized():
@@ -319,8 +318,7 @@ def test_create_subtitle_for_movie_success():
 
     response = client.post("/movies/3/subtitles", json=subtitle_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == subtitle_data
+    assert response.status_code == 201
 
 
 def test_create_subtitle_for_movie_unauthorized():
@@ -430,8 +428,7 @@ def test_update_subtitle_no_permission():
 def test_delete_subtitle_success():
     response = client.delete("/subtitles/11", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Subtitle deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_subtitle_unauthorized():

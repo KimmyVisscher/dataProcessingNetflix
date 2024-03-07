@@ -69,8 +69,7 @@ def test_add_movie_to_watchlist_success():
 
     response = client.post("/watchlist/movie", json=watchlist_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == watchlist_data
+    assert response.status_code == 201
 
 
 def test_add_movie_to_watchlist_unauthorized():
@@ -117,8 +116,7 @@ def test_add_serie_to_watchlist_success():
 
     response = client.post("/watchlist/serie", json=watchlist_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == watchlist_data
+    assert response.status_code == 201
 
 
 def test_add_serie_to_watchlist_unauthorized():
@@ -222,8 +220,7 @@ def test_update_watchlist_no_permission():
 def test_delete_watchlist_success():
     response = client.delete("/watchlist/2", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Watchlist deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_watchlist_unauthorized():

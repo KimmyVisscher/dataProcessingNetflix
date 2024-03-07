@@ -151,8 +151,7 @@ def test_create_movie_success():
 
     response = client.post("/movies", json=movie_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == movie_data
+    assert response.status_code == 201
 
 
 def test_create_movie_unauthorized():
@@ -256,8 +255,7 @@ def test_update_movie_no_permission():
 def test_delete_movie_success():
     response = client.delete("/movies/11", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Movie deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_movie_unauthorized():

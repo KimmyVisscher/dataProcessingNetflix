@@ -22,7 +22,7 @@ def create_api_key(*, session: Session = Depends(get_session),
         session.add(apikey_model)
         session.commit()
 
-        return {"api_key": api_key}
+        return return_created()
 
 
 @app.delete("/apikeys/{apikey}", response_model=dict)
@@ -38,7 +38,7 @@ def delete_api_key(apikey: str,
         session.delete(delete_api_key)
         session.commit()
 
-        return {"message": "API key deleted successfully"}
+        return return_deleted()
 
 
 @app.get("/apikey/{apikey}", response_model=APIKey)

@@ -296,8 +296,7 @@ def test_create_genrepreference_success():
 
     response = client.post("/profiles/3/genrepreferences", json=genrepreference_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == genrepreference_data
+    assert response.status_code == 201
 
 
 def test_create_genrepreference_unauthorized():
@@ -356,8 +355,7 @@ def test_create_indicationpreference_success():
 
     response = client.post("/profiles/3/indicationpreferences", json=indicationpreference_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == indicationpreference_data
+    assert response.status_code == 201
 
 
 def test_create_indicationpreference_unauthorized():
@@ -416,8 +414,7 @@ def test_create_agepreference_success():
 
     response = client.post("/profiles/3/agepreferences", json=agepreference_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == agepreference_data
+    assert response.status_code == 201
 
 
 def test_create_agepreference_unauthorized():
@@ -530,8 +527,7 @@ def test_update_agepreference_no_permission():
 def test_delete_agepreference_success():
     response = client.delete("/agepreferences/4", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Agepreference deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_agepreference_unauthorized():
@@ -626,8 +622,7 @@ def test_update_indicationpreference_no_permission():
 def test_delete_indicationpreference_success():
     response = client.delete("/indicationpreferences/4", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Indicationpreference deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_indicationpreference_unauthorized():
@@ -722,8 +717,7 @@ def test_update_genrepreference_no_permission():
 def test_delete_genrepreference_success():
     response = client.delete("/genrepreferences/4", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Genrepreference deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_genrepreference_unauthorized():

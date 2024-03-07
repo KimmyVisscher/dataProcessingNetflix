@@ -8,7 +8,6 @@ def read_total_accounts_by_quality(*, session: Session = Depends(get_session),
                quality: Quality
                ):
     if check_apikey_role(session, api_key_header, Role.JUNIOR.value):
-        # result = session.exec(text('CALL `calculateTotalAccountsWithParam`(:parameter);'), {"parameter": quality})
         result = session.execute(
             text('CALL `calculateTotalAccountsWithParam`(:parameter);'),
             {"parameter": quality.name}

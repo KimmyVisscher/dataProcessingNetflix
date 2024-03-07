@@ -606,7 +606,7 @@ def return_created():
 
 
 def return_deleted():
-    return Response(status_code=204, content="Deleted succesfully")
+    return Response(status_code=204, content="Resource deleted succesfully")
 
 
 app = FastAPI()

@@ -311,8 +311,7 @@ def test_create_profile_success():
 
     response = client.post("/profiles", json=profile_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == profile_data
+    assert response.status_code == 201
 
 
 def test_create_profile_unauthorized():
@@ -519,8 +518,7 @@ def test_delete_account_no_permission():
 def test_delete_profile_success():
     response = client.delete("/profiles/11", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Profile deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_profile_unauthorized():

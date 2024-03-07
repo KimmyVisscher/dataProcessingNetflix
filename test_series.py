@@ -304,8 +304,7 @@ def test_create_series_success():
 
     response = client.post("/series", json=series_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == series_data
+    assert response.status_code == 201
 
 
 def test_create_series_unauthorized():
@@ -350,8 +349,7 @@ def test_create_episode_success():
 
     response = client.post("/episodes", json=episode_data, headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == episode_data
+    assert response.status_code == 201
 
 
 def test_create_episode_unauthorized():
@@ -515,8 +513,7 @@ def test_update_episode_no_permission():
 def test_delete_series_success():
     response = client.delete("/series/11", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Series deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_series_unauthorized():
@@ -551,8 +548,7 @@ def test_delete_series_no_permission():
 def test_delete_episode_success():
     response = client.delete("/episodes/11", headers={"X-API-KEY": "senior"})
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Episode deleted successfully"}
+    assert response.status_code == 204
 
 
 def test_delete_episode_unauthorized():

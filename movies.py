@@ -73,7 +73,7 @@ def read_genre_by_movie(
             return genres
 
 
-@app.post("/movies", response_model=MovieRead)
+@app.post("/movies")
 def create_movie(*, session: Session = Depends(get_session),
                  movie_create: MovieCreate,
                  api_key_header: Optional[str] = Depends(api_key_header)
@@ -82,7 +82,7 @@ def create_movie(*, session: Session = Depends(get_session),
         movie = Movie(**movie_create.dict())
         session.add(movie)
         session.commit()
-        return movie
+        return return_created()
 
 
 @app.put("/movies/{movie_id}", response_model=MovieRead)
@@ -117,7 +117,7 @@ def delete_movie(*, session: Session = Depends(get_session),
 
         session.delete(movie)
         session.commit()
-        return {"message": "Movie deleted successfully"}
+        return return_deleted()
 
 
 @app.get("/movies/{movie_id}/imdb")

@@ -20,7 +20,7 @@ def read_subtitles_by_episode(
             return subtitles
 
 
-@app.post("/episodes/{episode_id}/subtitles", response_model=SubtitleRead)
+@app.post("/episodes/{episode_id}/subtitles")
 def create_subtitle_for_episode(
     *,
     session: Session = Depends(get_session),
@@ -39,10 +39,10 @@ def create_subtitle_for_episode(
         subtitle = Subtitle(**subtitle_data)
         session.add(subtitle)
         session.commit()
-        return subtitle
+        return return_created()
 
 
-@app.post("/movies/{movie_id}/subtitles", response_model=SubtitleRead)
+@app.post("/movies/{movie_id}/subtitles")
 def create_subtitle_for_movie(
     *,
     session: Session = Depends(get_session),
@@ -61,7 +61,7 @@ def create_subtitle_for_movie(
         subtitle = Subtitle(**subtitle_data)
         session.add(subtitle)
         session.commit()
-        return subtitle
+        return return_created()
 
 
 @app.get("/movies/{movie_id}/subtitles", response_model=List[SubtitleRead])
@@ -118,4 +118,4 @@ def delete_subtitle(*, session: Session = Depends(get_session),
 
         session.delete(subtitle)
         session.commit()
-        return {"message": "Subtitle deleted successfully"}
+        return return_deleted()

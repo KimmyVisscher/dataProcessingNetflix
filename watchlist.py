@@ -20,7 +20,7 @@ def read_watchlist_by_profile(
             return watchlists
 
 
-@app.post("/watchlist/movie", response_model=WatchlistRead)
+@app.post("/watchlist/movie")
 def add_movie_to_watchlist(
         *,
         session: Session = Depends(get_session),
@@ -39,7 +39,7 @@ def add_movie_to_watchlist(
         watchlist = Watchlist(**watchlist_create.dict())
         session.add(watchlist)
         session.commit()
-        return watchlist
+        return return_created()
 
 
 @app.put("/watchlist/{watchlist_id}", response_model=WatchlistRead)
@@ -74,4 +74,4 @@ def delete_profile(*, session: Session = Depends(get_session),
 
         session.delete(watchlist)
         session.commit()
-        return {"message": "Watchlist deleted successfully"}
+        return return_deleted()
