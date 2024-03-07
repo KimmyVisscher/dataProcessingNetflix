@@ -142,7 +142,7 @@ def create_episode(
         return return_created()
 
 
-@app.put("/series/{serie_id}", response_model=SerieRead)
+@app.put("/series/{serie_id}")
 def update_serie(
         *,
         session: Session = Depends(get_session),
@@ -159,10 +159,10 @@ def update_serie(
             setattr(serie, field, value)
 
         session.commit()
-        return serie
+        return return_updated()
 
 
-@app.put("/episodes/{episode_id}", response_model=EpisodeRead)
+@app.put("/episodes/{episode_id}")
 def update_episode(
         *,
         session: Session = Depends(get_session),
@@ -179,7 +179,7 @@ def update_episode(
             setattr(episode, field, value)
 
         session.commit()
-        return episode
+        return return_updated()
 
 
 @app.delete("/series/{serie_id}")

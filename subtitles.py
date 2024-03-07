@@ -86,7 +86,7 @@ def read_subtitles_by_movie(
             return subtitles
 
 
-@app.put("/subtitles/{subtitle_id}", response_model=SubtitleRead)
+@app.put("/subtitles/{subtitle_id}")
 def update_subtitle(
         *,
         session: Session = Depends(get_session),
@@ -103,7 +103,7 @@ def update_subtitle(
             setattr(subtitle, field, value)
 
         session.commit()
-        return subtitle
+        return return_updated()
 
 
 @app.delete("/subtitles/{subtitle_id}")

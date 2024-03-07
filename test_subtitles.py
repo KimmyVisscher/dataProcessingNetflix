@@ -369,7 +369,6 @@ def test_update_subtitle_success():
     response = client.put("/subtitles/6", json=updated_data, headers={"X-API-KEY": "senior"})
 
     assert response.status_code == 200
-    assert response.json() == updated_data
 
 
 def test_update_subtitle_unauthorized():

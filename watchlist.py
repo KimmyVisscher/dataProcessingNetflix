@@ -42,7 +42,7 @@ def add_movie_to_watchlist(
         return return_created()
 
 
-@app.put("/watchlist/{watchlist_id}", response_model=WatchlistRead)
+@app.put("/watchlist/{watchlist_id}")
 def update_watchlist(
         *,
         session: Session = Depends(get_session),
@@ -59,7 +59,7 @@ def update_watchlist(
             setattr(watchlist, field, value)
 
         session.commit()
-        return watchlist
+        return return_updated()
 
 
 @app.delete("/watchlist/{watchlist_id}")

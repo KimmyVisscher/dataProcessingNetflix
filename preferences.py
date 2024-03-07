@@ -181,7 +181,7 @@ def create_agepreference(
         return return_created()
 
 
-@app.put("/agepreferences/{agepreference_id}", response_model=AgepreferenceRead)
+@app.put("/agepreferences/{agepreference_id}")
 def update_agepreference(
         *,
         session: Session = Depends(get_session),
@@ -198,7 +198,7 @@ def update_agepreference(
             setattr(agepreference, field, value)
 
         session.commit()
-        return agepreference
+        return return_updated()
 
 
 @app.delete("/agepreferences/{agepreference_id}")
@@ -216,7 +216,7 @@ def delete_agepreference(*, session: Session = Depends(get_session),
         return return_deleted()
 
 
-@app.put("/indicationpreferences/{indicationpreference_id}", response_model=IndicationpreferenceRead)
+@app.put("/indicationpreferences/{indicationpreference_id}")
 def update_indicationpreference(
         *,
         session: Session = Depends(get_session),
@@ -233,7 +233,7 @@ def update_indicationpreference(
             setattr(indicationpreference, field, value)
 
         session.commit()
-        return indicationpreference
+        return return_updated()
 
 
 @app.delete("/indicationpreferences/{indicationpreference_id}")
@@ -251,7 +251,7 @@ def delete_indicationpreference(*, session: Session = Depends(get_session),
         return return_deleted()
 
 
-@app.put("/genrepreferences/{genrepreference_id}", response_model=GenrespreferenceRead)
+@app.put("/genrepreferences/{genrepreference_id}")
 def update_genrepreference(
         *,
         session: Session = Depends(get_session),
@@ -268,7 +268,7 @@ def update_genrepreference(
             setattr(genrepreference, field, value)
 
         session.commit()
-        return genrepreference
+        return return_updated()
 
 
 @app.delete("/genrepreferences/{genrepreference_id}")

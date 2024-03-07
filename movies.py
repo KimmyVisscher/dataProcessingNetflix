@@ -85,7 +85,7 @@ def create_movie(*, session: Session = Depends(get_session),
         return return_created()
 
 
-@app.put("/movies/{movie_id}", response_model=MovieRead)
+@app.put("/movies/{movie_id}")
 def update_movie(
         *,
         session: Session = Depends(get_session),
@@ -102,7 +102,7 @@ def update_movie(
             setattr(movie, field, value)
 
         session.commit()
-        return movie
+        return return_updated()
 
 
 @app.delete("/movies/{movie_id}")

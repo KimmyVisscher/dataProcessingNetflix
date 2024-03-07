@@ -605,6 +605,10 @@ def return_created():
     return Response(status_code=201, content="Created")
 
 
+def return_updated():
+    return Response(status_code=200, content="Resource updated succesfully")
+
+
 def return_deleted():
     return Response(status_code=204, content="Resource deleted succesfully")
 

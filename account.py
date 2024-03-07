@@ -101,7 +101,7 @@ def create_profile(
         return return_created()
 
 
-@app.put("/accounts/{account_id}", response_model=AccountRead)
+@app.put("/accounts/{account_id}")
 def update_account(
         *,
         session: Session = Depends(get_session),
@@ -118,10 +118,10 @@ def update_account(
             setattr(account, field, value)
 
         session.commit()
-        return account
+        return return_updated()
 
 
-@app.put("/profiles/{profile_id}", response_model=ProfileRead)
+@app.put("/profiles/{profile_id}")
 def update_profile(
         *,
         session: Session = Depends(get_session),
@@ -138,7 +138,7 @@ def update_profile(
             setattr(profile, field, value)
 
         session.commit()
-        return profile
+        return return_updated()
 
 
 @app.delete("/accounts/{account_id}")
