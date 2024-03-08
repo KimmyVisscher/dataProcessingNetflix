@@ -17,10 +17,27 @@ secrets.py.dist bevat twee velden die ingevuld dienen te worden. Maar eerst, voo
 
 ---
 
-De folder genaamd SQL bevat .sql-bestanden met daarin de opbouw van de database en ook testdata:
-* DI.sql bevat alle stored procedures en triggers.
-* DP_netflix_testing.sql bevat de database structuur met testdata. Deze testdata worden ook gebruikt bij het unit testen.
-* users.sql bevat informatie over de typen gebruikers en hun permissies.
+De folder genaamd SQL bevat .sql-bestanden met daarin de opbouw van de database, integriteitsonerdelen, testdata en users:
+
+* dbHenkflix.sql:
+table scructure
+auto increment
+key additions
+FK constraints
+
+* dbHenkflix_DI:
+indexen
+checks
+triggers
+stored procedures
+
+* dbHenkflix_testdata:
+testdata
+
+* db_users:
+database users
+
+let op! het gebruik van de stored procedures voor het maken van zowel de partial incremental back_up als de full back_up werkt alleen wanneer deze het correcte bestandspad hebben icm de correcte read/write privileges.
 
 Het JSON-bestand endpoints.json bevat informatie over alle endpoints volgens de **[OpenAPI Specification]**.
 
