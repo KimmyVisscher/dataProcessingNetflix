@@ -104,16 +104,16 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE TRIGGER before_backup_log_update
+CREATE TRIGGER before_fullBackup_log_update
 BEFORE UPDATE ON backup_log
 FOR EACH ROW
 BEGIN
     DECLARE last_full_backup_time TIMESTAMP;
     SELECT MAX(last_full_backup_timestamp) INTO last_full_backup_time FROM backup_log;
 
-    IF (NEW.last_full_backup_timestamp < last_full_backup_time + INTERVAL 1 DAY) THEN
+    IF (NEW.last_full_backup_timestamp < last_full_backup_time + INTERVAL 1 WEEK) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Cannot update full backup time more than once in a day';
+        SET MESSAGE_TEXT = 'Cannot update full backup time more than once in a week';
     ELSE
         SET NEW.last_full_backup_timestamp = NOW();
     END IF;
@@ -122,6 +122,27 @@ END;
 //
 
 DELIMITER ;
+
+-- incremental back up limiter
+DELIMITER //
+
+CREATE TRIGGER before_incrementalBackup_log_update
+BEFORE UPDATE ON backup_log
+FOR EACH ROW
+BEGIN
+    DECLARE last_incremental_backup_time TIMESTAMP;
+    SELECT MAX(last_incremental_backup_time) INTO last_incremental_backup_time FROM backup_log;
+
+    IF (NEW.last_incremental_backup_time >= CURDATE()) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot update incremental backup time more than once a day';
+    ELSE
+        SET NEW.last_incremental_backup_time = NOW();
+    END IF;
+END;
+
+//
+
 
 DELIMITER //
 
