@@ -6,6 +6,16 @@ START TRANSACTION;
 -- Testdata
 
 --
+-- Test data: apikey
+--
+
+INSERT INTO `apikey` (`apikey`, `role`) VALUES
+('senior', 'SENIOR'),
+('seniorkey', 'SENIOR'),
+('unauthorized', 'UNAUTHORIZED'),
+('unauthorizedkey', 'UNAUTHORIZED');
+
+--
 -- Test data: subscription
 --
 
