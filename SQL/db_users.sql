@@ -1,0 +1,37 @@
+
+
+START TRANSACTION;
+--
+-- User Junior
+--
+
+CREATE USER IF NOT EXISTS 'User_Junior'@'%' IDENTIFIED BY 'GerjanRulez';
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON `DB_Henkflix`.* TO 'User_Junior'@'%';
+
+--
+-- User Medior
+--
+
+CREATE USER IF NOT EXISTS 'User_Medior'@'%' IDENTIFIED BY 'RobRulez';
+
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EVENT, TRIGGER, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `DB_Henkflix`.* TO 'User_Medior'@'%';
+
+--
+-- User Senior
+--
+
+CREATE USER IF NOT EXISTS 'User_Senior'@'%' IDENTIFIED BY 'JanRulez';
+
+GRANT ALL PRIVILEGES ON *.* TO 'User_Senior'@'%';
+
+--
+-- User API
+--
+CREATE USER IF NOT EXISTS 'User_API'@'%' IDENTIFIED BY 'APIKEY';
+
+GRANT CREATE, ALTER, DROP, SELECT, INSERT, UPDATE, DELETE, EXECUTE ON DB_Henkflix.* TO 'User_API'@'%';
+GRANT RELOAD, PROCESS ON *.* TO 'User_API'@'%';
+
+
+COMMIT;
