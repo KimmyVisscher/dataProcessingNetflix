@@ -75,6 +75,7 @@ ADD CONSTRAINT chk_unique_language CHECK (LENGTH(language) > 0);
 -- ----------------------------------------------------------------
 -- Triggers
 
+-- Trigger voor de profile-tabel
 DELIMITER //
 
 CREATE TRIGGER before_insert_profile
@@ -83,12 +84,12 @@ FOR EACH ROW
 BEGIN
     DECLARE profile_count INT;
 
-    -- Controleer het aantal profielen voor het account
+    -- count the number of profiles present linkend to the same account.
     SELECT COUNT(*) INTO profile_count
     FROM profile
     WHERE account_id = NEW.account_id;
 
-    -- Als het aantal profielen groter is dan 4, voorkom het invoegen
+    -- if a an attempt is made to add an 5th profile, activate the trigger
     IF profile_count >= 4 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cannot insert more than 4 profiles for an account';
@@ -97,7 +98,12 @@ END;
 
 //
 
+DELIMITER ;
+
+-- full back up limiter
+
 DELIMITER //
+
 CREATE TRIGGER before_backup_log_update
 BEFORE UPDATE ON backup_log
 FOR EACH ROW
@@ -112,15 +118,22 @@ BEGIN
         SET NEW.last_full_backup_timestamp = NOW();
     END IF;
 END;
+
 //
+
 DELIMITER ;
 
+DELIMITER //
 
 -- Trigger voor de account-tabel
 CREATE TRIGGER account_before_insert
 BEFORE INSERT ON account
 FOR EACH ROW
 SET NEW.modification_timestamp = NOW();
+
+DELIMITER ;
+
+DELIMITER //
 
 CREATE TRIGGER account_before_update
 BEFORE UPDATE ON account
@@ -129,11 +142,23 @@ BEGIN
     SET NEW.modification_timestamp = NOW();
 END;
 
+//
+
+DELIMITER ;
+
+DELIMITER //
+
 -- Trigger voor de profile-tabel
 CREATE TRIGGER profile_before_insert
 BEFORE INSERT ON profile
 FOR EACH ROW
 SET NEW.modification_timestamp = NOW();
+
+//
+
+DELIMITER ;
+
+DELIMITER //
 
 CREATE TRIGGER profile_before_update
 BEFORE UPDATE ON profile
@@ -142,11 +167,23 @@ BEGIN
     SET NEW.modification_timestamp = NOW();
 END;
 
+//
+
+DELIMITER ;
+
+DELIMITER //
+
 -- Trigger voor de subscription-tabel
 CREATE TRIGGER subscription_before_insert
 BEFORE INSERT ON subscription
 FOR EACH ROW
 SET NEW.modification_timestamp = NOW();
+
+//
+
+DELIMITER ;
+
+DELIMITER //
 
 CREATE TRIGGER subscription_before_update
 BEFORE UPDATE ON subscription
@@ -155,11 +192,23 @@ BEGIN
     SET NEW.modification_timestamp = NOW();
 END;
 
+//
+
+DELIMITER ;
+
+DELIMITER //
+
 -- Trigger voor de watchlist-tabel
 CREATE TRIGGER watchlist_before_insert
 BEFORE INSERT ON watchlist
 FOR EACH ROW
 SET NEW.modification_timestamp = NOW();
+
+//
+
+DELIMITER ;
+
+DELIMITER //
 
 CREATE TRIGGER watchlist_before_update
 BEFORE UPDATE ON watchlist
@@ -168,6 +217,9 @@ BEGIN
     SET NEW.modification_timestamp = NOW();
 END;
 
+//
+
+DELIMITER ;
 
 -- ----------------------------------------------------------------
 -- Stored procedures
